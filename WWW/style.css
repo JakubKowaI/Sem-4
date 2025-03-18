@@ -1,0 +1,252 @@
+* {
+    font-family: IBM Plex Mono,sans-serif;
+    font-weight: 600;
+    font-style: normal;
+    
+}
+
+body {
+    background-color: black;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    font-size: 0.85em;
+}
+
+a:link {
+  text-decoration: none;
+}
+
+a:link:hover {
+  text-decoration: underline;
+}
+
+a:visited {
+  text-decoration: none;
+}
+
+a:active {
+  text-decoration: none;
+}
+
+
+
+.middle {
+    list-style: none;
+    display: flex;
+    margin: 10px;
+    padding: 0;
+    overflow: hidden;
+    background-color: inherit;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  .mid {
+    float: left;
+    margin: 0px;
+  }
+
+  .mid:hover{
+    background-color: #111111;
+  }
+  
+  .mid a {
+    display: block;
+    text-align: center;
+    padding: 5px;
+    text-decoration: none;
+  }
+  
+a {
+    color: white;
+}
+footer{
+    
+    width: 100%;
+    text-align: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr; /* Trzy kolumny: pierwsza i trzecia są równe, środkowa większa */
+  gap: 30px; /* Odstępy między elementami */
+  padding: 10px;
+}
+
+.gridItem {
+  background-color: inherit;
+  padding: 10px;
+  text-align: center;
+}
+
+.gridItem > div > img{
+  width: 80%;
+  background: inherit;
+}
+
+.gridItem > div{
+  justify-content: space-evenly;
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: 1fr; /* Trzy kolumny: pierwsza i trzecia są równe, środkowa większa */
+  gap: 30px; /* Odstępy między elementami */
+  padding: 10px;
+}
+
+.galleryItem {
+  background-color: inherit;
+  justify-content: space-evenly;
+  max-width: 100%;
+  max-height: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.galleryItem > img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  margin: auto;
+}
+
+.sportsGrid{
+  display: grid;
+  grid-template-columns: 1fr; /* Trzy kolumny: pierwsza i trzecia są równe, środkowa większa */
+  gap: 30px; /* Odstępy między elementami */
+  padding: 10px;
+}
+
+
+
+.sportsItem{
+  background-color: inherit; /* #131313 */
+  justify-content: space-evenly;
+  margin: auto;
+  width: 75%;
+  max-height: 100%;
+  display: flex;
+  justify-content: space-evenly;
+  flex-direction: column;
+}
+
+.sportsItem > div{
+  margin: auto;
+  text-align: justify;
+}
+
+.container {
+  display: grid;
+  grid-template-areas:
+      "header header"
+      "menu main"
+      "footer footer";
+  grid-template-columns: auto 1fr auto; /* Menu węższe, główna treść szersza */
+  grid-template-rows: auto 1fr auto;
+  height: 100vh;
+}
+
+.header { grid-area: header; background-color: inherit; }
+
+.menu { 
+  grid-area: menu; 
+  background-color: inherit; 
+  list-style: none;
+  display: flex;
+  justify-content: space-between; /* Rozmieszczenie elementów z przestrzenią między nimi */
+  flex-direction: column;
+}
+.main { grid-area: main; background-color: inherit; }
+
+.footer { grid-area: footer; background-color: inherit; }
+
+.profSection{
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Trzy kolumny: pierwsza i trzecia są równe, środkowa większa */
+  gap: 3%; /* Odstępy między elementami */
+  padding: 1%;
+  justify-content: center;
+}
+
+.profItem{
+  padding: 10px;
+  text-align: center;
+  
+ 
+}
+
+#texts{
+  flex-direction: column;
+  display: flex;
+  padding: 1%;
+  justify-content: space-evenly;
+}
+
+.break{
+  width: 75%;
+  color: white;
+}
+
+.sportsBreak{
+  width: 75%;
+  opacity: 80%;
+}
+
+@media (min-width: 768px) {
+
+  .menu {
+      flex-direction: row; /* Switch to horizontal navigation */
+      /*justify-content: center;*/
+  }
+
+  .middle {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+  }
+
+  .grid {
+      grid-template-columns: 1fr 1fr; /* Two columns for medium screens */
+  }
+
+  .gallery{
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Desktop and Larger Screens */
+@media (min-width: 1024px) {
+
+  .grid {
+      grid-template-columns: 1fr 1fr 1fr; /* Restore three columns for desktops */
+  }
+
+  .gallery{
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+
+#prof{
+  max-width:25%;
+  min-width: 100px;
+}
+
+pre {
+  background-color: #1e1e1e; /* Dark background */
+  color: #ffffff; /* Light text */
+  padding: 10px;
+  border-radius: 5px; /* Rounded corners */
+  font-family: 'IBM Plex Mono', monospace; /* Monospace font */
+  font-size: 14px;
+  overflow-x: auto; /* Scrollbar for long lines */
+  white-space: pre-wrap; /* Wrap long lines */
+  border: 1px solid #333; /* Subtle border */
+}
+
+code {
+  display: block;
+  text-align: left;
+}

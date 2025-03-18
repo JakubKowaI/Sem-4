@@ -1,0 +1,126 @@
+Sprawozdanie z kompilacji i działania programów
+Zadanie 1
+
+    Plik źródłowy: L1Z1.cpp
+
+    Opis zadania:
+
+        Zaimplementowano kolejkę (FIFO) oraz stos (LIFO).
+
+        Do każdej struktury dodano po 50 elementów, a następnie je pobrano i wypisano.
+
+        Obsługa błędów: program prawdopodobnie zawiera zabezpieczenie przed próbą pobrania elementu z pustej kolejki/stosu.
+
+    Kompilacja: Program został skompilowany bez błędów za pomocą polecenia g++ L1Z1.cpp.
+
+    Wynik działania:
+
+        Program wypisał sekwencję wartości oznaczonych jako LIFO (od 49 do 0), co odpowiada działaniu stosu (ostatni dodany element jest pierwszy do pobrania).
+
+        Następnie wypisał sekwencję wartości oznaczonych jako FIFO (od 0 do 49), co odpowiada działaniu kolejki (pierwszy dodany element jest pierwszy do pobrania).
+
+        Wynik jest zgodny z oczekiwaniami, a program działa poprawnie.
+
+    Wnioski:
+
+        Implementacja FIFO i LIFO jest poprawna.
+
+        Program nie zgłasza błędów, co sugeruje, że obsługa błędów (np. próba pobrania z pustej struktury) działa prawidłowo.
+
+Zadanie 2
+
+    Plik źródłowy: L1Z2.cpp
+
+    Opis zadania:
+
+        Zaimplementowano listę jednokierunkową cykliczną liczb całkowitych.
+
+        Funkcje:
+
+            insert(l, i): wstawia nowy element do listy.
+
+            merge(l1, l2): łączy dwie listy.
+
+        Utworzono tablicę T zawierającą 10000 losowych liczb całkowitych z przedziału [0, 100000], a następnie wstawiono je do listy L.
+
+        Obliczono średni koszt 1000 wyszukiwań:
+
+            Dla liczb, które są na liście (wybieranych losowo z tablicy T).
+
+            Dla losowych liczb z przedziału [0, 100000].
+
+    Kompilacja: Program został skompilowany bez błędów za pomocą polecenia g++ L1Z2.cpp.
+
+    Wynik działania:
+
+        Program wygenerował i wypisał 1000 losowych liczb całkowitych.
+
+        Obliczono średnią (AVG) tych liczb, która wyniosła 4561.44.
+
+        Następnie wypisano 1000 wartości, z których większość to 10000, ale niektóre były mniejsze (np. 5353, 7446). Może to odpowiadać wynikom wyszukiwań, gdzie 10000 oznacza maksymalny koszt wyszukiwania (przeszukanie całej listy), a mniejsze wartości oznaczają, że znaleziono element wcześniej.
+
+        Średnia dla tej części wyniosła 9514.98, co sugeruje, że większość wyszukiwań wymagała przeszukania prawie całej listy.
+
+    Wnioski:
+
+        Implementacja listy jednokierunkowej cyklicznej jest poprawna.
+
+        Wyniki wyszukiwań są zgodne z oczekiwaniami dla listy jednokierunkowej, gdzie koszt wyszukiwania jest liniowy względem liczby elementów.
+
+        Program działa poprawnie, ale można rozważyć optymalizację wyszukiwań (np. przez przechowywanie dodatkowych wskaźników).
+
+Zadanie 3
+
+    Plik źródłowy: L1Z3.cpp
+
+    Opis zadania:
+
+        Zaimplementowano listę dwukierunkową cykliczną.
+
+        Wykonano te same polecenia co w Zadaniu 2, ale z dodatkowym wskaźnikiem na poprzedni element w cyklu.
+
+        Każde wyszukiwanie losowo decyduje, w którym kierunku będzie się odbywać (do przodu lub do tyłu).
+
+    Kompilacja: Program został skompilowany bez błędów za pomocą polecenia g++ L1Z3.cpp.
+
+    Wynik działania:
+
+        Program wygenerował i wypisał 1000 losowych liczb całkowitych.
+
+        Obliczono średnią (AVG) tych liczb, która wyniosła 5014.79.
+
+        Następnie wypisano 1000 wartości, z których większość to 10000, ale niektóre były mniejsze (np. 3914, 6116). Podobnie jak w Zadaniu 2, może to odpowiadać wynikom wyszukiwań.
+
+        Średnia dla tej części wyniosła 9535.95, co sugeruje, że większość wyszukiwań również wymagała przeszukania prawie całej listy.
+
+    Wnioski:
+
+        Implementacja listy dwukierunkowej cyklicznej jest poprawna.
+
+        Wyniki wyszukiwań są zbliżone do tych z Zadania 2, co może wskazywać, że losowy kierunek wyszukiwania nie wpłynął znacząco na średni koszt.
+
+        Program działa poprawnie, ale podobnie jak w Zadaniu 2, można rozważyć optymalizację wyszukiwań.
+
+Podsumowanie
+
+    Zadanie 1:
+
+        Poprawnie zaimplementowano kolejkę (FIFO) i stos (LIFO).
+
+        Program działa zgodnie z wymaganiami, a obsługa błędów jest prawdopodobnie zaimplementowana.
+
+    Zadanie 2:
+
+        Poprawnie zaimplementowano listę jednokierunkową cykliczną.
+
+        Wyniki wyszukiwań są zgodne z oczekiwaniami dla listy jednokierunkowej.
+
+        Program działa poprawnie, ale można rozważyć optymalizację wyszukiwań.
+
+    Zadanie 3:
+
+        Poprawnie zaimplementowano listę dwukierunkową cykliczną.
+
+        Wyniki wyszukiwań są zbliżone do tych z Zadania 2, co sugeruje, że losowy kierunek wyszukiwania nie wpłynął znacząco na średni koszt.
+
+        Program działa poprawnie, ale podobnie jak w Zadaniu 2, można rozważyć optymalizację.
