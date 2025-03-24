@@ -30,7 +30,7 @@ void insert(packet* l,int n){
 packet* merge(packet* l1,packet* l2){
     packet* temp = l2->front;
     for(int i =0;i<l2->num;i++){
-        cout<<"hej"<<endl;
+        //cout<<"hej"<<endl;
         insert(l1,temp->num);
         temp=temp->front;
     }

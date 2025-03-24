@@ -16,13 +16,13 @@ void insert(packet* l,int n){
         l->num++;
     if(l->front==nullptr){
         temp->front=temp;
-        temp->back=temp;
+        //temp->back=temp;
         l->front=temp;
     }else{
         temp->front=l->front;
-        temp->back=l->front->back;
-        l->front->back->front=temp;
-        l->front->back=temp;
+        //temp->back=l->front->back;
+        //l->front->back->front=temp;
+        //l->front->back=temp;
         l->front=temp;
     }
 }
@@ -30,7 +30,7 @@ void insert(packet* l,int n){
 packet* merge(packet* l1,packet* l2){
     packet* temp = l2->front;
     for(int i =0;i<l2->num;i++){
-        cout<<"hej"<<endl;
+        //cout<<"hej"<<endl;
         insert(l1,temp->num);
         temp=temp->front;
     }
@@ -66,7 +66,7 @@ void mergeTest(){
     view(l2);
     packet* l3 = merge(l1,l2);
     view(l3);
-    view(l1);
+    //zview(l1);
 }
 
 int find(packet* l, int n){
@@ -120,8 +120,8 @@ void mainTestI(){
 int main() {
     srand (time(NULL));
 
-    //mergeTest();
-    mainTestT();
-    mainTestI();
+    mergeTest();
+    //mainTestT();
+    //mainTestI();
     return 0;
 }
