@@ -7,7 +7,6 @@ os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 
 folder = "../../MyNums/PNG"
 
-# Wczytanie etykiet z pliku labels.txt
 labels = {}
 labels_path = os.path.join(folder, "labels.txt")
 
@@ -20,42 +19,35 @@ with open(labels_path, "r") as f:
         filename, label = line.strip().split()
         labels[filename] = int(label)
 
-# Lista nazw plików (tylko te z obrazami)
 image_files = sorted([f for f in os.listdir(folder) if f.endswith((".png"))])
 
 if not image_files:
     raise ValueError("Nie znaleziono żadnych plików .png ani .jpg w folderze!")
 
-# Listy do przechowywania obrazów i etykiet
 processed_images = []
 true_labels = []
 
-# Wczytanie i przetworzenie obrazów
 for file in image_files:
     img_path = os.path.join(folder, file)
 
     img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
     if img is None:
-        print(f"⚠️ Błąd wczytywania obrazu: {file}, pomijam...")
+        print(f" Błąd wczytywania obrazu: {file}, pomijam...")
         continue
 
-    img = cv2.resize(img, (28, 28))  # Skalowanie do 28x28
+    img = cv2.resize(img, (28, 28))  
     
-    # Zastosowanie progowania (thresholding)
-    # Oznaczymy tło na czarne (wartości poniżej progu na 0), a cyfrę na białą (wartości powyżej progu na 255)
     _, img = cv2.threshold(img, 127, 255, cv2.THRESH_BINARY_INV)
 
     
     #img = 255 - img  # Odwrócenie kolorów
-    img = img / 255.0  # Normalizacja
+    img = img / 255.0  
 
     processed_images.append(img)
-    true_labels.append(labels.get(file, -1))  # Pobranie etykiety (jeśli brak, -1)
+    true_labels.append(labels.get(file, -1))
 
-# Sprawdzenie, czy przetworzono obrazy
 print(f"Przetworzono {len(processed_images)} obrazów")
 
-# Konwersja do tablicy NumPy
 processed_images = np.array(processed_images).reshape(len(processed_images), 28, 28)
 true_labels = np.array(true_labels)
 
@@ -82,4 +74,17 @@ model.compile(optimizer='adam',
 
 model.fit(x_train, y_train, epochs=5)
 
+predictions = model.predict(processed_images)
+
+for i in range(len(processed_images)):
+    true_label = true_labels[i]
+    predicted_label = np.argmax(predictions[i])  
+    confidence = np.max(predictions[i])  
+
+    print(f"Test File {i+1}:")
+    print(f"True Label: {true_label}, Predicted Label: {predicted_label}, Confidence: {confidence:.4f}")
+    print("-" * 40)
+
 model.evaluate(processed_images,  true_labels, verbose=2)
+
+
