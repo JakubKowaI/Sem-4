@@ -2,6 +2,7 @@ import tensorflow as tf
 import cv2
 import numpy as np
 import os
+from sklearn.metrics import classification_report
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 
@@ -42,6 +43,8 @@ for file in image_files:
     
     #img = 255 - img  # Odwrócenie kolorów
     img = img / 255.0  
+
+    #img = cv2.GaussianBlur(img, (5, 5), 0)
 
     processed_images.append(img)
     true_labels.append(labels.get(file, -1))
@@ -87,4 +90,5 @@ for i in range(len(processed_images)):
 
 model.evaluate(processed_images,  true_labels, verbose=2)
 
-
+y_pred = np.argmax(model.predict(processed_images), axis=1)
+print(classification_report(true_labels, y_pred))

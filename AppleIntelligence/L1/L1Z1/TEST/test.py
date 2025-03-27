@@ -1,5 +1,7 @@
 import tensorflow as tf
 import os
+from sklearn.metrics import classification_report
+import numpy as np
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 
@@ -15,14 +17,7 @@ model = tf.keras.models.Sequential([
   tf.keras.layers.Dense(10)
 ])
 
-#predictions = model(x_train[:1]).numpy()
-#print(predictions)
-
-#tf.nn.softmax(predictions).numpy()
-
 loss_fn = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
-
-#loss_fn(y_train[:1], predictions).numpy()
 
 model.compile(optimizer='adam',
               loss=loss_fn,
@@ -32,15 +27,5 @@ model.fit(x_train, y_train, epochs=5)
 
 model.evaluate(x_test,  y_test, verbose=2)
 
-#probability_model = tf.keras.Sequential([
-#  model,
-#  tf.keras.layers.Softmax()
-#])
-
-#probability_model.compile(optimizer='adam',
-#              loss=loss_fn,
-#              metrics=['accuracy'])
-
-#probability_model.fit(x_train, y_train, epochs=5)
-
-#probability_model.evaluate(x_test,  y_test, verbose=2)
+y_pred = np.argmax(model.predict(x_test), axis=1)
+print(classification_report(y_test, y_pred))
