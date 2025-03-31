@@ -1,8 +1,27 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
+#include <fstream>
 
 using namespace std;
+
+void appendResultToCSV(const std::string& algorithm, int array_size, int comparisons, int swaps, const std::string& filename) {
+    std::ofstream file(filename, std::ios::app);
+    if (!file.is_open()) {
+        std::cerr << "Error opening file!" << std::endl;
+        return;
+    }
+
+    std::ifstream checkFile(filename);
+    if (checkFile.peek() == std::ifstream::traits_type::eof()) {
+        file << "Algorithm,Array Size,Comparisons,Swaps\n";
+    }
+    
+    file << algorithm << "," << array_size << "," << comparisons << "," << swaps << "\n";
+    file.close();
+}
+
+
 
 int por=0;
 int swp=0;
@@ -103,6 +122,8 @@ int main(){
         T[i]=A[i];
     }
     QSort(A,0,n-1);
+    appendResultToCSV("HybridSort", n, por, swp, "results.csv");
+
     int temp=0;
     if(n<40){
 

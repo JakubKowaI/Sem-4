@@ -1,11 +1,36 @@
 #include <iostream>
 #include <string>
 #include <iomanip>
+#include <fstream>
 
 using namespace std;
 
+void appendResultToCSV(const std::string& algorithm, int array_size, int comparisons, int swaps, const std::string& filename) {
+    std::ofstream file(filename, std::ios::app);
+    if (!file.is_open()) {
+        std::cerr << "Error opening file!" << std::endl;
+        return;
+    }
+
+    std::ifstream checkFile(filename);
+    if (checkFile.peek() == std::ifstream::traits_type::eof()) {
+        file << "Algorithm,Array Size,Comparisons,Swaps\n";
+    }
+    
+    file << algorithm << "," << array_size << "," << comparisons << "," << swaps << "\n";
+    file.close();
+}
+
 int por=0;
 int swp=0;
+int n=0;
+
+void stan(int* A){
+    cout<<"Tablica w waznym momencie: "<<endl;
+    for(int i =0;i<n;i++){
+        cout<<setw(2)<<setfill('0')<<i<<" : "<<setw(2)<<setfill('0')<<A[i]<<endl;
+    }
+}
 
 int* InsSort(int* A, int n){
     for(int i=1;i<n;i++){
@@ -25,10 +50,7 @@ int* InsSort(int* A, int n){
             A[temp+1]=k;
             swp++;
         
-            cout<<"Tablica w waznym momencie: "<<endl;
-            for(int i =0;i<n;i++){
-                cout<<setw(2)<<setfill('0')<<i<<" : "<<setw(2)<<setfill('0')<<A[i]<<endl;
-            }
+          stan(A);
 
     }
     return A;
@@ -36,7 +58,6 @@ int* InsSort(int* A, int n){
 
 int main(){
     string line;
-    int n=-1;
     int* A = NULL;
     try{
         getline(cin,line);
@@ -65,6 +86,7 @@ int main(){
         T[i]=A[i];
     }
     int* S = InsSort(A,n);
+    appendResultToCSV("InsertionSort", n, por, swp, "results.csv");
 
     int temp=0;
     if(n<40){
