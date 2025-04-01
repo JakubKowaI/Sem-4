@@ -61,7 +61,7 @@ void QSort(int* A, int p, int q){
     }
     int index = partition(A,p,q);
     
-    stan(A);
+    //stan(A);
 
     QSort(A,p,index-1);
     QSort(A,index+1,q);
@@ -83,52 +83,52 @@ int main(){
         cout << "Error: " << e.what() << endl;
         return -1;
     }
-    if(n<40){
+    // if(n<40){
 
-        cout<<"Tablica przed posortowaniem: "<<endl;
-        for(int i =0;i<n;i++){
-            cout<<setw(2)<<setfill('0')<<i<<" : "<<setw(2)<<setfill('0')<<A[i]<<endl;
-        }
-    }
+    //     cout<<"Tablica przed posortowaniem: "<<endl;
+    //     for(int i =0;i<n;i++){
+    //         cout<<setw(2)<<setfill('0')<<i<<" : "<<setw(2)<<setfill('0')<<A[i]<<endl;
+    //     }
+    // }
 
-    int* T = new int[n];
-    for(int i =0;i<n;i++){
-        T[i]=A[i];
-    }
+    // int* T = new int[n];
+    // for(int i =0;i<n;i++){
+    //     T[i]=A[i];
+    // }
     QSort(A,0,n-1);
     appendResultToCSV("QuickSort", n, por, swp, "results.csv");
 
-    int temp=0;
-    if(n<40){
+    // int temp=0;
+    // if(n<40){
 
-        cout<<"Tablica przed posortowaniem: "<<endl;
-        for(int i =0;i<n;i++){
-            cout<<setw(2)<<setfill('0')<<i<<" : "<<setw(2)<<setfill('0')<<T[i]<<endl;
-        }
+    //     cout<<"Tablica przed posortowaniem: "<<endl;
+    //     for(int i =0;i<n;i++){
+    //         cout<<setw(2)<<setfill('0')<<i<<" : "<<setw(2)<<setfill('0')<<T[i]<<endl;
+    //     }
 
-        cout<<"Tablica po posortowaniu: "<<endl;
+    //     cout<<"Tablica po posortowaniu: "<<endl;
         
-        for(int i =0;i<n;i++){
-            if(i==0){
-                temp=A[i];
-            }else{
-                if(temp>A[i]){
-                    temp=-1;
-                }else{
-                    temp=A[i];
-                }
-            }
-            cout<<setw(2)<<setfill('0')<<i<<" : "<<setw(2)<<setfill('0')<<A[i]<<endl;
-        }
-    }
+    //     for(int i =0;i<n;i++){
+    //         if(i==0){
+    //             temp=A[i];
+    //         }else{
+    //             if(temp>A[i]){
+    //                 temp=-1;
+    //             }else{
+    //                 temp=A[i];
+    //             }
+    //         }
+    //         cout<<setw(2)<<setfill('0')<<i<<" : "<<setw(2)<<setfill('0')<<A[i]<<endl;
+    //     }
+    // }
     
-    cout<<"Liczba porownan: "<<por<<" Liczba swapow: "<<swp<<endl;
+    // cout<<"Liczba porownan: "<<por<<" Liczba swapow: "<<swp<<endl;
 
-    if(temp==-1){
-        cout<<"Tablica zle posortowana"<<endl;
-    }else{
-        cout<<"Wszytko git!"<<endl;
-    }
+    // if(temp==-1){
+    //     cout<<"Tablica zle posortowana"<<endl;
+    // }else{
+    //     //cout<<"Wszytko git!"<<endl;
+    // }
 
     delete[] A;
 

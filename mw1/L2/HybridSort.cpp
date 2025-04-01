@@ -26,7 +26,7 @@ void appendResultToCSV(const std::string& algorithm, int array_size, int compari
 int por=0;
 int swp=0;
 int n=0;
-int prog=10;
+int prog=0;
 
 void stan(int* A){
     cout<<"Tablica w waznym momencie: "<<endl;
@@ -51,7 +51,7 @@ void InsSort(int* A, int p,int q){
         }
             A[temp+1]=k;
             swp++;
-            stan(A);
+            //stan(A);
     }
 }
 
@@ -85,7 +85,7 @@ void QSort(int* A, int p, int q){
         InsSort(A,p,q);
     }else{
         int index = partition(A,p,q);
-        stan(A);
+        //stan(A);
     QSort(A,p,index-1);
     QSort(A,index+1,q);
     }
@@ -96,65 +96,89 @@ int main(){
     string line;
     int* A = NULL;
     try{
+        // ifstream data("temp.txt");
+        // if(!data.is_open()){
+        //     cout<<"blad"<<endl;
+        //     return -1;
+        // }
+        
         getline(cin,line);
+        //getline(data,line);
         n = stoi(line);
         A = new int[n];
         int i=0;
         while(getline(cin, line)){
             A[i]=stoi(line);
             i++;
+            
         }
+        //data.close();
     }catch (const exception& e) {
         cout << "Error: " << e.what() << endl;
         return -1;
     }
 
-    if(n<40){
+    // if(n<40){
 
-        cout<<"Tablica przed posortowaniem: "<<endl;
-        for(int i =0;i<n;i++){
-            cout<<setw(2)<<setfill('0')<<i<<" : "<<setw(2)<<setfill('0')<<A[i]<<endl;
-        }
-    }
+    //     cout<<"Tablica przed posortowaniem: "<<endl;
+    //     for(int i =0;i<n;i++){
+    //         cout<<setw(2)<<setfill('0')<<i<<" : "<<setw(2)<<setfill('0')<<A[i]<<endl;
+    //     }
+    // }
 
-    int* T = new int[n];
-    for(int i =0;i<n;i++){
-        T[i]=A[i];
-    }
+    // int* T = new int[n];
+    // for(int i =0;i<n;i++){
+    //     T[i]=A[i];
+    // }
+
+    // for(int i = 10;i>=0;i--){
+    //     prog=i;
+    //     cout<<"Prog wynosi: "<<prog<<endl;
+
+    //     for(int i =0;i<n;i++){
+    //         A[i]=T[i];
+    //     }
+    //     QSort(A,0,n-1);
+    //     cout<<"Liczba porownan: "<<por<<" Liczba swapow: "<<swp<<endl;
+    //     por=0;
+    //     swp=0;
+    // }
+
     QSort(A,0,n-1);
+    
     appendResultToCSV("HybridSort", n, por, swp, "results.csv");
 
-    int temp=0;
-    if(n<40){
+    // int temp=0;
+    // if(n<40){
 
-        cout<<"Tablica przed posortowaniem: "<<endl;
-        for(int i =0;i<n;i++){
-            cout<<setw(2)<<setfill('0')<<i<<" : "<<setw(2)<<setfill('0')<<T[i]<<endl;
-        }
+    //     cout<<"Tablica przed posortowaniem: "<<endl;
+    //     for(int i =0;i<n;i++){
+    //         cout<<setw(2)<<setfill('0')<<i<<" : "<<setw(2)<<setfill('0')<<T[i]<<endl;
+    //     }
 
-        cout<<"Tablica po posortowaniu: "<<endl;
+    //     cout<<"Tablica po posortowaniu: "<<endl;
         
-        for(int i =0;i<n;i++){
-            if(i==0){
-                temp=A[i];
-            }else{
-                if(temp>A[i]){
-                    temp=-1;
-                }else{
-                    temp=A[i];
-                }
-            }
-            cout<<setw(2)<<setfill('0')<<i<<" : "<<setw(2)<<setfill('0')<<A[i]<<endl;
-        }
-    }
+    //     for(int i =0;i<n;i++){
+    //         if(i==0){
+    //             temp=A[i];
+    //         }else{
+    //             if(temp>A[i]){
+    //                 temp=-1;
+    //             }else{
+    //                 temp=A[i];
+    //             }
+    //         }
+    //         cout<<setw(2)<<setfill('0')<<i<<" : "<<setw(2)<<setfill('0')<<A[i]<<endl;
+    //     }
+    // }
     
-    cout<<"Liczba porownan: "<<por<<" Liczba swapow: "<<swp<<endl;
+    // cout<<"Liczba porownan: "<<por<<" Liczba swapow: "<<swp<<endl;
 
-    if(temp==-1){
-        cout<<"Tablica zle posortowana"<<endl;
-    }else{
-        cout<<"Wszytko git!"<<endl;
-    }
+    // if(temp==-1){
+    //    cout<<"Tablica zle posortowana"<<endl;
+    // }else{
+    //     //cout<<"Wszytko git!"<<endl;
+    // }
 
     delete[] A;
 

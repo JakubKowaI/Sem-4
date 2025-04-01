@@ -3,8 +3,6 @@
 #include <iomanip>
 #include <fstream>
 
-using namespace std;
-
 void appendResultToCSV(const std::string& algorithm, int array_size, int comparisons, int swaps, const std::string& filename) {
     std::ofstream file(filename, std::ios::app);
     if (!file.is_open()) {
@@ -21,7 +19,10 @@ void appendResultToCSV(const std::string& algorithm, int array_size, int compari
     file.close();
 }
 
-int por=0;
+
+using namespace std;
+
+int por =0;
 int swp=0;
 int n=0;
 
@@ -32,28 +33,76 @@ void stan(int* A){
     }
 }
 
-int* InsSort(int* A, int n){
-    for(int i=1;i<n;i++){
-        int k = A[i];
-        int temp=i-1;
-        
-        while (temp >= 0) {  
-            por++;  
-            if (A[temp] > k) {  
-                A[temp + 1] = A[temp];
-                temp--;
-                swp++;  
-            } else {
-                break;  
+void swap(int* A,int p,int q){
+    int temp = A[p];
+        A[p]=A[q];
+        A[q] = temp;
+        swp++;
+}
+
+int* partition(int* A,int p,int q){
+    int ppivot= A[p];
+    int qpivot= A[q];
+    int pcounter=0;
+    int qcounter=0;
+    if(ppivot>qpivot)swap(A,p,q);
+    ppivot= A[p];
+    qpivot= A[q];
+    for(int i=p+1;i<q-qcounter;i++){
+        if(qcounter>pcounter){
+            if(A[i]>qpivot){
+                qcounter++;
+                por++;
+                swap(A,q-qcounter,i);
+
+                i--;
+            }else if(A[i]<=ppivot){
+                pcounter++;
+                por+=2;
+
+                swap(A,p+pcounter,i);
+            }else {
+                por+=2;
+            }
+        }else{
+            if(A[i]<=ppivot){
+                pcounter++;
+                por++;
+
+                swap(A,p+pcounter,i);
+            }else if(A[i]>qpivot){
+                qcounter++;
+                por+=2;
+
+                swap(A,q-qcounter,i);
+                i--;
+            }else{
+                por+=2;
             }
         }
-            A[temp+1]=k;
-            swp++;
         
-          //stan(A);
-
     }
-    return A;
+    swap(A,p+pcounter,p);
+    swap(A,q-qcounter,q);
+    //stan(A);
+
+    int* T = new int[2];
+    T[0]=pcounter+p;
+    T[1]=q-qcounter;
+    return T;
+}
+
+void QSort(int* A, int p, int q){
+    if(p>=q||p<0){
+        return ;
+    }
+    int* index = partition(A,p,q);
+    
+    //stan(A);
+
+    QSort(A,p,index[0]-1);
+    QSort(A,index[0]+1,index[1]-1);
+    QSort(A,index[1]+1,q);
 }
 
 int main(){
@@ -72,7 +121,6 @@ int main(){
         cout << "Error: " << e.what() << endl;
         return -1;
     }
-    
     // if(n<40){
 
     //     cout<<"Tablica przed posortowaniem: "<<endl;
@@ -85,8 +133,8 @@ int main(){
     // for(int i =0;i<n;i++){
     //     T[i]=A[i];
     // }
-    int* S = InsSort(A,n);
-    appendResultToCSV("InsertionSort", n, por, swp, "results.csv");
+    QSort(A,0,n-1);
+    appendResultToCSV("DualPivotQuickSort", n, por, swp, "results.csv");
 
     // int temp=0;
     // if(n<40){
@@ -117,11 +165,10 @@ int main(){
     // if(temp==-1){
     //     cout<<"Tablica zle posortowana"<<endl;
     // }else{
-    //     //cout<<"Wszytko git!"<<endl;
+    //     cout<<"Wszytko git!"<<endl;
     // }
 
     delete[] A;
-    
 
     return 0;
 }

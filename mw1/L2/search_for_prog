@@ -1,0 +1,72 @@
+                  ╭───────────╮ 
+      /\          │  user    │ kuba
+     /  \         │ 󰇅 hname   │ archlinux
+    /    \        │ 󰅐 uptime  │ 9 hours, 37 mins
+   /      \       │  distro  │ Arch Linux x86_64
+  /   ,,   \      │  kernel  │ Linux 6.13.8-arch1-1
+ /   |  |   \     │  term    │ tmux 3.5a
+/_-''    ''-_\    │  shell   │ bash 5.2.37
+                  │ 󰍛 cpu     │ Intel(R) Core(TM) Ultra 7 155H (12+8+2) @ 4.80 GHz
+                  │ 󰉉 disk    │ 75.76 GiB / 161.37 GiB (47%) - ext4
+                  │  memory  │ 5.86 GiB / 30.95 GiB (19%)
+                  │ 󰩟 network │  (wlan0)
+                  ├───────────┤ 
+                  │  colors  │ ● ● ● ● ● ● ● ●
+                  ╰───────────╯ 
+
+╭─kuba   󰉖 ~/Projects/Sem-4/mw1/L2                                                                    ( main)  ?6 ~3 -2 3.12.3
+╰─ ❯❯ ./HybridSort.out 
+Prog wynosi: 10
+Liczba porownan: 86425 Liczba swapow: 88113
+Prog wynosi: 9
+Liczba porownan: 85444 Liczba swapow: 87279
+Prog wynosi: 8
+Liczba porownan: 84475 Liczba swapow: 86491
+Prog wynosi: 7
+Liczba porownan: 83577 Liczba swapow: 85820
+Prog wynosi: 6
+Liczba porownan: 82699 Liczba swapow: 85221
+Prog wynosi: 5
+Liczba porownan: 81825 Liczba swapow: 84691
+Prog wynosi: 4
+Liczba porownan: 80995 Liczba swapow: 84291
+Prog wynosi: 3
+Liczba porownan: 79925 Liczba swapow: 83918
+Prog wynosi: 2
+Liczba porownan: 78416 Liczba swapow: 83436
+Prog wynosi: 1
+Liczba porownan: 75479 Liczba swapow: 82183
+Prog wynosi: 0
+Liczba porownan: 75479 Liczba swapow: 82183
+
+╭─kuba   󰉖 ~/Projects/Sem-4/mw1/L2                                                                    ( main)  ?6 ~3 -2 3.12.3
+╰─ ❯❯ tmux capture-pane -p -S'-' -E'-' -J > search_for_prog
+
+tablica wielkosci 10000
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

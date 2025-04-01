@@ -1,0 +1,46 @@
+
+╭─kuba   󰉖 ~/Projects/Sem-4/mw1/L2                                                                   ( main)  ?10 ~5 -2 3.12.3
+╰─ ❯❯ time ./Test.out 
+
+real	0m4.156s
+user	0m2.446s
+sys	0m1.666s
+
+╭─kuba   󰉖 ~/Projects/Sem-4/mw1/L2                                                                   ( main)  ?10 ~5 -2 3.12.3
+╰─ ❯❯ g++ Test.cpp -o Test.out 
+
+╭─kuba   󰉖 ~/Projects/Sem-4/mw1/L2                                                                   ( main)  ?10 ~5 -2 3.12.3
+╰─ ❯❯ time ./Test.out 
+
+real	0m41.323s
+user	0m24.213s
+sys	0m16.678s
+
+╭─kuba   󰉖 ~/Projects/Sem-4/mw1/L2                                                                   ( main)  ?11 ~5 -2 3.12.3
+╰─ ❯❯ g++ Test.cpp -o Test.out 
+
+╭─kuba   󰉖 ~/Projects/Sem-4/mw1/L2                                                                    ( main)  ?6 ~5 -2 3.12.3
+╰─ ❯❯ time ./Test.out 
+
+real	6m59.224s
+user	4m5.334s
+sys	2m49.471s
+
+Z DualPivotQuickSortem
+
+╭─kuba   󰉖 ~/Projects/Sem-4/mw1/L2                                         ( main)  ?10 ~5 -11 3.12.3
+╰─ ❯❯ time ./Test.out 
+
+real	0m4.109s
+user	0m2.367s
+sys	0m1.699s
+
+╭─kuba   󰉖 ~/Projects/Sem-4/mw1/L2                                         ( main)  ?10 ~5 -11 3.12.3
+╰─ ❯❯ g++ Test.cpp -o Test.out 
+
+╭─kuba   󰉖 ~/Projects/Sem-4/mw1/L2                                         ( main)  ?10 ~5 -11 3.12.3
+╰─ ❯❯ time ./Test.out 
+
+real	0m41.925s
+user	0m24.573s
+sys	0m16.922s
