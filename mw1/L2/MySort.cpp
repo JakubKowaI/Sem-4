@@ -23,8 +23,8 @@ void appendResultToCSV(const std::string& algorithm, int array_size, int compari
     file.close();
 }
 
-int por=0;
-int swp=0;
+long int por=0;
+long int swp=0;
 int n=0;
 
 void stan(int* A){
@@ -34,43 +34,86 @@ void stan(int* A){
     }
 }
 
-vector<int> Merge(vector<int> B,vector<int> C){
-    if(B.empty()){
-        swp+=C.size();
-        return C;
-    }
-    if(C.empty()){
-        swp+=B.size();
-        return B;
+// vector<int> Merge(vector<int> B,vector<int> C){
+//     if(B.empty()){
+//         swp+=C.size();
+//         return C;
+//     }
+//     if(C.empty()){
+//         swp+=B.size();
+//         return B;
+//     }
+
+//     vector<int> T;
+//     if(B[0]<=C[0]){
+//         T.push_back(B[0]);
+//         B.erase(B.begin());
+//     }else{
+//         T.push_back(C[0]);
+//         C.erase(C.begin());
+//     }
+//     por++;
+//     swp++;
+//     vector<int> temp = Merge(B,C);
+//     T.insert(T.end(),temp.begin(),temp.end());
+//     return T;
+// }
+
+
+// vector<int> MySort(vector<int> A){
+//     if(A.size()<=1)return A;
+
+//     vector<int>::iterator it= A.begin()+1;
+//     vector<int>::iterator itemp = A.begin();
+//     for(;it!=A.end();it++,itemp++){
+//         por++;        
+//         if(*itemp>*it)break;
+//     }
+//     vector<int> temp(A.begin(),it);
+//     vector<int> B(it,A.end());
+//     return Merge(temp,MySort(B));
+// }
+
+vector<int> Merge(const vector<int>& B, const vector<int>& C) {
+    vector<int> T;
+    int i = 0, j = 0;
+
+    while (i < B.size() && j < C.size()) {
+        por++;
+        swp++;
+        if (B[i] <= C[j]) {
+            T.push_back(B[i++]);
+        } else {
+            T.push_back(C[j++]);
+        }
     }
 
-    vector<int> T;
-    if(B[0]<=C[0]){
-        T.push_back(B[0]);
-        B.erase(B.begin());
-    }else{
-        T.push_back(C[0]);
-        C.erase(C.begin());
+    while (i < B.size()) {
+        T.push_back(B[i++]);
+        swp++;
     }
-    por++;
-    swp++;
-    vector<int> temp = Merge(B,C);
-    T.insert(T.end(),temp.begin(),temp.end());
+    while (j < C.size()) {
+        T.push_back(C[j++]);
+        swp++;
+    }
+
     return T;
 }
 
-vector<int> MySort(vector<int> A){
-    if(A.size()<=1)return A;
+vector<int> MySort(vector<int>::iterator begin, vector<int>::iterator end) {
+    if (end - begin <= 1) return vector<int>(begin, end);
 
-    vector<int>::iterator it= A.begin()+1;
-    vector<int>::iterator itemp = A.begin();
-    for(;it!=A.end();it++,itemp++){
-        por++;        
-        if(*itemp>*it)break;
+    auto it = begin + 1;
+    auto itemp = begin;
+
+    for (; it != end; ++it, ++itemp) {
+        por++;
+        if (*itemp > *it) break;
     }
-    vector<int> temp(A.begin(),it);
-    vector<int> B(it,A.end());
-    return Merge(temp,MySort(B));
+
+    vector<int> temp(begin, it);
+    vector<int> B = MySort(it, end);
+    return Merge(temp, B);
 }
 
 int main(){
@@ -103,7 +146,7 @@ int main(){
     for(int i =0;i<n;i++){
         T[i]=A[i];
     }
-    vector<int> S=MySort(A);
+    vector<int> S=MySort(A.begin(),A.end());
     appendResultToCSV("MySort", n, por, swp, "results.csv");
 
     int temp=0;

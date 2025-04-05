@@ -19,9 +19,9 @@ int main(){
             string q = "./MergeSort.out < temp.txt";
             const char* qcom = q.c_str();
             system(qcom);
-            string h = "./MySort.out < temp.txt";
-            const char* hcom = h.c_str();
-            system(hcom);
+            // string h = "./MySort.out < temp.txt";
+            // const char* hcom = h.c_str();
+            // system(hcom);
         }
     }
     return 0;

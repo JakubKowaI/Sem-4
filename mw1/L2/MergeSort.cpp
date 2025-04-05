@@ -34,31 +34,31 @@ void stan(int* A){
     }
 }
 
-vector<int> Merge(vector<int> B,vector<int> C){
-    if(B.empty()){
-        swp+=C.size();
-        return C;
-    }
-    if(C.empty()){
-        swp+=B.size();
-        return B;
+vector<int> Merge(const vector<int>& B, const vector<int>& C) {
+    vector<int> T;
+    int i = 0, j = 0;
+
+    while (i < B.size() && j < C.size()) {
+        por++;
+        swp++;
+        if (B[i] <= C[j]) {
+            T.push_back(B[i++]);
+        } else {
+            T.push_back(C[j++]);
+        }
     }
 
-    vector<int> T;
-    if(B[0]<=C[0]){
-        T.push_back(B[0]);
-        B.erase(B.begin());
-    }else{
-        T.push_back(C[0]);
-        C.erase(C.begin());
+    while (i < B.size()) {
+        T.push_back(B[i++]);
+        swp++;
     }
-    por++;
-    swp++;
-    vector<int> temp = Merge(B,C);
-    T.insert(T.end(),temp.begin(),temp.end());
+    while (j < C.size()) {
+        T.push_back(C[j++]);
+        swp++;
+    }
+
     return T;
 }
-
 vector<int> MergeSort(vector<int> A){
     if(A.size()<=1)return A;
 

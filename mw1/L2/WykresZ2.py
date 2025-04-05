@@ -7,7 +7,7 @@ k=100
 
 # Load the data from CSV
 #df = pd.read_csv("resultsQSK"+str(k)+".csv")
-df = pd.read_csv("results.csv")
+df = pd.read_csv("plots/Z3/results/results.csv")
 
 
 # Ensure correct data types

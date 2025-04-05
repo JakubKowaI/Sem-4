@@ -44,3 +44,11 @@ sys	0m1.699s
 real	0m41.925s
 user	0m24.573s
 sys	0m16.922s
+
+Generowanie dla MySort i MergeSort XDDDDDDDDDDDDDDDd
+
+time ./Test.out 
+
+real	269m18.957s
+user	265m8.049s
+sys	3m24.596s
