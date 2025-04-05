@@ -16,10 +16,10 @@ int main(){
             // string ins = "./InsSort.out < temp.txt";
             // const char* inscom = ins.c_str();
             // system(inscom);
-            string q = "./QSort.out < temp.txt";
+            string q = "./MergeSort.out < temp.txt";
             const char* qcom = q.c_str();
             system(qcom);
-            string h = "./DPQSort.out < temp.txt";
+            string h = "./MySort.out < temp.txt";
             const char* hcom = h.c_str();
             system(hcom);
         }

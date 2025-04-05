@@ -59,14 +59,18 @@ vector<int> Merge(vector<int> B,vector<int> C){
     return T;
 }
 
-vector<int> MergeSort(vector<int> A){
+vector<int> MySort(vector<int> A){
     if(A.size()<=1)return A;
 
-        int mid =A.size()/2;
-        vector<int> B(A.begin(),A.begin()+mid);
-        vector<int> C(A.begin()+mid,A.end()); 
-        
-    return Merge(MergeSort(B),MergeSort(C));
+    vector<int>::iterator it= A.begin()+1;
+    vector<int>::iterator itemp = A.begin();
+    for(;it!=A.end();it++,itemp++){
+        por++;        
+        if(*itemp>*it)break;
+    }
+    vector<int> temp(A.begin(),it);
+    vector<int> B(it,A.end());
+    return Merge(temp,MySort(B));
 }
 
 int main(){
@@ -99,8 +103,8 @@ int main(){
     for(int i =0;i<n;i++){
         T[i]=A[i];
     }
-    vector<int> S=MergeSort(A);
-    appendResultToCSV("MergeSort", n, por, swp, "results.csv");
+    vector<int> S=MySort(A);
+    appendResultToCSV("MySort", n, por, swp, "results.csv");
 
     int temp=0;
     int status=0;

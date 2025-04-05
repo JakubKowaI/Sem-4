@@ -3,10 +3,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-k=1
+k=100
 
 # Load the data from CSV
-df = pd.read_csv("resultsQSK"+str(k)+".csv")
+#df = pd.read_csv("resultsQSK"+str(k)+".csv")
+df = pd.read_csv("results.csv")
+
 
 # Ensure correct data types
 df["Array Size"] = df["Array Size"].astype(int)
@@ -69,11 +71,11 @@ def plot_metric2(metric, title, ylabel, filename):
     plt.close()
 
 # Generate and save the required plots
-plot_metric("Comparisons", "Average Number of Comparisons vs Array Size", "Average Comparisons", "plots/QS/comparisons_avgQSK"+str(k)+".png")
-plot_metric("Swaps", "Average Number of Swaps vs Array Size", "Average Swaps", "plots/QS/swaps_avgQSK"+str(k)+".png")
+plot_metric2("Comparisons", "Average Number of Comparisons vs Array Size", "Average Comparisons", "plots/Z3/comparisons_avg"+str(k)+".png")
+plot_metric2("Swaps", "Average Number of Swaps vs Array Size", "Average Swaps", "plots/Z3/swaps_avg"+str(k)+".png")
 df_avg["Comparisons per n"] = df_avg["Comparisons"] / df_avg["Array Size"]
 df_avg["Swaps per n"] = df_avg["Swaps"] / df_avg["Array Size"]
-plot_metric2("Comparisons per n", "Comparisons per n", "Comparisons / n", "plots/QS/comparisons_per_nQSK"+str(k)+".png")
-plot_metric2("Swaps per n", "Swaps per n", "Swaps / n", "plots/QS/swaps_per_nQSK"+str(k)+".png")
+plot_metric2("Comparisons per n", "Comparisons per n", "Comparisons / n", "plots/Z3/comparisons_per_n"+str(k)+".png")
+plot_metric2("Swaps per n", "Swaps per n", "Swaps / n", "plots/Z3/swaps_per_n"+str(k)+".png")
 
 print("Plots saved: comparisons_avg.png, swaps_avg.png, comparisons_per_n.png, swaps_per_n.png")
