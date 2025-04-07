@@ -1,0 +1,49 @@
+c.show()
+###[ Ethernet ]###
+  dst       = None
+  src       = 90:65:84:7c:56:c3
+  type      = ARP
+###[ ARP ]###
+     hwtype    = Ethernet (10Mb)
+     ptype     = IPv4
+     hwlen     = None
+     plen      = None
+     op        = who-has
+     hwsrc     = 90:65:84:7c:56:c3
+     psrc      = 192.168.8.153
+     hwdst     = 00:00:00:00:00:00
+     pdst      = 192.168.8.144
+
+#działa i oddaje nam odpowiedź adres mac 192.168.8.144
+
+b.show()
+###[ Ethernet ]###
+  dst       = ff:ff:ff:ff:ff:ff
+  src       = 90:65:84:7c:56:c3
+  type      = ARP
+###[ ARP ]###
+     hwtype    = Ethernet (10Mb)
+     ptype     = IPv4
+     hwlen     = 6
+     plen      = 4
+     op        = who-has
+     hwsrc     = 90:65:84:7c:56:c3
+     psrc      = 192.168.8.144
+     hwdst     = ee:1f:8a:40:8d:d2
+     pdst      = 192.168.8.1
+
+a.show()
+###[ Ethernet ]###
+  dst       = ff:ff:ff:ff:ff:ff
+  src       = c2:f9:6f:06:cf:89
+  type      = ARP
+###[ ARP ]###
+     hwtype    = Ethernet (10Mb)
+     ptype     = IPv4
+     hwlen     = 6
+     plen      = 4
+     op        = who-has
+     hwsrc     = c2:f9:6f:06:cf:89
+     psrc      = 192.168.8.1
+     hwdst     = ff:ff:ff:ff:ff:ff
+     pdst      = 192.168.8.144
