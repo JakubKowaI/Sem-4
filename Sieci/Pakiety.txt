@@ -47,3 +47,10 @@ a.show()
      psrc      = 192.168.8.1
      hwdst     = ff:ff:ff:ff:ff:ff
      pdst      = 192.168.8.144
+
+172.20.10.6 - ja
+90:65:84:7c:56:c3
+172.20.10.7 - janek
+5e:ac:aa:4b:ac:03
+172.20.10.11 - kajtek
+14:7f:ce:b9:7d:b9
