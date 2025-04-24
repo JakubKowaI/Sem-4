@@ -185,6 +185,8 @@ predicted_classes = np.argmax(processed_preds, axis=1)
 true_classes = np.argmax(true_labels_oh, axis=1)
 
 # Calculate accuracy
+for pred, true in zip(predicted_classes, true_classes):
+    print(f"{pred:8} | {true:4}")
 accuracy = np.mean(predicted_classes == true_classes)
 print(f"Prediction Accuracy on processed_images: {accuracy * 100:.2f}%")
 
