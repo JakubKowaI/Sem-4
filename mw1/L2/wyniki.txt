@@ -239,6 +239,27 @@ Exported revision 14.
 ╰─ ❯❯ cd L2/
 
 ╭─kuba   󰉖 ~/Projects/Sem-4/temp/L2                                                                      ( main)  ?6 ~9 3.12.3
+╰─ ❯❯ g++ Test2.cpp -o Test2.out
+
+╭─kuba   󰉖 ~/Projects/Sem-4/temp/L2                                                                      ( main)  ?6 ~9 3.12.3
+╰─ ❯❯ g++ DualPivotQuickSort.cpp -o DPQSort.out
+
+╭─kuba   󰉖 ~/Projects/Sem-4/temp/L2                                                                      ( main)  ?6 ~9 3.12.3
+╰─ ❯❯ g++ HybridSort.cpp -o HybridSort.out
+
+╭─kuba   󰉖 ~/Projects/Sem-4/temp/L2                                                                      ( main)  ?6 ~9 3.12.3
+╰─ ❯❯ g++ InsertionSort.cpp -o InsSort.out
+
+╭─kuba   󰉖 ~/Projects/Sem-4/temp/L2                                                                      ( main)  ?6 ~9 3.12.3
+╰─ ❯❯ g++ MergeSort.cpp -o MergeSort.out
+
+╭─kuba   󰉖 ~/Projects/Sem-4/temp/L2                                                                      ( main)  ?6 ~9 3.12.3
+╰─ ❯❯ g++ MySort.cpp -o MySort.out
+
+╭─kuba   󰉖 ~/Projects/Sem-4/temp/L2                                                                      ( main)  ?6 ~9 3.12.3
+╰─ ❯❯ g++ QuickSort.cpp -o QSort.out
+
+╭─kuba   󰉖 ~/Projects/Sem-4/temp/L2                                                                      ( main)  ?6 ~9 3.12.3
 ╰─ ❯❯ ./Test2.out DPQSort.out 
 n = 8
 Decreasing Table
