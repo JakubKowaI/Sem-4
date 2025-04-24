@@ -11,6 +11,7 @@
 #include <chrono>
 #include <random>
 #include <algorithm>
+#include <fstream>
 
 using namespace std;
 
@@ -305,58 +306,53 @@ void results(vector<Matrix> solution){
     }
 }
 
-int main(){
-    
-        goal = createGoalState();
-    
-        const vector<int> move_counts = {5, 5, 10, 15, 20};
+int main() {
+    goal = createGoalState();
+    const vector<int> move_counts = {5, 10, 15, 20, 25, 30};
 
-        Matrix start = {{
-            {{10, 12, 1, 2}},
-            {{11, 14, 13, 8}},
-            {{15, 3, 5, 4}},
-            {{6, 9, 7, 0}}
-        }};
+    ofstream output("results.csv");
+    output << "heurystyka,liczba_stanow,dlugosc_rozwiazania\n";
+for(int i=0;i<50;i++){
+    for (int moves : move_counts) {
+        Matrix puzzle = makeRandomMoves(moves);
+        cout << "\nTesting puzzle with " << moves << " random moves:\n";
+        printPuzzle(puzzle);
 
-        // Matrix tt= generateSolvablePuzzle();
-        // if (!isSolvable(tt)) {
-        //     cout << "Not solvable!" << endl;
-        // } else {
-        //     printPuzzle(tt);
-        //     results(solve(tt));
-        // }
-    
-    
-        
-        for (int moves : move_counts) {
-            
-            Matrix puzzle = makeRandomMoves(moves);
-            
-            cout << "\nTesting puzzle with " << moves << " random moves:" << endl;
-            printPuzzle(puzzle);
-            
-            if (!isSolvable(puzzle)) {
-                cout << "Not solvable!" << endl;
-            } else {
-                cout<<"Solving with h1:"<<endl;
-                auto start_time = chrono::steady_clock::now();
-                results(solve(puzzle));
-                auto end_time = chrono::steady_clock::now();
-                cout << "Elapsed time: " 
-                 << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() 
-                 << " ms" << endl;
-
-                cout<<"Solving with h2"<<endl;
-                start_time = chrono::steady_clock::now();
-                results(solve2(puzzle));
-                end_time = chrono::steady_clock::now();
-                cout << "Elapsed time: " 
-                 << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() 
-                 << " ms" << endl;
-            }
-            
-            
+        if (!isSolvable(puzzle)) {
+            cout << "Not solvable!" << endl;
+            continue;
         }
-        
-        return 0;
+
+        // --- solve z h1 ---
+        cout << "Solving with h1:\n";
+        auto start_time = chrono::steady_clock::now();
+        vector<Matrix> path1 = solve(puzzle);
+        auto end_time = chrono::steady_clock::now();
+        int visited1 = states;
+        int steps1 = path1.empty() ? -1 : static_cast<int>(path1.size()) - 1;
+
+        output << "h1," << visited1 << "," << steps1 << "\n";
+
+        cout << "Elapsed time: " 
+             << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count()
+             << " ms\n";
+
+        // --- solve2 z h2 ---
+        cout << "Solving with h2:\n";
+        start_time = chrono::steady_clock::now();
+        vector<Matrix> path2 = solve2(puzzle);
+        end_time = chrono::steady_clock::now();
+        int visited2 = states;
+        int steps2 = path2.empty() ? -1 : static_cast<int>(path2.size()) - 1;
+
+        output << "h2," << visited2 << "," << steps2 << "\n";
+
+        cout << "Elapsed time: " 
+             << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count()
+             << " ms\n";
     }
+}
+    output.close();
+    cout << "\nWyniki zapisane do pliku 'results.csv'.\n";
+    return 0;
+}
