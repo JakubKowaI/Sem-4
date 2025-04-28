@@ -38,7 +38,7 @@ for file in image_files:
 
     
     #img = 255 - img  # Odwrócenie kolorów
-    img = img / 255.0  
+    img = img / 255.0
 
     #img = cv2.GaussianBlur(img, (5, 5), 0)
 

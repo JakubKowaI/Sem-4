@@ -8,15 +8,18 @@
     <title>Portfolio Studenta</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+    <script src="menu.js"></script>
 </head>
 <body>
     <div class="container">
     <header class="header">
         <nav class="menu">
+            <button class="hamburger" aria-label="Menu">&#9776;</button>
+            <div class="nav-links">
                 <ul class="middle">
-                    <li class="mid"><a href="index.html" >[Jakub Kowal]</a></li>
+                    <li class="mid"><a href="index.html">[Jakub Kowal]</a></li>
                 </ul>
                 <ul class="middle">
                     <li class="mid"><a href="projects.html">[Projects]</a></li>
@@ -27,7 +30,19 @@
                     <li class="mid"><a href="gallery.html">[Gallery]</a></li>
                     <li class="mid"><a href="about.html">[Contact]</a></li>
                 </ul>
-            
+            </div>
+            <noscript>
+                <div class="nav-links noscript-menu">
+                    <ul class="middle">
+                        <li class="mid"><a href="index.html">[Jakub Kowal]</a></li>
+                        <li class="mid"><a href="projects.html">[Projects]</a></li>
+                        <li class="mid"><a href="interests.html">[IT Interests]</a></li>
+                        <li class="mid"><a href="sports.html">[Non-IT Interests]</a></li>
+                        <li class="mid"><a href="gallery.html">[Gallery]</a></li>
+                        <li class="mid"><a href="about.html">[Contact]</a></li>
+                    </ul>
+                </div>
+            </noscript>
         </nav>
     </header>
     

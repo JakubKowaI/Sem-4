@@ -1,22 +1,26 @@
 <!DOCTYPE html>
 <html lang="pl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title>Portfolio Studenta</title>
-    <link rel="stylesheet" href="../style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Library Project | Portfolio Studenta</title>
+        <link rel="stylesheet" href="../style.css">
+        <!-- <script src="../scripts/prism-config.js" defer></script> -->
+        <script src="../menu.js"></script>
+        <script src="prism/prism.js" defer></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+        <link href="prism/prism-tonight.css" rel="stylesheet" />
+    </head>
 <body>
     <div class="container">
     <header class="header">
         <nav class="menu">
+            <button class="hamburger" aria-label="Menu">&#9776;</button>
+            <div class="nav-links">
                 <ul class="middle">
-                    <li class="mid"><a href="../index.html" >[Jakub Kowal]</a></li>
+                    <li class="mid"><a href="../index.html">[Jakub Kowal]</a></li>
                 </ul>
                 <ul class="middle">
                     <li class="mid"><a href="../projects.html">[Projects]</a></li>
@@ -27,7 +31,19 @@
                     <li class="mid"><a href="../gallery.html">[Gallery]</a></li>
                     <li class="mid"><a href="../about.html">[Contact]</a></li>
                 </ul>
-            
+            </div>
+            <noscript>
+                <div class="nav-links noscript-menu">
+                    <ul class="middle">
+                        <li class="mid"><a href="../index.html">[Jakub Kowal]</a></li>
+                        <li class="mid"><a href="../projects.html">[Projects]</a></li>
+                        <li class="mid"><a href="../interests.html">[IT Interests]</a></li>
+                        <li class="mid"><a href="../sports.html">[Non-IT Interests]</a></li>
+                        <li class="mid"><a href="../gallery.html">[Gallery]</a></li>
+                        <li class="mid"><a href="../about.html">[Contact]</a></li>
+                    </ul>
+                </div>
+            </noscript>
         </nav>
     </header>
     
@@ -51,24 +67,30 @@
             <article class="sportsItem">
                 <div><h2><a>Code Highlights</a></h2></div>
                 <div>
-<pre><code>#include &lt;iostream>
+                    <pre><code class="language-cpp">
+#include &lt;iostream&gt;
+
 using namespace std;
 
 int main() {
+    int first_number;
+    int second_number;
+    int sum;
+        
+    cout &lt;&lt; "Enter two integers: ";
+    cin &gt;&gt; first_number &gt;&gt; second_number;
 
-int first_number, second_number, sum;
-    
-cout << "Enter two integers: ";
-cin >> first_number >> second_number;
+    // sum of two numbers in stored in variable sumOfTwoNumbers
+    sum = first_number + second_number;
 
-// sum of two numbers in stored in variable sumOfTwoNumbers
-sum = first_number + second_number;
+    // prints sum 
+    cout &lt;&lt; first_number &lt;&lt; " + " &lt;&lt;  second_number &lt;&lt; " = " &lt;&lt; sum;     
 
-// prints sum 
-cout << first_number << " + " <<  second_number << " = " << sum;     
-
-return 0;
-}</code></pre></div>
+    return 0;
+}
+                    </code></pre>
+                    </script>
+                    </div>
                 <div></div>
             </article>
 

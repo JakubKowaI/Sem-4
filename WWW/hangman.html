@@ -3,12 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio Studenta - Gallery</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Portfolio Studenta</title>
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
-    <script src="gallery.js" defer></script>
+    <script src="menu.js"></script>
+    
+    <!-- <link rel="stylesheet" href="hangman.css"> -->
+    <script defer src="hangman.js"></script>
 </head>
 <body>
     <div class="container">
@@ -45,12 +50,16 @@
         </header>
         
         <main class="main">
-            <h1><a>[Gallery]</a></h1>
+            <h1><a>[Wisielec]</a></h1>
             <hr class="break">
-            <section class="gallery" id="gallery-container">
-                <!-- Images will be loaded here by JavaScript -->
-                <div class="loading-spinner">Loading images...</div>
-            </section>
+            
+            
+                <canvas id="hangmanCanvas" width="200" height="250"></canvas>
+                <div id="word"></div>
+                <div id="letters"></div>
+                <div id="message"></div>
+                <button id="restartButton">Nowa gra</button>
+            
             <hr class="break">
         </main>
         
@@ -60,3 +69,16 @@
     </div>
 </body>
 </html>
+
+<div class="container">
+    <header>
+        <h1>Wisielec</h1>
+    </header>
+    <main>
+        <canvas id="hangmanCanvas" width="200" height="250"></canvas>
+        <div id="word"></div>
+        <div id="letters"></div>
+        <div id="message"></div>
+        <button id="restartButton">Nowa gra</button>
+    </main>
+</div>

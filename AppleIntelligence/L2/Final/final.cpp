@@ -200,7 +200,7 @@ vector<Matrix> solve(const Matrix& start){
     while(!possible.empty()){
         current=possible.begin()->second;
         states++;
-        
+        cout<<states<<"\r";
 
         if(current==goal){
             return path(previous,current);
@@ -237,7 +237,12 @@ vector<Matrix> solve(const Matrix& start){
 vector<Matrix> solve2(const Matrix& start){
     //priority_queue<node, vector<node>, CompareF> possible;
     states=1;
-    
+    cout<<"test"<<endl;
+
+    if (!isSolvable(start)) {
+                cout << "Not solvable!" << endl;
+                return {};
+            } 
     multimap<int,Matrix> possible;
 
     possible.insert({h2(start),start});
@@ -259,7 +264,7 @@ vector<Matrix> solve2(const Matrix& start){
     while(!possible.empty()){
         current=possible.begin()->second;
         states++;
-        
+        cout<<states<<endl;
         if(current==goal){
             return path(previous,current);
         }
@@ -311,11 +316,32 @@ int main(){
     
         const vector<int> move_counts = {5, 5, 10, 15, 20};
 
-        Matrix start = {{
-            {{10, 12, 1, 2}},
-            {{11, 14, 13, 8}},
-            {{15, 3, 5, 4}},
-            {{6, 9, 7, 0}}
+        Matrix ex1 = {{
+            {{12, 10, 14, 11}},
+            {{9, 8, 6, 2}},
+            {{0, 7, 15, 13}},
+            {{4, 1, 5, 3}}
+        }};
+
+        Matrix ex2 = {{
+            {{4, 12, 15, 5}},
+            {{14, 10, 11, 13}},
+            {{0, 7, 2, 8}},
+            {{6, 9, 1, 3}}
+        }};
+
+        Matrix ex3 = {{
+            {{7, 5, 8, 12}},
+            {{1, 6, 9, 14}},
+            {{10, 0, 2, 4}},
+            {{3, 11, 13, 15}}
+        }};
+
+        Matrix ex4 = {{
+            {{15, 11, 13, 12}},
+            {{14, 10, 9, 5}},
+            {{2, 6, 8, 1}},
+            {{3, 7, 4, 0}}
         }};
 
         // Matrix tt= generateSolvablePuzzle();
@@ -325,38 +351,65 @@ int main(){
         //     printPuzzle(tt);
         //     results(solve(tt));
         // }
-    
-    
-        
-        for (int moves : move_counts) {
-            
-            Matrix puzzle = makeRandomMoves(moves);
-            
-            cout << "\nTesting puzzle with " << moves << " random moves:" << endl;
-            printPuzzle(puzzle);
-            
-            if (!isSolvable(puzzle)) {
-                cout << "Not solvable!" << endl;
-            } else {
-                cout<<"Solving with h1:"<<endl;
-                auto start_time = chrono::steady_clock::now();
-                results(solve(puzzle));
-                auto end_time = chrono::steady_clock::now();
-                cout << "Elapsed time: " 
-                 << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() 
-                 << " ms" << endl;
+        printPuzzle(ex1);
+        auto start_time = chrono::steady_clock::now();
+        results(solve(ex1));
+        auto end_time = chrono::steady_clock::now();
+        cout << "Elapsed time: " 
+         << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() 
+         << " ms" << endl;
 
-                cout<<"Solving with h2"<<endl;
-                start_time = chrono::steady_clock::now();
-                results(solve2(puzzle));
-                end_time = chrono::steady_clock::now();
-                cout << "Elapsed time: " 
-                 << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() 
-                 << " ms" << endl;
-            }
+         printPuzzle(ex2);
+         start_time = chrono::steady_clock::now();
+        results(solve(ex2));
+         end_time = chrono::steady_clock::now();
+        cout << "Elapsed time: " 
+         << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() 
+         << " ms" << endl;
+
+         printPuzzle(ex3);
+         start_time = chrono::steady_clock::now();
+        results(solve(ex3));
+         end_time = chrono::steady_clock::now();
+        cout << "Elapsed time: " 
+         << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() 
+         << " ms" << endl;
+
+         printPuzzle(ex4);
+         start_time = chrono::steady_clock::now();
+        results(solve(ex4));
+         end_time = chrono::steady_clock::now();
+        cout << "Elapsed time: " 
+         << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() 
+         << " ms" << endl;
+        
+        // for (int moves : move_counts) {
             
+        //     Matrix puzzle = makeRandomMoves(moves);
             
-        }
+        //     cout << "\nTesting puzzle with " << moves << " random moves:" << endl;
+        //     printPuzzle(puzzle);
+            
+        //     if (!isSolvable(puzzle)) {
+        //         cout << "Not solvable!" << endl;
+        //     } else {
+        //         cout<<"Solving with h1:"<<endl;
+        //         auto start_time = chrono::steady_clock::now();
+        //         results(solve(puzzle));
+        //         auto end_time = chrono::steady_clock::now();
+        //         cout << "Elapsed time: " 
+        //          << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() 
+        //          << " ms" << endl;
+
+        //         cout<<"Solving with h2"<<endl;
+        //         start_time = chrono::steady_clock::now();
+        //         results(solve2(puzzle));
+        //         end_time = chrono::steady_clock::now();
+        //         cout << "Elapsed time: " 
+        //          << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() 
+        //          << " ms" << endl;
+        //     }
+        // }
         
         return 0;
     }

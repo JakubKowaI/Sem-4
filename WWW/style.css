@@ -1,1 +1,359 @@
-:root{--bg-color: white;--text-color: black}@media(prefers-color-scheme: dark){:root{--bg-color: black;--text-color: white}}*{font-family:"IBM Plex Mono",sans-serif;font-weight:600;font-style:normal}body{background-color:var(--bg-color);color:var(--text-color);text-align:center;font-size:.85em}a{color:var(--text-color);text-decoration:none}a:link:hover{text-decoration:underline}a:visited{text-decoration:none}a:active{text-decoration:none}.middle{list-style:none;display:flex;margin:10px;padding:0;overflow:hidden;background-color:inherit;flex-direction:column;justify-content:center}.grid{display:grid;grid-template-columns:1fr;gap:30px;padding:10px}.gridItem{background-color:inherit;padding:10px;text-align:center}.gridItem div{justify-content:space-evenly}.gridItem div img{width:80%;background:inherit}.gallery{display:grid;grid-template-columns:1fr;gap:30px;padding:10px}.galleryItem{display:flex;justify-content:space-evenly;align-items:center;max-width:100%;max-height:100%}.galleryItem>img{display:block;width:auto;height:auto;max-width:100%;max-height:100%;margin:auto}.sportsGrid{display:grid;grid-template-columns:1fr;gap:30px;padding:10px}.sportsItem{background-color:inherit;justify-content:space-evenly;margin:auto;width:75%;max-height:100%;display:flex;justify-content:space-evenly;flex-direction:column}.sportsItem>div{margin:auto;text-align:justify}.container{display:grid;grid-template-areas:"header header" "menu main" "footer footer";grid-template-columns:auto 1fr auto;grid-template-rows:auto 1fr auto;height:100vh}.header{grid-area:header;background-color:inherit}.menu{grid-area:menu;background-color:inherit;list-style:none;display:flex;justify-content:space-between;flex-direction:column}.main{grid-area:main;background-color:inherit}.footer{grid-area:footer;background-color:inherit}.profSection{display:grid;grid-template-columns:1fr 1fr;gap:3%;padding:1%;justify-content:center}.profItem{padding:10px;text-align:center}#prof{max-width:25%;min-width:100px}#texts{flex-direction:column;display:flex;padding:1%;justify-content:space-evenly}.break{width:75%;color:inherit}.sportsBreak{width:75%;opacity:80%}pre{background-color:#1e1e1e;color:#fff;padding:10px;border-radius:5px;font-family:"IBM Plex Mono",monospace;font-size:14px;overflow-x:auto;white-space:pre-wrap;border:1px solid #333}code{display:block;text-align:left}@media(min-width: 768px){.menu{flex-direction:row}.middle{display:flex;flex-direction:row;justify-content:space-between}.grid{grid-template-columns:1fr 1fr}.gallery{grid-template-columns:1fr 1fr}}@media(min-width: 1024px){.grid{grid-template-columns:1fr 1fr 1fr}.gallery{grid-template-columns:1fr 1fr 1fr}}/*# sourceMappingURL=style.css.map */
+:root {
+  --bg-color: white;
+  --text-color: black;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-color: black;
+    --text-color: white;
+  }
+}
+* {
+  font-family: "IBM Plex Mono", sans-serif;
+  font-weight: 600;
+  font-style: normal;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  text-align: center;
+  font-size: 0.85em;
+}
+
+a {
+  color: var(--text-color);
+  text-decoration: none;
+}
+a:link:hover {
+  text-decoration: underline;
+}
+a:visited {
+  text-decoration: none;
+}
+a:active {
+  text-decoration: none;
+}
+
+.middle {
+  list-style: none;
+  display: flex;
+  margin: 10px;
+  padding: 0;
+  overflow: hidden;
+  background-color: inherit;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 30px;
+  padding: 10px;
+}
+
+.gridItem {
+  background-color: inherit;
+  padding: 10px;
+  text-align: center;
+}
+.gridItem div {
+  justify-content: space-evenly;
+}
+.gridItem div img {
+  width: 80%;
+  background: inherit;
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(250px, 1fr));
+  gap: 30px;
+  padding: 10px;
+}
+.gallery .loading-spinner {
+  padding: 20px;
+  text-align: center;
+  font-style: italic;
+  grid-column: 1/-1;
+}
+.gallery .error {
+  color: red;
+  padding: 20px;
+  text-align: center;
+  grid-column: 1/-1;
+}
+
+.galleryItem {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  max-width: 100%;
+  max-height: 100%;
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.3s ease;
+}
+.galleryItem:hover {
+  transform: scale(1.02);
+}
+.galleryItem img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.sportsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 30px;
+  padding: 10px;
+}
+
+.sportsItem {
+  background-color: inherit;
+  justify-content: space-evenly;
+  margin: auto;
+  width: 75%;
+  max-height: 100%;
+  display: flex;
+  justify-content: space-evenly;
+  flex-direction: column;
+}
+
+.sportsItem > div {
+  margin: auto;
+  text-align: justify;
+}
+
+.container {
+  display: grid;
+  grid-template-areas: "header header" "menu main" "footer footer";
+  grid-template-columns: auto 1fr auto;
+  grid-template-rows: auto 1fr auto;
+  height: 100vh;
+}
+
+.header {
+  grid-area: header;
+  background-color: inherit;
+}
+
+.menu {
+  grid-area: menu;
+  background-color: inherit;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+}
+
+.main {
+  grid-area: main;
+  background-color: inherit;
+}
+
+.footer {
+  grid-area: footer;
+  background-color: inherit;
+}
+
+.profSection {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3%;
+  padding: 1%;
+  justify-content: center;
+}
+
+.profItem {
+  padding: 10px;
+  text-align: center;
+}
+
+#prof {
+  max-width: 25%;
+  min-width: 100px;
+}
+
+#texts {
+  flex-direction: column;
+  display: flex;
+  padding: 1%;
+  justify-content: space-evenly;
+}
+
+.break {
+  width: 75%;
+  color: inherit;
+}
+
+.sportsBreak {
+  width: 75%;
+  opacity: 80%;
+}
+
+pre {
+  background-color: #1e1e1e;
+  color: #ffffff;
+  padding: 10px;
+  border-radius: 5px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 14px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  border: 1px solid #333;
+}
+
+code {
+  display: block;
+  text-align: left;
+}
+
+.hamburger {
+  display: block;
+  background: none;
+  border: none;
+  font-size: 30px;
+  cursor: pointer;
+  color: var(--text-color);
+  padding: 10px;
+  margin-left: auto;
+}
+
+.nav-links {
+  display: none;
+  width: 100%;
+}
+
+.nav-links.active {
+  display: flex;
+  flex-direction: column;
+}
+
+pre[class*=language-] {
+  margin: 1.5em 0;
+  font-family: "IBM Plex Mono", sans-serif;
+}
+@media (max-width: 768px) {
+  pre[class*=language-] {
+    margin: 1em 0;
+    font-size: 0.9em;
+  }
+}
+
+#hangmanCanvas {
+  margin-bottom: 20px;
+}
+
+#word {
+  font-size: 20px;
+  letter-spacing: 10px;
+  margin: 20px;
+}
+
+#letters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.letter {
+  background-color: #eee;
+  border: none;
+  padding: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.letter:hover {
+  background-color: #ddd;
+}
+
+.letter.disabled {
+  background-color: #bbb;
+  cursor: default;
+}
+
+#message {
+  margin: 20px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+#restartButton {
+  padding: 10px 20px;
+  font-size: 18px;
+  margin-top: 10px;
+  border: none;
+  background-color: #333;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#restartButton:hover {
+  background-color: #555;
+}
+
+@media (prefers-color-scheme: light) {
+  pre[class*=language-] {
+    background: #f5f5f5 !important;
+  }
+}
+@media (min-width: 768px) {
+  .menu {
+    flex-direction: row;
+  }
+  .middle {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  .grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .gallery {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+  .hamburger {
+    display: none;
+  }
+  .nav-links {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  #word {
+    font-size: 24px;
+  }
+  .letter {
+    padding: 10px;
+    font-size: 18px;
+  }
+}
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  .gallery {
+    grid-template-columns: repeat(3, minmax(250px, 1fr));
+  }
+}
+.noscript-menu {
+  display: flex !important;
+  flex-direction: column;
+}
+
+.noscript-menu .middle {
+  flex-direction: column;
+}
+
+/*# sourceMappingURL=style.css.map */

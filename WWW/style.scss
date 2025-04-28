@@ -1,6 +1,6 @@
 @use "sass:map";
 
-//uzycie nr1
+// Variables
 $font-primary: 'IBM Plex Mono', sans-serif;
 $font-secondary: Arial, sans-serif;
 $background-light: white;
@@ -24,236 +24,388 @@ $themes: (
     ),
 );
 
-//uzycie nr2
+// Root variables
 :root {
     --bg-color: white;
     --text-color: black;
-  }
+}
   
-  @media (prefers-color-scheme: dark) {
+@media (prefers-color-scheme: dark) {
     :root {
-      --bg-color: black;
-      --text-color: white;
+        --bg-color: black;
+        --text-color: white;
     }
-  }
+}
 
-//uzycie nr3
+// Mixins
 @mixin flex-center {
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
 }
 
 @mixin grid-element {
-  background-color: inherit;
-  padding: $spacing;
-  text-align: center;
+    background-color: inherit;
+    padding: $spacing;
+    text-align: center;
 }
 
+// Base styles
 * {
-  font-family: $font-primary;
-  font-weight: 600;
-  font-style: normal;
+    font-family: $font-primary;
+    font-weight: 600;
+    font-style: normal;
 }
 
-//uzycie nr4
 body {
-  background-color: var(--bg-color);
-  color: var(--text-color);
-  text-align: center;
-  font-size: 0.85em;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    text-align: center;
+    font-size: 0.85em;
 }
 
-//uzycie nr5
 a {
-  color: var(--text-color);
-  text-decoration: none;
-  &:link:hover { text-decoration: underline; }
-  &:visited { text-decoration: none; }
-  &:active { text-decoration: none; }
+    color: var(--text-color);
+    text-decoration: none;
+    &:link:hover { text-decoration: underline; }
+    &:visited { text-decoration: none; }
+    &:active { text-decoration: none; }
 }
 
+// Navigation
 .middle {
-  list-style: none;
-  display: flex;
-  margin: $spacing;
-  padding: 0;
-  overflow: hidden;
-  background-color: inherit;
-  flex-direction: column;
-  justify-content: center;
+    list-style: none;
+    display: flex;
+    margin: $spacing;
+    padding: 0;
+    overflow: hidden;
+    background-color: inherit;
+    flex-direction: column;
+    justify-content: center;
 }
 
+// Grid layouts
 .grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: $gap;
-  padding: $spacing;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $gap;
+    padding: $spacing;
 }
 
-//uzycie nr6
 .gridItem { 
-  @include grid-element; 
-  div {
-    justify-content: space-evenly;
-    img {
-      width: 80%;
-      background: inherit;
+    @include grid-element; 
+    div {
+        justify-content: space-evenly;
+        img {
+            width: 80%;
+            background: inherit;
+        }
     }
-  }
 }
 
+// Gallery styles
 .gallery {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: $gap;
-  padding: $spacing;
+    display: grid;
+grid-template-columns: repeat(1, minmax(250px, 1fr));    gap: $gap;
+    padding: $spacing;
+    
+    // Loading and error states
+    .loading-spinner {
+        padding: 20px;
+        text-align: center;
+        font-style: italic;
+        grid-column: 1 / -1;
+    }
+
+    .error {
+        color: red;
+        padding: 20px;
+        text-align: center;
+        grid-column: 1 / -1;
+    }
 }
 
 .galleryItem {
-  @include flex-center;
-  max-width: 100%;
-  max-height: 100%;
+    @include flex-center;
+    max-width: 100%;
+    max-height: 100%;
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.3s ease;
+    
+    &:hover {
+        transform: scale(1.02);
+    }
+
+    img {
+        display: block;
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
 }
 
-.galleryItem > img {
-  display: block;
-  width: auto;
-  height: auto;
-  max-width: 100%;
-  max-height: 100%;
-  margin: auto;
-}
-
+// Sports grid
 .sportsGrid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: $gap;
-  padding: $spacing;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: $gap;
+    padding: $spacing;
 }
 
 .sportsItem {
-  background-color: inherit;
-  justify-content: space-evenly;
-  margin: auto;
-  width: 75%;
-  max-height: 100%;
-  display: flex;
-  justify-content: space-evenly;
-  flex-direction: column;
+    background-color: inherit;
+    justify-content: space-evenly;
+    margin: auto;
+    width: 75%;
+    max-height: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: column;
 }
 
 .sportsItem > div {
-  margin: auto;
-  text-align: justify;
+    margin: auto;
+    text-align: justify;
 }
 
+// Layout
 .container {
-  display: grid;
-  grid-template-areas:
-      "header header"
-      "menu main"
-      "footer footer";
-  grid-template-columns: auto 1fr auto;
-  grid-template-rows: auto 1fr auto;
-  height: 100vh;
+    display: grid;
+    grid-template-areas:
+        "header header"
+        "menu main"
+        "footer footer";
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto 1fr auto;
+    height: 100vh;
 }
 
 .header { grid-area: header; background-color: inherit; }
 .menu {
-  grid-area: menu;
-  background-color: inherit;
-  list-style: none;
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
+    grid-area: menu;
+    background-color: inherit;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
 }
 .main { grid-area: main; background-color: inherit; }
 .footer { grid-area: footer; background-color: inherit; }
 
+// Profile section
 .profSection {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 3%;
-  padding: 1%;
-  justify-content: center;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3%;
+    padding: 1%;
+    justify-content: center;
 }
 
 .profItem {
-  padding: 10px;
-  text-align: center;
+    padding: 10px;
+    text-align: center;
 }
 
-#prof{
-  max-width: 25%;
-  min-width: 100px;
+#prof {
+    max-width: 25%;
+    min-width: 100px;
 }
 
 #texts {
-  flex-direction: column;
-  display: flex;
-  padding: 1%;
-  justify-content: space-evenly;
+    flex-direction: column;
+    display: flex;
+    padding: 1%;
+    justify-content: space-evenly;
 }
 
+// Dividers
 .break {
-  width: 75%;
-  color: inherit;
+    width: 75%;
+    color: inherit;
 }
 
 .sportsBreak {
-  width: 75%;
-  opacity: 80%;
+    width: 75%;
+    opacity: 80%;
 }
 
+// Code blocks
 pre {
-  background-color: #1e1e1e;
-  color: #ffffff;
-  padding: $spacing;
-  border-radius: 5px;
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 14px;
-  overflow-x: auto;
-  white-space: pre-wrap;
-  border: 1px solid #333;
+    background-color: #1e1e1e;
+    color: #ffffff;
+    padding: $spacing;
+    border-radius: 5px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    border: 1px solid #333;
 }
 
 code {
-  display: block;
-  text-align: left;
+    display: block;
+    text-align: left;
 }
 
+// Mobile menu
+.hamburger {
+    display: block;
+    background: none;
+    border: none;
+    font-size: 30px;
+    cursor: pointer;
+    color: var(--text-color);
+    padding: 10px;
+    margin-left: auto;
+}
+
+.nav-links {
+    display: none;
+    width: 100%;
+}
+
+.nav-links.active {
+    display: flex;
+    flex-direction: column;
+}
+
+pre[class*="language-"] {
+  margin: 1.5em 0;
+  font-family: $font-primary;
+  
+  @media (max-width: 768px) {
+    margin: 1em 0;
+    font-size: 0.9em;
+  }
+}
+
+#hangmanCanvas {
+  // border: 1px solid #ccc;
+  margin-bottom: 20px;
+}
+
+#word {
+  font-size: 20px;
+  letter-spacing: 10px;
+  margin: 20px;
+}
+
+#letters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.letter {
+  background-color: #eee;
+  border: none;
+  padding: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.letter:hover {
+  background-color: #ddd;
+}
+
+.letter.disabled {
+  background-color: #bbb;
+  cursor: default;
+}
+
+#message {
+  margin: 20px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+#restartButton {
+  padding: 10px 20px;
+  font-size: 18px;
+  margin-top: 10px;
+  border: none;
+  background-color: #333;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#restartButton:hover {
+  background-color: #555;
+}
+
+// Theme handling
 @media (prefers-color-scheme: dark) {
     $themes: dark;
-  }
+}
   
-  @media (prefers-color-scheme: light) {
+@media (prefers-color-scheme: light) {
     $themes: light;
-  }
-  
 
-@media (min-width: 768px) {
-  .menu {
-    flex-direction: row;
-  }
-  .middle {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-  }
-  .grid {
-    grid-template-columns: 1fr 1fr;
-  }
-  .gallery {
-    grid-template-columns: 1fr 1fr;
-  }
+    pre[class*="language-"] {
+      background: #f5f5f5 !important;
+    }
 }
 
+// Responsive breakpoints
+@media (min-width: 768px) {
+    .menu {
+        flex-direction: row;
+    }
+    .middle {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+    .grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .gallery {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+
+    .hamburger {
+        display: none;
+    }
+  
+    .nav-links {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    #word {
+      font-size: 24px;
+    }
+
+    .letter{  
+      padding: 10px;
+      font-size: 18px;
+    }
+}
+
+
+
 @media (min-width: 1024px) {
-  .grid {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
-  .gallery {
-    grid-template-columns: 1fr 1fr 1fr;
-  }
+    .grid {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+    .gallery {
+        grid-template-columns: repeat(3, minmax(250px, 1fr));
+    }
+}
+
+// Noscript fallback
+.noscript-menu {
+    display: flex !important;
+    flex-direction: column;
+}
+
+.noscript-menu .middle {
+    flex-direction: column;
 }
