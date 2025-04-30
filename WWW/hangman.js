@@ -57,6 +57,7 @@ function guess(letter, button) {
         checkWin();
     } else {
         mistakes++;
+        guessedLetters.push(letter);
         drawHangman();
         checkLose();
     }
@@ -123,8 +124,9 @@ function loadGameState() {
         mistakes = state.mistakes;
         generateLetters();
         displayWord();
+        console.log(guessedLetters);
         for (const btn of document.querySelectorAll('.letter')) {
-            if (guessedLetters.includes(btn.textContent) || !selectedWord.includes(btn.textContent)) {
+            if (guessedLetters.includes(btn.textContent)) {//&& !selectedWord.includes(btn.textContent)
                 btn.disabled = true;
                 btn.classList.add('disabled');
             }
