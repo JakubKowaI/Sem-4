@@ -1,0 +1,71 @@
+Z2
+
+time ./Tests.out 
+nError: stoi1600
+Error: stoi1600
+nError: stoi4000
+Error: stoi4000
+n= 50000
+real	12m52.174s
+user	6m31.093s
+sys	6m12.540s
+
+^
+|
+Wrong partition
+
+time ./Tests.out 
+Error: stoi14300
+Error: stoi14300
+
+real	13m6.675s
+user	6m43.138s
+sys	6m15.131s
+
+_____________________________
+
+Z3
+
+time ./TestsZ3.out 
+Error: stoi100
+
+real	7m6.746s
+user	5m12.045s
+sys	6m42.147s
+^
+|
+rozmiar = 3
+
+time ./TestsZ3.out 
+Error: stoi100
+Error: stoi200
+Error: stoi200
+Error: stoi19700
+
+real	6m47.124s
+user	4m53.932s
+sys	6m40.186s
+^
+|
+rozmiar = 5
+
+time ./TestsZ3.out 
+Error: stoi6600
+
+real	6m44.010s
+user	4m52.070s
+sys	6m36.100s
+^
+|
+rozmiar = 7
+
+time ./TestsZ3.out 
+Error: stoi500
+Error: stoi13400
+
+real	6m47.335s
+user	4m56.394s
+sys	6m36.149s
+^
+|
+rozmiar = 9

@@ -9,7 +9,8 @@
 
 
 
-void appendResultToCSV(const std::string& algorithm, int array_size, int comparisons, int swaps, const std::string& filename) {
+
+void appendResultToCSV(const std::string& algorithm, int array_size, int comparisons, int swaps,long long time,int size, const std::string& filename) {
     std::ofstream file(filename, std::ios::app);
     if (!file.is_open()) {
         std::cerr << "Error opening file!" << std::endl;
@@ -18,10 +19,11 @@ void appendResultToCSV(const std::string& algorithm, int array_size, int compari
 
     std::ifstream checkFile(filename);
     if (checkFile.peek() == std::ifstream::traits_type::eof()) {
-        file << "Algorithm,Array Size,Comparisons,Swaps\n";
+        file << "Algorithm,Array Size,Comparisons,Swaps,Time (microsec),Group Size\n";
     }
     
-    file << algorithm << "," << array_size << "," << comparisons << "," << swaps << "\n";
+    file << algorithm << "," << array_size << "," << comparisons << "," << swaps << "," << time<<","<<size << "\n";
+    file.flush();
     file.close();
 }
 
@@ -39,9 +41,10 @@ void swap(int* A,int p,int q){
         swp++;
 }
 
-int partition(int* A,int p,int q,int i){
-    int pivot= A[i];
+int partition(int* A,int p,int q,int index){
+    int pivot = A[index];
     int counter=0;
+    swap(A,p,index);
     for(int i=p+1;i<=q;i++){
         if(A[i]<=pivot){
             counter++;
@@ -59,52 +62,66 @@ void QSort(int* A, int p, int q){
         return ;
     }
     int index = partition(A,p,q,p);
-    
-    //stan(A);
-
     QSort(A,p,index-1);
     QSort(A,index+1,q);
 }
 
-int Select(int* A, int p, int q,int i){
+int Select(int* A, int p, int q,int i,int groupsize){
     if(p==q)return A[p];
 
     int median[5];
-    median[1]=-1;
-    int* medians;
+    int numGroups;
+    
+    numGroups = (q - p + 1 + (5-1)) / 5;
+    // cout<<q<<" v "<<numGroups<<endl;
+    int medians[numGroups];
     int it=0;
-    for(int j=0;j<=q;j++){
-        median[j%5]=A[j];
-        if(j%5==0&&median[1]!=-1){
-            it+=5;
-            QSort(median,0,4);
-            medians[(j/5)-1]=median[2];
+    for (int j = 0; j < numGroups; j++) {
+        int start = p + j * 5;
+        int end;
+        if(start+5-1<=q){
+            end=start+5-1;
+        }else{
+            end=q;
+            // cout<<"Median "<<start<<" | "<<end<<" | "<<end-start<<endl;
         }
+        for(int k=0;k<=end-start;k++){
+            median[k]=A[start+k];
+        }
+        QSort(median, 0, end-start);
+        medians[j] = median[(end - start) / 2];
     }
-    int t[4];
-    int tsize=q-it;
-    for(;it<=q;it++;){
-        t[(it%5)-1]=A[it];
-    }
-    QSort(t,0,tsize,0);
-    medians[(it/5)+1]=t[]
-    int m;
-    int r = partition(A,p,q,m);
+    int mm=Select(medians,0,numGroups-1,numGroups/2,groupsize);
+    // cout<<"tets"<<mm<<endl;
+    int pivotIndex=-1;
+    for (int i = p; i <= q; i++) {
+        if(n<=30)cout<<setw(2)<<setfill('0')<<i<<" : "<<setw(2)<<setfill('0')<<A[i]<<endl;
+        if (A[i] == mm) {
+            pivotIndex = i;
+            //break;
+        }
+    }    if(n<=30)cout<<endl;
+    int r = partition(A,p,q,pivotIndex);
+    // cout<< "R = "<<r<<endl;
     int k = r-p+1;
     if(i==k)return A[r];
     if(i<k){
-        return Select(A,p,r-1,i);
+        return Select(A,p,r-1,i,groupsize);
     }else{
-        return Select(A,r+1,q,i-k);
+        return Select(A,r+1,q,i-k,groupsize);
     }
 }
 
 int main(){
     string line;
     int* A = NULL;
+    int k;
+    int size=3;
     try{
         getline(cin,line);
         n = stoi(line);
+        getline(cin,line);
+        k = stoi(line);
         A = new int[n];
         int i=0;
         while(getline(cin, line)){
@@ -112,21 +129,42 @@ int main(){
             i++;
         }
     }catch (const exception& e) {
-        cout << "Error: " << e.what() << endl;
+        cout << "Error: " << e.what() <<n<< endl;
         return -1;
     }
-    if(n<40){
 
-        cout<<"Tablica przed posortowaniem: "<<endl;
+    int* T = new int[n];
+    for(int i =0;i<n;i++){
+        T[i]=A[i];
+    }
+    auto start_time = chrono::steady_clock::now();
+    int wynik=Select(A,0,n-1,k,size);
+    auto end_time = chrono::steady_clock::now();
+    auto time = chrono::duration_cast<chrono::microseconds>(end_time - start_time).count();
+    int finalpor=por;
+    int finalswp=swp;
+    
+    if(n<=30){
+        cout<<"Tablica przed select: "<<endl;
+        for(int i =0;i<n;i++){
+            cout<<setw(2)<<setfill('0')<<i<<" : "<<setw(2)<<setfill('0')<<T[i]<<endl;
+        }
+        cout<<"Tablica po select: "<<endl;
         for(int i =0;i<n;i++){
             cout<<setw(2)<<setfill('0')<<i<<" : "<<setw(2)<<setfill('0')<<A[i]<<endl;
         }
+        cout<<"Wynik: "<<wynik<<endl;
+        QSort(T,0,n-1);
+        cout<<"Posortowana Tablica: "<<endl;
+        for(int i =0;i<n;i++){
+            cout<<setw(2)<<setfill('0')<<i<<" : "<<setw(2)<<setfill('0')<<T[i]<<endl;
+        }
     }
-
-    cout<<Select(A,0,n-1,2)<<" - wynik"<<endl;
-    //appendResultToCSV("DualPivotQuickSort", n, por, swp, "results.csv");
+    
+    
+    appendResultToCSV("Select", n, finalpor, finalswp, time,size, "results.csv");
 
     delete[] A;
-
+    delete[] T;
     return 0;
 }
