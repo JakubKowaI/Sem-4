@@ -25,7 +25,7 @@ sys	6m15.131s
 _____________________________
 
 Z3
-
+All/
 time ./TestsZ3.out 
 Error: stoi100
 
@@ -66,6 +66,52 @@ Error: stoi13400
 real	6m47.335s
 user	4m56.394s
 sys	6m36.149s
+^
+|
+rozmiar = 9
+
+MM/
+time ./TestsZ3.out 
+Error: stoi100
+Error: stoi19100
+Error: stoi37700
+
+real	6m38.814s
+user	4m45.303s
+sys	6m36.365s
+^
+|
+rozmiar = 3
+
+time ./TestsZ3.out 
+Error: stoi2400
+Error: stoi5900
+
+real	6m37.139s
+user	4m51.211s
+sys	6m27.331s
+^
+|
+rozmiar = 5
+
+time ./TestsZ3.out 
+ 
+real	6m39.917s
+user	4m50.120s
+sys	6m32.488s
+^
+|
+rozmiar = 7
+
+time ./TestsZ3.out 
+Error: stoi100
+Error: stoi2900
+Error: stoi3100
+Error: stoi4200
+
+real	6m37.031s
+user	4m50.107s
+sys	6m21.483s
 ^
 |
 rozmiar = 9

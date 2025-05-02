@@ -116,7 +116,7 @@ int main(){
     string line;
     int* A = NULL;
     int k;
-    int size=3;
+    int size=9;
     try{
         getline(cin,line);
         n = stoi(line);
