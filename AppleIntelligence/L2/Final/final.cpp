@@ -264,7 +264,7 @@ vector<Matrix> solve2(const Matrix& start){
     while(!possible.empty()){
         current=possible.begin()->second;
         states++;
-        cout<<states<<endl;
+        //cout<<states<<endl;
         if(current==goal){
             return path(previous,current);
         }
@@ -314,7 +314,10 @@ int main(){
     
         goal = createGoalState();
     
-        const vector<int> move_counts = {5, 5, 10, 15, 20};
+        // const vector<int> move_counts = {5, 5, 10, 15, 20};
+
+        const vector<int> move_counts = {30,40};
+
 
         Matrix ex1 = {{
             {{12, 10, 14, 11}},
@@ -351,65 +354,65 @@ int main(){
         //     printPuzzle(tt);
         //     results(solve(tt));
         // }
-        printPuzzle(ex1);
-        auto start_time = chrono::steady_clock::now();
-        results(solve(ex1));
-        auto end_time = chrono::steady_clock::now();
-        cout << "Elapsed time: " 
-         << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() 
-         << " ms" << endl;
+        // printPuzzle(ex1);
+        // auto start_time = chrono::steady_clock::now();
+        // results(solve(ex1));
+        // auto end_time = chrono::steady_clock::now();
+        // cout << "Elapsed time: " 
+        //  << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() 
+        //  << " ms" << endl;
 
-         printPuzzle(ex2);
-         start_time = chrono::steady_clock::now();
-        results(solve(ex2));
-         end_time = chrono::steady_clock::now();
-        cout << "Elapsed time: " 
-         << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() 
-         << " ms" << endl;
+        //  printPuzzle(ex2);
+        //  start_time = chrono::steady_clock::now();
+        // results(solve(ex2));
+        //  end_time = chrono::steady_clock::now();
+        // cout << "Elapsed time: " 
+        //  << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() 
+        //  << " ms" << endl;
 
-         printPuzzle(ex3);
-         start_time = chrono::steady_clock::now();
-        results(solve(ex3));
-         end_time = chrono::steady_clock::now();
-        cout << "Elapsed time: " 
-         << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() 
-         << " ms" << endl;
+        //  printPuzzle(ex3);
+        //  start_time = chrono::steady_clock::now();
+        // results(solve(ex3));
+        //  end_time = chrono::steady_clock::now();
+        // cout << "Elapsed time: " 
+        //  << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() 
+        //  << " ms" << endl;
 
-         printPuzzle(ex4);
-         start_time = chrono::steady_clock::now();
-        results(solve(ex4));
-         end_time = chrono::steady_clock::now();
-        cout << "Elapsed time: " 
-         << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() 
-         << " ms" << endl;
+        //  printPuzzle(ex4);
+        //  start_time = chrono::steady_clock::now();
+        // results(solve(ex4));
+        //  end_time = chrono::steady_clock::now();
+        // cout << "Elapsed time: " 
+        //  << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() 
+        //  << " ms" << endl;
         
-        // for (int moves : move_counts) {
+        for (int moves : move_counts) {
             
-        //     Matrix puzzle = makeRandomMoves(moves);
+            Matrix puzzle = makeRandomMoves(moves);
             
-        //     cout << "\nTesting puzzle with " << moves << " random moves:" << endl;
-        //     printPuzzle(puzzle);
+            cout << "\nTesting puzzle with " << moves << " random moves:" << endl;
+            printPuzzle(puzzle);
             
-        //     if (!isSolvable(puzzle)) {
-        //         cout << "Not solvable!" << endl;
-        //     } else {
-        //         cout<<"Solving with h1:"<<endl;
-        //         auto start_time = chrono::steady_clock::now();
-        //         results(solve(puzzle));
-        //         auto end_time = chrono::steady_clock::now();
-        //         cout << "Elapsed time: " 
-        //          << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() 
-        //          << " ms" << endl;
+            if (!isSolvable(puzzle)) {
+                cout << "Not solvable!" << endl;
+            } else {
+                cout<<"Solving with h1:"<<endl;
+                auto start_time = chrono::steady_clock::now();
+                results(solve(puzzle));
+                auto end_time = chrono::steady_clock::now();
+                cout << "Elapsed time: " 
+                 << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() 
+                 << " ms" << endl;
 
-        //         cout<<"Solving with h2"<<endl;
-        //         start_time = chrono::steady_clock::now();
-        //         results(solve2(puzzle));
-        //         end_time = chrono::steady_clock::now();
-        //         cout << "Elapsed time: " 
-        //          << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() 
-        //          << " ms" << endl;
-        //     }
-        // }
+                cout<<"Solving with h2"<<endl;
+                start_time = chrono::steady_clock::now();
+                results(solve2(puzzle));
+                end_time = chrono::steady_clock::now();
+                cout << "Elapsed time: " 
+                 << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() 
+                 << " ms" << endl;
+            }
+        }
         
         return 0;
     }
