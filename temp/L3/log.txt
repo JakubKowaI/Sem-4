@@ -1,0 +1,475 @@
+                  ╭───────────╮ 
+      /\          │  user    │ kuba
+     /  \         │ 󰇅 hname   │ archlinux
+    /    \        │ 󰅐 uptime  │ 4 hours
+   /      \       │  distro  │ Arch Linux x86_64
+  /   ,,   \      │  kernel  │ Linux 6.14.4-arch1-2
+ /   |  |   \     │  term    │ tmux 3.5a
+/_-''    ''-_\    │  shell   │ bash 5.2.37
+                  │ 󰍛 cpu     │ Intel(R) Core(TM) Ultra 7 155H (12+8+2) @ 4.80 GHz
+                  │ 󰉉 disk    │ 104.71 GiB / 161.37 GiB (65%) - ext4
+                  │  memory  │ 6.93 GiB / 30.95 GiB (22%)
+                  │ 󰩟 network │ 192.168.8.153/24 (wlan0)
+                  ├───────────┤ 
+                  │  colors  │ ● ● ● ● ● ● ● ●
+                  ╰───────────╯ 
+
+╭─kuba   󰉖 ~/Projects/Sem-4/temp                                         ( main)  ?7 ~7
+╰─ ❯❯ echo "#Jakub Kowal 279706"
+#Jakub Kowal 279706
+
+╭─kuba   󰉖 ~/Projects/Sem-4/temp                                         ( main)  ?7 ~7
+╰─ ❯❯ svn export https://repo.cs.pwr.edu.pl/279706-dir/mw1/L3/
+A    L3
+A    L3/plots
+A    L3/plots/Z2
+A    L3/plots/Z2/results
+A    L3/plots/Z3
+A    L3/plots/Z3/All
+A    L3/plots/Z3/All/results
+A    L3/plots/Z3/MM
+A    L3/Wykresy.py
+A    L3/BinSearch.cpp
+A    L3/WykresyZ4.py
+A    L3/DualPivotQuickSort.cpp
+A    L3/DualPivotQuickSort.out
+A    L3/DualPivotQuickSortSelect.cpp
+A    L3/plots/Z3/MM/results
+A    L3/plots/Z4
+A    L3/a.out
+A    L3/DualPivotQuickSortSelect.out
+A    L3/Gen.cpp
+A    L3/IncGen.out
+A    L3/InsGen.out
+A    L3/Makefile
+A    L3/QuickSort.cpp
+A    L3/plots/Z4/FromTable
+A    L3/plots/Z4/FromTable/results
+A    L3/QuickSort.out
+A    L3/QuickSortSelect.cpp
+A    L3/QuickSortSelect.out
+A    L3/plots/Z4/Random
+A    L3/plots/Z4/Random/results
+A    L3/RandGen.out
+A    L3/RandomSelect.cpp
+A    L3/plots/Z2/Swaps_per_n.png
+A    L3/RandomSelect.out
+A    L3/Select.cpp
+A    L3/plots/Z5
+A    L3/plots/Z5/results
+A    L3/Select.out
+A    L3/Sorted.cpp
+A    L3/TestsZ2.cpp
+A    L3/TestsZ2.out
+A    L3/TestsZ3.cpp
+A    L3/plots/Z2/comparisons_per_n.png
+A    L3/TestsZ3.out
+A    L3/TestsZ4.cpp
+A    L3/TestsZ5.cpp
+A    L3/WykresyZ3.py
+A    L3/WykresyZ5.py
+A    L3/plots/Z3/MM/comparisons_per_n.png
+A    L3/plots/Z2/time_per_n.png
+A    L3/plots/Z2/Swaps.png
+A    L3/plots/Z2/results/results.csv
+A    L3/plots/Z3/All/comparisons.png
+A    L3/plots/Z4/FromTable/comparisons.png
+A    L3/plots/Z2/comparisons.png
+A    L3/plots/Z4/FromTable/time_per_n.png
+A    L3/plots/Z3/All/Swaps.png
+A    L3/plots/Z2/time.png
+A    L3/plots/Z3/All/time.png
+A    L3/plots/Z3/All/Swaps_per_n.png
+A    L3/plots/Z3/All/comparisons_per_n.png
+A    L3/plots/Z3/MM/Swaps_per_n.png
+A    L3/plots/Z4/Random/time.png
+A    L3/plots/Z3/MM/time.png
+A    L3/plots/Z4/FromTable/results/results.csv
+A    L3/plots/Z5/comparisons.png
+A    L3/plots/Z4/Random/comparisons_per_n.png
+A    L3/plots/Z3/All/time_per_n.png
+A    L3/plots/Z3/All/results/results.csv
+A    L3/plots/Z5/time_per_n.png
+A    L3/times.txt
+A    L3/plots/Z3/MM/Swaps.png
+A    L3/plots/Z3/MM/comparisons.png
+A    L3/plots/Z5/Swaps.png
+A    L3/plots/Z5/results/results.csv
+A    L3/results.csv
+A    L3/plots/Z3/MM/time_per_n.png
+A    L3/plots/Z3/MM/results/results.csv
+A    L3/plots/Z4/FromTable/time.png
+A    L3/plots/Z4/Random/results/results.csv
+A    L3/plots/Z4/FromTable/comparisons_per_n.png
+A    L3/plots/Z5/Swaps_per_n.png
+A    L3/plots/Z4/Random/comparisons.png
+A    L3/plots/Z5/time.png
+A    L3/plots/Z4/Random/time_per_n.png
+A    L3/temp.txt
+A    L3/plots/Z5/comparisons_per_n.png
+A    L3/plots/resultsOLD.csv
+Exported revision 20.
+
+╭─kuba   󰉖 ~/Projects/Sem-4/temp                                         ( main)  ?8 ~7
+╰─ ❯❯ cd L3/
+
+╭─kuba   󰉖 ~/Projects/Sem-4/temp/L3                            ( main)  ?8 ~7 3.12.3
+╰─ ❯❯ make
+g++ Gen.cpp -o RandGen.out
+g++ RandomSelect.cpp -o RandomSelect.out
+g++ Select.cpp -o Select.out
+g++ Sorted.cpp -o IncGen.out
+g++ QuickSort.cpp -o QuickSort.out
+g++ QuickSortSelect.cpp -o QuickSortSelect.out
+g++ DualPivotQuickSort.cpp -o DualPivotQuickSort.out
+g++ DualPivotQuickSortSelect.cpp -o DualPivotQuickSortSelect.out
+g++ BinSearch.cpp -o BinSearch.out
+g++ TestsZ2.cpp -o TestsZ2.out
+g++ TestsZ3.cpp -o TestsZ3.out
+g++ TestsZ4.cpp -o TestsZ4.out
+g++ TestsZ5.cpp -o TestsZ5.out
+
+╭─kuba   󰉖 ~/Projects/Sem-4/temp/L3                            ( main)  ?8 ~7 3.12.3
+╰─ ❯❯ ./RandGen.out 8 3 | ./Select.out 
+00 : 11
+01 : 01
+
+00 : 12
+01 : 02
+02 : 01
+03 : 13
+04 : 11
+05 : 06
+06 : 01
+07 : 01
+
+Tablica przed select: 
+00 : 12
+01 : 02
+02 : 01
+03 : 13
+04 : 11
+05 : 06
+06 : 01
+07 : 01
+Tablica po select: 
+00 : 01
+01 : 01
+02 : 01
+03 : 13
+04 : 11
+05 : 06
+06 : 02
+07 : 12
+Wynik: 1
+Posortowana Tablica: 
+00 : 01
+01 : 01
+02 : 01
+03 : 02
+04 : 06
+05 : 11
+06 : 12
+07 : 13
+
+╭─kuba   󰉖 ~/Projects/Sem-4/temp/L3                            ( main)  ?8 ~7 3.12.3
+╰─ ❯❯ ./RandGen.out 8 3 | ./RandomSelect.out                                                     
+Tablica przed RandomSelect: 
+00 : 05
+01 : 11
+02 : 03
+03 : 02
+04 : 00
+05 : 13
+06 : 14
+07 : 01
+Tablica po RandomSelect: 
+00 : 00
+01 : 02
+02 : 03
+03 : 01
+04 : 05
+05 : 13
+06 : 14
+07 : 11
+Wynik: 3
+Posortowana Tablica: 
+00 : 00
+01 : 01
+02 : 02
+03 : 03
+04 : 05
+05 : 11
+06 : 13
+07 : 14
+
+╭─kuba   󰉖 ~/Projects/Sem-4/temp/L3                            ( main)  ?8 ~7 3.12.3
+╰─ ❯❯ ./RandGen.out 32 8 | ./Select.out                                                          
+
+╭─kuba   󰉖 ~/Projects/Sem-4/temp/L3                            ( main)  ?8 ~7 3.12.3
+╰─ ❯❯ ./RandGen.out 32 3 | ./RandomSelect.out                                                    
+
+╭─kuba   󰉖 ~/Projects/Sem-4/temp/L3                            ( main)  ?8 ~7 3.12.3
+╰─ ❯❯ ./RandGen.out 28 8 | ./Select.out                                                          
+00 : 31
+01 : 10
+
+00 : 33
+01 : 24
+02 : 31
+03 : 37
+04 : 19
+05 : 10
+
+01 : 24
+02 : 31
+03 : 37
+04 : 19
+05 : 33
+
+01 : 19
+02 : 24
+
+00 : 00
+01 : 17
+02 : 36
+03 : 33
+04 : 39
+05 : 06
+06 : 41
+07 : 30
+08 : 15
+09 : 24
+10 : 31
+11 : 08
+12 : 35
+13 : 46
+14 : 07
+15 : 37
+16 : 50
+17 : 46
+18 : 10
+19 : 16
+20 : 49
+21 : 17
+22 : 19
+23 : 33
+24 : 13
+25 : 35
+26 : 10
+27 : 07
+
+00 : 07
+01 : 10
+02 : 13
+
+00 : 07
+01 : 17
+02 : 06
+03 : 15
+04 : 00
+05 : 08
+06 : 07
+07 : 10
+08 : 16
+09 : 17
+10 : 19
+11 : 13
+12 : 10
+
+00 : 15
+01 : 13
+
+04 : 17
+05 : 08
+06 : 15
+07 : 10
+08 : 16
+09 : 17
+10 : 19
+11 : 13
+12 : 10
+
+Tablica przed select: 
+00 : 00
+01 : 17
+02 : 36
+03 : 33
+04 : 39
+05 : 06
+06 : 41
+07 : 30
+08 : 15
+09 : 24
+10 : 31
+11 : 08
+12 : 35
+13 : 46
+14 : 07
+15 : 37
+16 : 50
+17 : 46
+18 : 10
+19 : 16
+20 : 49
+21 : 17
+22 : 19
+23 : 33
+24 : 13
+25 : 35
+26 : 10
+27 : 07
+Tablica po select: 
+00 : 07
+01 : 06
+02 : 00
+03 : 07
+04 : 10
+05 : 08
+06 : 10
+07 : 13
+08 : 16
+09 : 17
+10 : 19
+11 : 17
+12 : 15
+13 : 24
+14 : 41
+15 : 37
+16 : 50
+17 : 46
+18 : 30
+19 : 33
+20 : 49
+21 : 39
+22 : 31
+23 : 33
+24 : 36
+25 : 35
+26 : 35
+27 : 46
+Wynik: 13
+Posortowana Tablica: 
+00 : 00
+01 : 06
+02 : 07
+03 : 07
+04 : 08
+05 : 10
+06 : 10
+07 : 13
+08 : 15
+09 : 16
+10 : 17
+11 : 17
+12 : 19
+13 : 24
+14 : 30
+15 : 31
+16 : 33
+17 : 33
+18 : 35
+19 : 35
+20 : 36
+21 : 37
+22 : 39
+23 : 41
+24 : 46
+25 : 46
+26 : 49
+27 : 50
+
+╭─kuba   󰉖 ~/Projects/Sem-4/temp/L3                            ( main)  ?8 ~7 3.12.3
+╰─ ❯❯ ./RandGen.out 28 3 | ./RandomSelect.out                                                    
+Tablica przed RandomSelect: 
+00 : 31
+01 : 54
+02 : 51
+03 : 28
+04 : 52
+05 : 52
+06 : 44
+07 : 05
+08 : 04
+09 : 16
+10 : 46
+11 : 34
+12 : 19
+13 : 49
+14 : 19
+15 : 47
+16 : 18
+17 : 01
+18 : 14
+19 : 53
+20 : 27
+21 : 36
+22 : 09
+23 : 49
+24 : 39
+25 : 07
+26 : 20
+27 : 34
+Tablica po RandomSelect: 
+00 : 01
+01 : 04
+02 : 07
+03 : 16
+04 : 19
+05 : 19
+06 : 18
+07 : 05
+08 : 14
+09 : 09
+10 : 34
+11 : 46
+12 : 34
+13 : 44
+14 : 27
+15 : 36
+16 : 28
+17 : 39
+18 : 47
+19 : 20
+20 : 31
+21 : 51
+22 : 54
+23 : 49
+24 : 52
+25 : 49
+26 : 53
+27 : 52
+Wynik: 7
+Posortowana Tablica: 
+00 : 01
+01 : 04
+02 : 05
+03 : 07
+04 : 09
+05 : 14
+06 : 16
+07 : 18
+08 : 19
+09 : 19
+10 : 20
+11 : 27
+12 : 28
+13 : 31
+14 : 34
+15 : 34
+16 : 36
+17 : 39
+18 : 44
+19 : 46
+20 : 47
+21 : 49
+22 : 49
+23 : 51
+24 : 52
+25 : 52
+26 : 53
+27 : 54
+
+╭─kuba   󰉖 ~/Projects/Sem-4/temp/L3                            ( main)  ?8 ~7 3.12.3
+╰─ ❯❯ tmux capture-pane -p -S'-' -E'-' -J > log.txt   
+

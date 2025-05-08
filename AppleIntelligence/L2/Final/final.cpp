@@ -16,8 +16,41 @@ using namespace std;
 
 constexpr int n = 4;
 using Matrix = array<array<int, n>, n>;
+using CompactState = array<char, 8>;
 int states;
 Matrix goal;
+
+inline int getTile(const CompactState& s, int idx) {
+    char byte = s[idx / 2];
+    if (idx % 2 == 0) return (byte >> 4) & 0xF;
+    else return byte & 0xF;
+}
+
+inline void setTile(CompactState& s, int idx, int value) {
+    char& byte = s[idx / 2];
+    if (idx % 2 == 0) {
+        byte = (byte & 0x0F) | ((value & 0xF) << 4);
+    } else {
+        byte = (byte & 0xF0) | (value & 0xF);
+    }
+}
+
+CompactState matrixToCompact(const Matrix& m) {
+    CompactState s{};
+    for (int i = 0; i < 16; ++i) {
+        setTile(s, i, m[i / 4][i % 4]);
+    }
+    return s;
+}
+
+void printCompact(const CompactState& s) {
+    for (int i = 0; i < 16; ++i) {
+        int val = getTile(s, i);
+        if (val == 0) cout << setw(3) << " ";
+        else cout << setw(3) << val;
+        if (i % 4 == 3) cout << "\n";
+    }
+}
 
 void printPuzzle(const Matrix& puzzle) {
     for(const auto& row : puzzle) {
@@ -189,10 +222,6 @@ vector<Matrix> solve(const Matrix& start){
     
     gCost.insert({start,0});
 
-    map<Matrix,int> fCost;
-
-    fCost.insert({start,h1(start)});
-
     Matrix current;
 
     set<Matrix> visited;
@@ -205,8 +234,6 @@ vector<Matrix> solve(const Matrix& start){
         if(current==goal){
             return path(previous,current);
         }
-
-        
         
         possible.erase(possible.begin());
         if(visited.find(current)!=visited.end())continue;
@@ -218,13 +245,11 @@ vector<Matrix> solve(const Matrix& start){
             if(visited.find(neighbor)!=visited.end())continue;
             if(gCost.find(neighbor)==gCost.end()){
                 gCost[neighbor]=gCost[current]+1;
-                fCost[neighbor] = gCost[neighbor] + h1(neighbor);
                 //cout<<states<<endl;
             }
             if(gCost[current]+1<=gCost[neighbor]){
                     previous[neighbor]=current;
                     gCost[neighbor]=gCost[current]+1;
-                    fCost[neighbor] = gCost[neighbor] + h1(neighbor);
                     
                     
                     possible.insert({gCost[current]+1+h1(neighbor),neighbor});
@@ -253,9 +278,6 @@ vector<Matrix> solve2(const Matrix& start){
     
     gCost.insert({start,0});
 
-    map<Matrix,int> fCost;
-
-    fCost.insert({start,h2(start)});
 
     Matrix current;
 
@@ -279,13 +301,11 @@ vector<Matrix> solve2(const Matrix& start){
             if(visited.find(neighbor)!=visited.end())continue;
             if(gCost.find(neighbor)==gCost.end()){
                 gCost[neighbor]=gCost[current]+1;
-                fCost[neighbor] = gCost[neighbor] + h2(neighbor);
                 //cout<<states<<endl;
             }
             if(gCost[current]+1<=gCost[neighbor]){
                     previous[neighbor]=current;
                     gCost[neighbor]=gCost[current]+1;
-                    fCost[neighbor] = gCost[neighbor] + h2(neighbor);
                     
                     
                     possible.insert({gCost[current]+1+h2(neighbor),neighbor});
@@ -325,6 +345,9 @@ int main(){
             {{0, 7, 15, 13}},
             {{4, 1, 5, 3}}
         }};
+
+        printCompact(matrixToCompact(ex1));
+
 
         Matrix ex2 = {{
             {{4, 12, 15, 5}},
@@ -386,33 +409,33 @@ int main(){
         //  << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() 
         //  << " ms" << endl;
         
-        for (int moves : move_counts) {
+        // for (int moves : move_counts) {
             
-            Matrix puzzle = makeRandomMoves(moves);
+        //     Matrix puzzle = makeRandomMoves(moves);
             
-            cout << "\nTesting puzzle with " << moves << " random moves:" << endl;
-            printPuzzle(puzzle);
+        //     cout << "\nTesting puzzle with " << moves << " random moves:" << endl;
+        //     printPuzzle(puzzle);
             
-            if (!isSolvable(puzzle)) {
-                cout << "Not solvable!" << endl;
-            } else {
-                cout<<"Solving with h1:"<<endl;
-                auto start_time = chrono::steady_clock::now();
-                results(solve(puzzle));
-                auto end_time = chrono::steady_clock::now();
-                cout << "Elapsed time: " 
-                 << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() 
-                 << " ms" << endl;
+        //     if (!isSolvable(puzzle)) {
+        //         cout << "Not solvable!" << endl;
+        //     } else {
+        //         cout<<"Solving with h1:"<<endl;
+        //         auto start_time = chrono::steady_clock::now();
+        //         results(solve(puzzle));
+        //         auto end_time = chrono::steady_clock::now();
+        //         cout << "Elapsed time: " 
+        //          << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() 
+        //          << " ms" << endl;
 
-                cout<<"Solving with h2"<<endl;
-                start_time = chrono::steady_clock::now();
-                results(solve2(puzzle));
-                end_time = chrono::steady_clock::now();
-                cout << "Elapsed time: " 
-                 << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() 
-                 << " ms" << endl;
-            }
-        }
+        //         cout<<"Solving with h2"<<endl;
+        //         start_time = chrono::steady_clock::now();
+        //         results(solve2(puzzle));
+        //         end_time = chrono::steady_clock::now();
+        //         cout << "Elapsed time: " 
+        //          << chrono::duration_cast<chrono::milliseconds>(end_time - start_time).count() 
+        //          << " ms" << endl;
+        //     }
+        // }
         
         return 0;
     }

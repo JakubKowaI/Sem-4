@@ -2,7 +2,30 @@
 #include <string>
 #include <iomanip>
 #include <fstream>
+#include <bits/stdc++.h>
 #include <chrono>
+#include <random>
+#include <array>
+
+
+
+
+// void appendResultToCSV(const std::string& algorithm, int array_size, int comparisons, int swaps,long long time,int size, const std::string& filename) {
+//     std::ofstream file(filename, std::ios::app);
+//     if (!file.is_open()) {
+//         std::cerr << "Error opening file!" << std::endl;
+//         return;
+//     }
+
+//     std::ifstream checkFile(filename);
+//     if (checkFile.peek() == std::ifstream::traits_type::eof()) {
+//         file << "Algorithm,Array Size,Comparisons,Swaps,Time (microsec),Group Size\n";
+//     }
+    
+//     file << algorithm << "," << array_size << "," << comparisons << "," << swaps << "," << time<<","<<size << "\n";
+//     file.flush();
+//     file.close();
+// }
 
 void appendResultToCSV(const std::string& algorithm, int array_size, int comparisons, int swaps,long long time, const std::string& filename) {
     std::ofstream file(filename, std::ios::app);
@@ -13,10 +36,10 @@ void appendResultToCSV(const std::string& algorithm, int array_size, int compari
 
     std::ifstream checkFile(filename);
     if (checkFile.peek() == std::ifstream::traits_type::eof()) {
-        file << "Algorithm,Array Size,Comparisons,Swaps,Time (microsec) \n";
+        file << "Algorithm,Array Size,Comparisons,Swaps,Time (microsec),Group Size\n";
     }
     
-    file << algorithm << "," << array_size << "," << comparisons << "," << swaps << "," << time<< "\n";
+    file << algorithm << "," << array_size << "," << comparisons << "," << swaps << "," << time<<","<< "\n";
     file.flush();
     file.close();
 }
@@ -27,13 +50,6 @@ using namespace std;
 int por =0;
 int swp=0;
 int n=0;
-
-void stan(int* A){
-    cout<<"Tablica w waznym momencie: "<<endl;
-    for(int i =0;i<n;i++){
-        cout<<setw(2)<<setfill('0')<<i<<" : "<<setw(2)<<setfill('0')<<A[i]<<endl;
-    }
-}
 
 void swap(int* A,int p,int q){
     int temp = A[p];
@@ -63,9 +79,6 @@ void QSort(int* A, int p, int q){
         return ;
     }
     int index = partition(A,p,q,p);
-    
-    //stan(A);
-
     QSort(A,p,index-1);
     QSort(A,index+1,q);
 }
@@ -116,37 +129,6 @@ int Select(int* A, int p, int q,int i,int groupsize){
     }
 }
 
-void QSortWithSelect(int* A, int p, int q, int groupsize){
-    if(p >= q || p < 0){
-        return;
-    }
-
-    int len = q - p + 1;
-    int i = len / 2 + 1; // szukamy mediany
-
-    int pivotValue = Select(A, p, q, i, groupsize);
-
-    // znajdź indeks pivotValue
-    int pivotIndex = -1;
-    for(int j = p; j <= q; j++){
-        if (A[j] == pivotValue) {
-            pivotIndex = j;
-            break;
-        }
-    }
-
-    if (pivotIndex == -1) {
-        std::cerr << "Pivot not found" << std::endl;
-        return;
-    }
-
-    int index = partition(A, p, q, pivotIndex);
-
-    QSortWithSelect(A, p, index - 1, groupsize);
-    QSortWithSelect(A, index + 1, q, groupsize);
-}
-
-
 int main(){
     string line;
     int* A = NULL;
@@ -167,59 +149,41 @@ int main(){
         cout << "Error: " << e.what() <<n<< endl;
         return -1;
     }
-    if(n<40){
-
-        cout<<"Tablica przed posortowaniem: "<<endl;
-        for(int i =0;i<n;i++){
-            cout<<setw(2)<<setfill('0')<<i<<" : "<<setw(2)<<setfill('0')<<A[i]<<endl;
-        }
-    }
 
     int* T = new int[n];
     for(int i =0;i<n;i++){
         T[i]=A[i];
     }
     auto start_time = chrono::steady_clock::now();
-    QSortWithSelect(A,0,n-1,5);
+    int wynik=Select(A,0,n-1,k,size);
     auto end_time = chrono::steady_clock::now();
     auto time = chrono::duration_cast<chrono::microseconds>(end_time - start_time).count();
+    int finalpor=por;
+    int finalswp=swp;
     
-    appendResultToCSV("QS_Select", n, por, swp, time, "results.csv");
-
-    int temp=0;
-    if(n<40){
-
-        cout<<"Tablica przed posortowaniem: "<<endl;
+    if(n<=30){
+        cout<<"Tablica przed select: "<<endl;
         for(int i =0;i<n;i++){
             cout<<setw(2)<<setfill('0')<<i<<" : "<<setw(2)<<setfill('0')<<T[i]<<endl;
         }
-
-        cout<<"Tablica po posortowaniu: "<<endl;
-        
+        cout<<"Tablica po select: "<<endl;
         for(int i =0;i<n;i++){
-            if(i==0){
-                temp=A[i];
-            }else{
-                if(temp>A[i]){
-                    temp=-1;
-                }else{
-                    temp=A[i];
-                }
-            }
             cout<<setw(2)<<setfill('0')<<i<<" : "<<setw(2)<<setfill('0')<<A[i]<<endl;
         }
-        cout<<"Liczba porownan: "<<por<<" Liczba swapow: "<<swp<<endl;
-
-        if(temp==-1){
-            cout<<"Tablica zle posortowana"<<endl;
-        }else{
-            cout<<"Poprawnie posortowane"<<endl;
+        cout<<"Wynik: "<<wynik<<endl;
+        QSort(T,0,n-1);
+        cout<<"Posortowana Tablica: "<<endl;
+        for(int i =0;i<n;i++){
+            cout<<setw(2)<<setfill('0')<<i<<" : "<<setw(2)<<setfill('0')<<T[i]<<endl;
         }
     }
     
     
+    //appendResultToCSV("Select", n, finalpor, finalswp, time,size, "results.csv");
+    appendResultToCSV("Select", n, finalpor, finalswp, time, "results.csv");
+
 
     delete[] A;
-
+    delete[] T;
     return 0;
 }
