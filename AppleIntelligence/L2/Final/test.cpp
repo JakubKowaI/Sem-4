@@ -337,7 +337,7 @@ vector<CompactState> path(map<CompactState, CompactState, CompactStateCompare> p
 // Improved thread function for searching from start
 void aStarFromStart(const CompactState& start, SharedSearchData& shared) {
     PriorityQueue<CompactState, int> open_set;
-    open_set.put(start, h1(start));
+    open_set.put(start, h2(start));
 
     {
         lock_guard<mutex> lock(shared.mtx);
@@ -383,7 +383,7 @@ void aStarFromStart(const CompactState& start, SharedSearchData& shared) {
                 tentative_g_score < shared.g_score_start[neighbor]) {
                 shared.came_from_start[neighbor] = current;
                 shared.g_score_start[neighbor] = tentative_g_score;
-                int f_score = tentative_g_score + h1(neighbor);
+                int f_score = tentative_g_score + h2(neighbor);
                 open_set.put(neighbor, f_score);
             }
         }
@@ -396,7 +396,7 @@ void aStarFromStart(const CompactState& start, SharedSearchData& shared) {
 // Improved thread function for searching from goal
 void aStarFromGoal(SharedSearchData& shared) {
     PriorityQueue<CompactState, int> open_set;
-    open_set.put(goal, h1(goal));
+    open_set.put(goal, h2(goal));
 
     {
         lock_guard<mutex> lock(shared.mtx);
@@ -442,7 +442,7 @@ void aStarFromGoal(SharedSearchData& shared) {
                 tentative_g_score < shared.g_score_goal[neighbor]) {
                 shared.came_from_goal[neighbor] = current;
                 shared.g_score_goal[neighbor] = tentative_g_score;
-                int f_score = tentative_g_score + h1(neighbor);
+                int f_score = tentative_g_score + h2(neighbor);
                 open_set.put(neighbor, f_score);
             }
         }
@@ -531,7 +531,7 @@ int main() {
         {{4, 3, 2, 1}}
     }};
 
-    auto solution = threadedBidirectionalAStar(matrixToCompact(ex5));
+    auto solution = threadedBidirectionalAStar(matrixToCompact(ex3));
     if(solution.size()!=0)cout<<"Steps: "<<solution.size()<< " States visited: "<<states<<endl;
     for (const auto& state : solution) {
         printCompact(state);

@@ -5,11 +5,12 @@
 #include <climits>
 #include <queue>
 #include <algorithm>
+#include <unordered_set>
 
 using namespace std;
 
 int packetSize = 10;
-double p = 0.98;
+double p = 0.9;
 mt19937 mt(time(nullptr));
 int maxEdges =30;
 
@@ -46,7 +47,7 @@ G genG(){
         edgeCount++;
         e.ends[0]=i;
         e.ends[1]=(i+1)%20;
-        e.c=mt()%10001+10000;
+        e.c=mt()%1000+5000;
         e.a=0;
         temp.E.push_back(e);
         
@@ -59,7 +60,7 @@ G genG(){
             d=mt()%20;
         }
         e.ends[1]=d;
-        e.c=mt()%10001+10000;
+        e.c=mt()%1000+5000;
         e.a=0;
         temp.E.push_back(e);
     }
@@ -95,7 +96,7 @@ double T(G g, int N[20][20]) {
 
 
 
-vector<int> dijkstra(const G& g, int from, int to) {
+vector<int> dijkstra(const G& g, int from, int to, const unordered_set<int>& forbidden_edges = {}) {
     vector<int> dist(20, INT_MAX);
     vector<int> parent(20, -1);
     dist[from] = 0;
@@ -111,13 +112,15 @@ vector<int> dijkstra(const G& g, int from, int to) {
         if (u == to) break;
         if (current_dist > dist[u]) continue;
 
-        // Przeszukaj wszystkie krawędzie (zarówno wychodzące, jak i przychodzące)
-        for (const edge& e : g.E) {
-            int v = -1;
-            if (e.ends[0] == u&&e.c!=0) v = e.ends[1];
-            else if (e.ends[1] == u&&e.c!=0) v = e.ends[0];
+        for (int ei = 0; ei < g.E.size(); ei++) {
+            if (forbidden_edges.count(ei)) continue;
             
-            if (v != -1&&e.c!=0) {
+            const edge& e = g.E[ei];
+            int v = -1;
+            if (e.ends[0] == u && e.c != 0) v = e.ends[1];
+            else if (e.ends[1] == u && e.c != 0) v = e.ends[0];
+            
+            if (v != -1 && e.c != 0) {
                 int new_dist = dist[u] + 1;
                 if (new_dist < dist[v]) {
                     dist[v] = new_dist;
@@ -128,7 +131,6 @@ vector<int> dijkstra(const G& g, int from, int to) {
         }
     }
 
-    // Odtwórz ścieżkę
     vector<int> path;
     if (parent[to] == -1) return path;
 
@@ -140,37 +142,107 @@ vector<int> dijkstra(const G& g, int from, int to) {
     return path;
 }
 
+vector<int> find_any_path(const G& g, int from, int to) {
+    // First try regular Dijkstra
+    vector<int> path = dijkstra(g, from, to);
+    if (!path.empty()) return path;
+
+    // If no path found, try to find any path by ignoring edge capacities
+    unordered_set<int> visited;
+    vector<int> parent(20, -1);
+    queue<int> q;
+    q.push(from);
+    visited.insert(from);
+
+    while (!q.empty()) {
+        int u = q.front();
+        q.pop();
+
+        if (u == to) break;
+
+        for (const edge& e : g.E) {
+            int v = -1;
+            if (e.ends[0] == u) v = e.ends[1];
+            else if (e.ends[1] == u) v = e.ends[0];
+
+            if (v != -1 && !visited.count(v)) {
+                visited.insert(v);
+                parent[v] = u;
+                q.push(v);
+            }
+        }
+    }
+
+    vector<int> any_path;
+    if (parent[to] == -1) return any_path;
+
+    for (int v = to; v != from; v = parent[v]) {
+        any_path.push_back(v);
+    }
+    any_path.push_back(from);
+    reverse(any_path.begin(), any_path.end());
+    return any_path;
+}
+
 bool Send(G& g, int from, int to, int a) {
     if (from == to) return true;
 
-    vector<int> path = dijkstra(g, from, to);
-    if (path.empty()) {
-        cerr << "Brak ścieżki z " << from << " do " << to << endl;
-        g.fail=true;
-        return false;
-    }
+    // Try to find the least congested path (weighted Dijkstra)
+    auto get_cost = [](const edge& e, int additional_a) {
+        double utilization = (e.a + additional_a) * packetSize / (double)e.c;
+        return 1.0 + utilization * 100;  // Penalize high utilization
+    };
 
-    // Najpierw sprawdź, czy wszystkie krawędzie mogą obsłużyć przepływ
-    for (size_t i = 0; i < path.size() - 1; i++) {
-        int u = path[i];
-        int v = path[i + 1];
+    vector<int> path;
+    vector<double> dist(20, INT_MAX);
+    vector<int> parent(20, -1);
+    priority_queue<pair<double, int>, vector<pair<double, int>>, greater<pair<double, int>>> pq;
 
-        for (edge& e : g.E) {
-            if ((e.ends[0] == u && e.ends[1] == v) || (e.ends[0] == v && e.ends[1] == u)) {
-                if (!c(e, a)) {
-                    cerr << "Przekroczono przepustowość na krawędzi " << u << "->" << v << endl;
-                    g.fail=true;
-                    return false;
+    dist[from] = 0;
+    pq.push({0, from});
+
+    while (!pq.empty()) {
+        int u = pq.top().second;
+        double current_dist = pq.top().first;
+        pq.pop();
+
+        if (u == to) break;
+        if (current_dist > dist[u]) continue;
+
+        for (const edge& e : g.E) {
+            int v = -1;
+            if (e.ends[0] == u) v = e.ends[1];
+            else if (e.ends[1] == u) v = e.ends[0];
+
+            if (v != -1) {
+                // Skip if edge would be overloaded
+                if ((e.a + a) * packetSize > e.c) continue;
+                
+                double new_dist = dist[u] + get_cost(e, a);
+                if (new_dist < dist[v]) {
+                    dist[v] = new_dist;
+                    parent[v] = u;
+                    pq.push({new_dist, v});
                 }
             }
         }
     }
 
-    // Dopiero potem zaktualizuj przepływy
-    for (size_t i = 0; i < path.size() - 1; i++) {
-        int u = path[i];
-        int v = path[i + 1];
+    // Reconstruct path
+    if (parent[to] == -1) {
+        cerr << "No valid path from " << from << " to " << to << " (would overload edges)" << endl;
+        return false;
+    }
 
+    for (int v = to; v != from; v = parent[v]) {
+        path.push_back(v);
+    }
+    path.push_back(from);
+    reverse(path.begin(), path.end());
+
+    // Reserve capacity on the path
+    for (size_t i = 0; i < path.size() - 1; i++) {
+        int u = path[i], v = path[i + 1];
         for (edge& e : g.E) {
             if ((e.ends[0] == u && e.ends[1] == v) || (e.ends[0] == v && e.ends[1] == u)) {
                 e.a += a;
@@ -181,24 +253,22 @@ bool Send(G& g, int from, int to, int a) {
 
     return true;
 }
-
-void exec(G* g,int N[20][20]){
+bool exec(G* g,int N[20][20]){
     for(int i=0;i<20;i++){
         for(int j=0;j<20;j++){
             if(N[i][j]!=0){
-                if (!Send(*g, i, j, N[i][j])) {
-                    cerr << "Nie udało się przesłać pakietów z " << i << " do " << j << endl;
-                    g->fail=true;
-                }
+                if(!Send(*g, i, j, N[i][j]))return false;
             }
         }
     }
+    return true;
 }
 
 void zerwij(G* g){
-    for(edge e : g->E){
+    for(vector<edge>::iterator e=g->E.begin();e!=g->E.end();e++){
         if(mt()%100>p*100){
-            e.c=0;
+            g->E.erase(e);
+            e--;
         }
     }
 }
@@ -209,16 +279,28 @@ double Pr(int N[20][20],double p, double T_max,G g,G main){
     for(int i=0;i<powt;i++){
         g=main;
         zerwij(&g);
-        exec(&g,N);
-        if(T(g,N)>=T_max){
-            //cout<<"Siec rozspojna"<<endl;
-            continue;
+        if(exec(&g,N)){
+            double wynik=T(g,N);
+            //cout<<"T: "<<wynik<<" Tmax: "<<T_max<<endl;
+            if(wynik<T_max){
+                good++;
+                
+            }else{
+                cout<<"to naprawde sie stalo"<<endl;
+                cout<<"T: "<<wynik<<" Tmax: "<<T_max<<endl;
+            }
         }else{
-            good++;
+            continue;
         }
     }
     cout<<good<<" : "<<powt<<endl;
     double wynik = (double)good/powt;
+    for (edge e : g.E) {
+        cout << e.ends[0] << " <-> " << e.ends[1] 
+             << " | c: " << e.c 
+             << " | a: " << e.a
+             << " | wykorzystanie: " << (100.0 * e.a * packetSize / e.c) << "%" << endl;
+    }
     return wynik;
 }
 
@@ -256,12 +338,8 @@ int main(){
     //     }
     //     cout<<endl;
     // }
-    // for (edge e : g.E) {
-    //     cout << e.ends[0] << " <-> " << e.ends[1] 
-    //          << " | c: " << e.c 
-    //          << " | a: " << e.a
-    //          << " | wykorzystanie: " << (100.0 * e.a * packetSize / e.c) << "%" << endl;
-    // }
+    
     cout<<Pr(N,(double)0.98,(double)0.1,g,main)<<endl;
+    
     return 0;
 }
