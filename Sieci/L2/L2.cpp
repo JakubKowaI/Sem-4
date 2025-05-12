@@ -6,14 +6,37 @@
 #include <queue>
 #include <algorithm>
 #include <unordered_set>
+#include <fstream>
+#include <string>
+
 
 using namespace std;
 
-int packetSize = 10;
-double p = 0.9;
+int packetSize = 13;
+double p = 0.98;
 mt19937 mt(time(nullptr));
 int maxEdges =30;
 
+// Function to save Pr() results to CSV with float modifier
+void saveResultsToCSV(const std::string& filename, double p, double T_max, 
+    double pr_result, float modifier = 0.0f) {
+std::ofstream outfile(filename, std::ios::app); // Open in append mode
+
+if (!outfile.is_open()) {
+std::cerr << "Error opening file: " << filename << std::endl;
+return;
+}
+
+// Write header if file is empty
+if (outfile.tellp() == 0) {
+outfile << "Modifier,p,T_max,pr_result\n";
+}
+
+// Write data with float modifier
+outfile << modifier << "," << p << "," << T_max << "," << pr_result << "\n";
+
+outfile.close();
+}
 
 struct node{
     int no;
@@ -47,7 +70,7 @@ G genG(){
         edgeCount++;
         e.ends[0]=i;
         e.ends[1]=(i+1)%20;
-        e.c=mt()%1000+5000;
+        e.c=mt()%1000+3000;
         e.a=0;
         temp.E.push_back(e);
         
@@ -60,7 +83,7 @@ G genG(){
             d=mt()%20;
         }
         e.ends[1]=d;
-        e.c=mt()%1000+5000;
+        e.c=mt()%1000+3000;
         e.a=0;
         temp.E.push_back(e);
     }
@@ -230,7 +253,7 @@ bool Send(G& g, int from, int to, int a) {
 
     // Reconstruct path
     if (parent[to] == -1) {
-        cerr << "No valid path from " << from << " to " << to << " (would overload edges)" << endl;
+        //cerr << "No valid path from " << from << " to " << to << " (would overload edges)" << endl;
         return false;
     }
 
@@ -274,7 +297,7 @@ void zerwij(G* g){
 }
 
 double Pr(int N[20][20],double p, double T_max,G g,G main){
-    int powt=1000;
+    int powt=5000;
     int good=0;
     for(int i=0;i<powt;i++){
         g=main;
@@ -286,25 +309,110 @@ double Pr(int N[20][20],double p, double T_max,G g,G main){
                 good++;
                 
             }else{
-                cout<<"to naprawde sie stalo"<<endl;
-                cout<<"T: "<<wynik<<" Tmax: "<<T_max<<endl;
+                //cout<<"to naprawde sie stalo"<<endl;
+                //cout<<"T: "<<wynik<<" Tmax: "<<T_max<<endl;
             }
         }else{
             continue;
         }
     }
-    cout<<good<<" : "<<powt<<endl;
+    //cout<<good<<" : "<<powt<<endl;
     double wynik = (double)good/powt;
-    for (edge e : g.E) {
-        cout << e.ends[0] << " <-> " << e.ends[1] 
-             << " | c: " << e.c 
-             << " | a: " << e.a
-             << " | wykorzystanie: " << (100.0 * e.a * packetSize / e.c) << "%" << endl;
-    }
+    // for (edge e : g.E) {
+    //     cout << e.ends[0] << " <-> " << e.ends[1] 
+    //          << " | c: " << e.c 
+    //          << " | a: " << e.a
+    //          << " | wykorzystanie: " << (100.0 * e.a * packetSize / e.c) << "%" << endl;
+    // }
     return wynik;
 }
 
+// Modified Pr function that saves results
+double Pr_with_save(int N[20][20], double p, double T_max, G g, G main, const std::string& filename = "pr_results.csv") {
+    double final_result = 0;
+    
+    for(float i = 1.0f; i <= 2.0f; i += 0.1f) {
+        // Create fresh copies for each iteration
+        G current_g = main;
+        G current_main = main;
+        
+        // Scale edge capacities
+        for(auto& e : current_g.E) {
+            e.c = static_cast<int>(e.c * i);
+        }
+        
+        // Scale main graph capacities too
+        for(auto& e : current_main.E) {
+            e.c = static_cast<int>(e.c * i);
+        }
+        
+        double result = Pr(N, p, T_max, current_g, current_main);
+        saveResultsToCSV(filename, p, T_max, result, i);
+        final_result = result; // Store last result to return
+    }
+    
+    return final_result;
+}
 
+// Modified Pr function that saves results
+double Pr_N_with_save(int N[20][20], double p, double T_max, G g, G main, const std::string& filename = "pr_results.csv") {
+    double result=0;
+    for(float i =1;i<=2;i+=0.1){
+        int temp[20][20];
+        for(int j = 0; j < 20; j++) {
+            for(int k = 0; k < 20; k++) {
+                temp[j][k] = N[j][k] * i;  // Copy and multiply in one step
+            }
+        }
+        result = Pr(temp, p, T_max, g, main);
+        g=main;
+        saveResultsToCSV(filename, p, T_max, result,i);
+    }
+    
+    return result;
+}
+
+// Modified Pr function that saves results
+double Pr_Edges_with_save(int N[20][20], double p, double T_max, G g, G main, const std::string& filename = "pr_results.csv") {
+    double final_result = 0;
+    
+    for(int i = 1; i <= 10; i++) {
+        // Create fresh copies for each iteration
+        G current_g = main;
+        int average = 0;
+
+        for(auto& e : current_g.E) {
+            average+=e.c;
+        }
+        average = average/current_g.E.size();
+        
+        for(int j=0;j<i;j++){
+            edge e;
+            e.ends[0]=mt()%20;
+            int d = mt()%20;
+            while(d==e.ends[0]){
+                d=mt()%20;
+            }
+            e.ends[1]=d;
+            for(auto& e : current_g.E) {
+                average+=e.c;
+            }
+            average = average/current_g.E.size();
+            //cout<<"Average" <<average<<endl;
+
+            e.c=average;
+            e.a=0;
+            current_g.E.push_back(e);
+        }
+        
+        
+        double result = Pr(N, p, T_max, current_g, main);
+        saveResultsToCSV(filename, p, T_max, result, i);
+        final_result = result; // Store last result to return
+    }
+    
+    return final_result;
+}
 
 int main(){
     int N[20][20]={};
@@ -339,7 +447,7 @@ int main(){
     //     cout<<endl;
     // }
     
-    cout<<Pr(N,(double)0.98,(double)0.1,g,main)<<endl;
+    cout<<Pr_Edges_with_save(N,(double)0.98,(double)0.1,g,main)<<endl;
     
     return 0;
 }

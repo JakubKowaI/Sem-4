@@ -94,7 +94,7 @@ struct SharedSearchData {
     atomic<bool> found{false};
     atomic<bool> start_done{false};
     atomic<bool> goal_done{false};
-    const int max_depth = 81;  // Maximum allowed depth
+    const int max_depth = 41;  // Maximum allowed depth
 };
 
 inline int getTile(const CompactState& s, int idx) {
@@ -531,12 +531,14 @@ int main() {
         {{4, 3, 2, 1}}
     }};
 
-    auto solution = threadedBidirectionalAStar(matrixToCompact(ex3));
+    auto solution = threadedBidirectionalAStar(matrixToCompact(ex1));
     if(solution.size()!=0)cout<<"Steps: "<<solution.size()<< " States visited: "<<states<<endl;
     for (const auto& state : solution) {
         printCompact(state);
         cout << endl;
     }
+    if(solution.size()!=0)cout<<"Steps: "<<solution.size()<< " States visited: "<<states<<endl;
+
 
     return 0;
 }
