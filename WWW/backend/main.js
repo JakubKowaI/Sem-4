@@ -47,34 +47,6 @@ function requireAdmin(req, res, next) {
   });
 }
 
-
-//odpowiedź Hello GET na żądanie GET do strony domowej
-app.get('/', (req, res) => {
-    console.log("Otrzymano żądanie GET dla strony głównej");
-    res.send('Hello GET');
-})
-//odpowiedź Hello POST na żądanie POST do strony domowej
-app.post('/', (req, res) => {
-    console.log("Otrzymano żądanie POST dla strony głównej");
-    res.send('Hello POST\n');
-})
-//odpowiedź Hello DELETE na żądanie DELETE do zasobu /users
-app.delete('/users', (req, res) => {
-    console.log("Otrzymano żądanie DELETE do zasobu /users");
-    res.send('Hello DELETE\n');
-})
-//odpowiedź na żądanie GET do zasobu /user_list
-app.get('/users', (req, res) => {
-    console.log("Otrzymano żądanie GET do zasobu /users");
-    res.send('Listing użytkowników');
-})
-//odpowiedź na żądanie GET do zasobu z uri o wzorcu /ab*cd
-app.get('/ab*cd', (req, res) => {
-    // wzorzec strony: abcd, abxcd, ab1cd, ...
-    console.log("Otrzymano żądanie GET do zasobu z uri o wzorcu /ab*cd");
-    res.send('Dopasowanie strony ze wzorcem ab*cd');
-})
-
 app.get('/users', authenticateToken, requireAdmin, (req, res) => {
   // Get page and limit from query params, set defaults
   const page = parseInt(req.query.page) || 1;       // Default page 1
@@ -411,7 +383,7 @@ app.post('/login', (req, res) => {
       secure: false, // true in production with HTTPS
       sameSite: 'Strict',
       maxAge: 24 * 60 * 60 * 1000
-    }).json({ message: 'Login successful' });
+    }).json({ token });
   });
 });
 
@@ -469,29 +441,12 @@ var db = mysql.createConnection({
 db.connect(function(err) {
   if (err) throw err;
   console.log("Connected!");
-//   db.query(sql, function (err, result) {
-//   if (err) throw err;
-//   console.log("Result: " + result);
-//   });
 });
 
 /*app.get('/form1.html', (req, res) => {
     res.sendFile( __dirname + "/" + "form1.html" );
     });*/
 
-app.get('/animals', (req, res) => {
-    let response = {
-        gromada : req.query.gromada,
-        rodzaj : req.query.rodzaj,
-        gatunek : req.query.gatunek
-    };
-    console.log(response);
-    res.end(JSON.stringify(response));
-})
-
-//obsługa formularzy metodą POST - body-parser dla starszych wersji Express
-//let bodyParser = require('body-parser');
-//let urlencodedParser = bodyParser.urlencoded({ extended: false }) // application/x-www-form-urlencoded
 
 
 
@@ -500,16 +455,3 @@ app.get('/animals', (req, res) => {
     res.sendFile( __dirname + "/" + "form2.html" );
 });*/
 
-//obsługa formularzy metodą POST
-
-//linijka zamienna dla body-parser ze straszych wersji Express
-//app.post('/animals', urlencodedParser, (req, res) => { 
-app.post('/animals', (req, res) => {
-let response = {
-    gromada:req.body.gromada,
-    rodzaj:req.body.rodzaj,
-    gatunek:req.body.gatunek
-};
-console.log(response);
-res.json(response);
-})
