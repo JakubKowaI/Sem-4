@@ -13,4 +13,4 @@ plt.ylabel('PR Result')
 plt.title('PR Results')
 
 # Show the plot
-plt.savefig("E_Results.png")
+plt.savefig("Results.png")

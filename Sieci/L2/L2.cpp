@@ -13,7 +13,7 @@
 using namespace std;
 
 int packetSize = 13;
-double p = 0.98;
+double p = 0.8;
 mt19937 mt(time(nullptr));
 int maxEdges =30;
 
@@ -109,7 +109,7 @@ double T(G g, int N[20][20]) {
     for (edge e : g.E) {
         double denominator = (e.c / (double)packetSize) - e.a;
         if (denominator <= 0.0) {
-            suma += 0;
+            return 99999;
         } else {
             suma += e.a / denominator;
         }
@@ -119,9 +119,10 @@ double T(G g, int N[20][20]) {
 
 
 
-vector<int> dijkstra(const G& g, int from, int to, const unordered_set<int>& forbidden_edges = {}) {
+vector<edge> dijkstra_edges(const G& g, int from, int to, const unordered_set<int>& forbidden_edges = {}) {
     vector<int> dist(20, INT_MAX);
     vector<int> parent(20, -1);
+    vector<int> parent_edge(20, -1); // Store edge index used to reach each node
     dist[from] = 0;
 
     priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
@@ -148,127 +149,57 @@ vector<int> dijkstra(const G& g, int from, int to, const unordered_set<int>& for
                 if (new_dist < dist[v]) {
                     dist[v] = new_dist;
                     parent[v] = u;
+                    parent_edge[v] = ei; // Store the edge index used
                     pq.push({new_dist, v});
                 }
             }
         }
     }
 
-    vector<int> path;
-    if (parent[to] == -1) return path;
+    vector<edge> path_edges;
+    if (parent[to] == -1) return path_edges; // No path found
 
+    // Reconstruct path by following parent pointers
     for (int v = to; v != from; v = parent[v]) {
-        path.push_back(v);
+        int u = parent[v];
+        int ei = parent_edge[v];
+        path_edges.push_back(g.E[ei]);
     }
-    path.push_back(from);
-    reverse(path.begin(), path.end());
-    return path;
-}
-
-vector<int> find_any_path(const G& g, int from, int to) {
-    // First try regular Dijkstra
-    vector<int> path = dijkstra(g, from, to);
-    if (!path.empty()) return path;
-
-    // If no path found, try to find any path by ignoring edge capacities
-    unordered_set<int> visited;
-    vector<int> parent(20, -1);
-    queue<int> q;
-    q.push(from);
-    visited.insert(from);
-
-    while (!q.empty()) {
-        int u = q.front();
-        q.pop();
-
-        if (u == to) break;
-
-        for (const edge& e : g.E) {
-            int v = -1;
-            if (e.ends[0] == u) v = e.ends[1];
-            else if (e.ends[1] == u) v = e.ends[0];
-
-            if (v != -1 && !visited.count(v)) {
-                visited.insert(v);
-                parent[v] = u;
-                q.push(v);
-            }
-        }
-    }
-
-    vector<int> any_path;
-    if (parent[to] == -1) return any_path;
-
-    for (int v = to; v != from; v = parent[v]) {
-        any_path.push_back(v);
-    }
-    any_path.push_back(from);
-    reverse(any_path.begin(), any_path.end());
-    return any_path;
+    
+    // Reverse to get from->to order
+    reverse(path_edges.begin(), path_edges.end());
+    return path_edges;
 }
 
 bool Send(G& g, int from, int to, int a) {
     if (from == to) return true;
 
-    // Try to find the least congested path (weighted Dijkstra)
-    auto get_cost = [](const edge& e, int additional_a) {
-        double utilization = (e.a + additional_a) * packetSize / (double)e.c;
-        return 1.0 + utilization * 100;  // Penalize high utilization
-    };
+    // Get the path edges
+    vector<edge> path_edges = dijkstra_edges(g, from, to);
+    if (path_edges.empty()) return false;
 
-    vector<int> path;
-    vector<double> dist(20, INT_MAX);
-    vector<int> parent(20, -1);
-    priority_queue<pair<double, int>, vector<pair<double, int>>, greater<pair<double, int>>> pq;
-
-    dist[from] = 0;
-    pq.push({0, from});
-
-    while (!pq.empty()) {
-        int u = pq.top().second;
-        double current_dist = pq.top().first;
-        pq.pop();
-
-        if (u == to) break;
-        if (current_dist > dist[u]) continue;
-
-        for (const edge& e : g.E) {
-            int v = -1;
-            if (e.ends[0] == u) v = e.ends[1];
-            else if (e.ends[1] == u) v = e.ends[0];
-
-            if (v != -1) {
+    // Reserve capacity on each edge in the path
+    for (const edge& e : path_edges) {
+        for (edge& ge : g.E) {
+            // Find the matching edge in the graph (by endpoints)
+            if ((ge.ends[0] == e.ends[0] && ge.ends[1] == e.ends[1]) ||
+                (ge.ends[0] == e.ends[1] && ge.ends[1] == e.ends[0])) {
                 // Skip if edge would be overloaded
-                if ((e.a + a) * packetSize > e.c) continue;
-                
-                double new_dist = dist[u] + get_cost(e, a);
-                if (new_dist < dist[v]) {
-                    dist[v] = new_dist;
-                    parent[v] = u;
-                    pq.push({new_dist, v});
-                }
+                if ((ge.a + a) * packetSize > ge.c) return false;
+                //ge.a += a;
+                break;
             }
         }
     }
 
-    // Reconstruct path
-    if (parent[to] == -1) {
-        //cerr << "No valid path from " << from << " to " << to << " (would overload edges)" << endl;
-        return false;
-    }
-
-    for (int v = to; v != from; v = parent[v]) {
-        path.push_back(v);
-    }
-    path.push_back(from);
-    reverse(path.begin(), path.end());
-
-    // Reserve capacity on the path
-    for (size_t i = 0; i < path.size() - 1; i++) {
-        int u = path[i], v = path[i + 1];
-        for (edge& e : g.E) {
-            if ((e.ends[0] == u && e.ends[1] == v) || (e.ends[0] == v && e.ends[1] == u)) {
-                e.a += a;
+    for (const edge& e : path_edges) {
+        for (edge& ge : g.E) {
+            // Find the matching edge in the graph (by endpoints)
+            if ((ge.ends[0] == e.ends[0] && ge.ends[1] == e.ends[1]) ||
+                (ge.ends[0] == e.ends[1] && ge.ends[1] == e.ends[0])) {
+                // Skip if edge would be overloaded
+                //if ((ge.a + a) * packetSize > ge.c) return false;
+                ge.a += a;
                 break;
             }
         }
@@ -276,6 +207,7 @@ bool Send(G& g, int from, int to, int a) {
 
     return true;
 }
+
 bool exec(G* g,int N[20][20]){
     for(int i=0;i<20;i++){
         for(int j=0;j<20;j++){
@@ -331,7 +263,7 @@ double Pr(int N[20][20],double p, double T_max,G g,G main){
 double Pr_with_save(int N[20][20], double p, double T_max, G g, G main, const std::string& filename = "pr_results.csv") {
     double final_result = 0;
     
-    for(float i = 1.0f; i <= 2.0f; i += 0.1f) {
+    for(float i = 1.0f; i <= 3.5f; i += 0.1f) {
         // Create fresh copies for each iteration
         G current_g = main;
         G current_main = main;
@@ -447,7 +379,7 @@ int main(){
     //     cout<<endl;
     // }
     
-    cout<<Pr_Edges_with_save(N,(double)0.98,(double)0.1,g,main)<<endl;
+    cout<<Pr_with_save(N,p,(double)0.1,g,main)<<endl;
     
     return 0;
 }

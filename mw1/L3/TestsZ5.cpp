@@ -20,7 +20,7 @@ int main(){
         for(int j=0;j<k;j++){
             //int temp = mt()%i;
             int k=10;
-            string gen = "./RandGen.out "+to_string(i)+" "+to_string(k)+" > temp.txt";
+            string gen = "./Sorted.out "+to_string(i)+" "+to_string(k)+" > temp.txt";
             const char* gencom = gen.c_str();
             system(gencom);
             string rndSel = "./QuickSort.out < temp.txt";
