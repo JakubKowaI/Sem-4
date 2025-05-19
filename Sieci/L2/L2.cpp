@@ -12,7 +12,7 @@
 
 using namespace std;
 
-int packetSize = 10;
+int packetSize = 13;
 mt19937 mt(time(nullptr));
 int maxEdges =30;
 
@@ -274,7 +274,7 @@ double Pr(int N[20][20], double T_max,G g,G main){
 double Pr_with_save(int N[20][20], double T_max, G g, G main, const std::string& filename = "pr_results.csv") {
     double final_result = 0;
     
-    for(float i = 1.0f; i <= 3.5f; i += 0.1f) {
+    for(float i = 1.0f; i <= 2.5f; i += 0.1f) {
         // Create fresh copies for each iteration
         G current_g = main;
         G current_main = main;
@@ -300,7 +300,7 @@ double Pr_with_save(int N[20][20], double T_max, G g, G main, const std::string&
 // Modified Pr function that saves results
 double Pr_N_with_save(int N[20][20],  double T_max, G g, G main, const std::string& filename = "pr_results.csv") {
     double result=0;
-    for(float i = 1.0f; i <= 3.5f; i += 0.1f){
+    for(float i = 1.0f; i <= 2.5f; i += 0.1f){
         int temp[20][20];
         for(int j = 0; j < 20; j++) {
             for(int k = 0; k < 20; k++) {
@@ -319,7 +319,7 @@ double Pr_N_with_save(int N[20][20],  double T_max, G g, G main, const std::stri
 double Pr_Edges_with_save(int N[20][20],  double T_max, G g, G main, const std::string& filename = "pr_results.csv") {
     double final_result = 0;
     
-    for(int i = 1; i <= 30; i+=2) {
+    for(int i = 1; i <= 15; i++) {
         // Create fresh copies for each iteration
         G current_g = main;
         int average = 0;
@@ -377,7 +377,9 @@ int main(){
 
     //Pr_with_save(N,(double)0.1,g,main,"Results_C.csv");
     //Pr_N_with_save(N,(double)0.1,g,main,"Results_N.csv");
-    Pr_Edges_with_save(N,(double)0.1,g,main,"Results_E.csv");
+    for(int i=0;i<25;i++){
+            Pr_Edges_with_save(N,(double)0.1,g,main,"Results_E.csv");
+    }
     
     return 0;
 }

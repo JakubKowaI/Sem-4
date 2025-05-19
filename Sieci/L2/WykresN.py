@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 data = pd.read_csv('Results_N.csv')
 
 # Create the plot
-plt.plot(data['Modifier'], data['pr_result'], marker='o')
+plt.plot(data['Modifier'], data['pr_result'])
 
 # Add basic labels
 plt.xlabel('Modifier')

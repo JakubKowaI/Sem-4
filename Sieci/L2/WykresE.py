@@ -1,16 +1,21 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# Read the CSV file
+# Read CSV and group by Modifier to compute mean
 data = pd.read_csv('Results_E.csv')
+grouped = data.groupby('Modifier')['pr_result'].mean().reset_index()
 
-# Create the plot
-plt.plot(data['Modifier'], data['pr_result'], marker='o')
+# Plot just the averages
+plt.plot(grouped['Modifier'], grouped['pr_result'], 
+        linestyle='-', color='blue', label='Average PR Result')
 
-# Add basic labels
+# Customize the plot
 plt.xlabel('Number of additional edges')
-plt.ylabel('PR Result')
-plt.title('PR Results for additional random edges')
+plt.ylabel('Average PR Result')
+plt.title('Average PR Results by Modifier')
+plt.legend()
+plt.grid(True, linestyle='--', alpha=0.6)
 
-# Show the plot
-plt.savefig("Results_E.png")
+# Save and close
+plt.savefig("Results_E_Averages.png", dpi=300, bbox_inches='tight')
+plt.close()
