@@ -93,13 +93,10 @@ G genG(){
 }
 
 double T(G g, int N[20][20]) {
-    if(g.fail)return 0;
     int AllPakiety = 0;
     for (int i = 0; i < 20; i++) {
         for (int j = 0; j < 20; j++) {
-            if (N[i][j] != 0) {
                 AllPakiety += N[i][j];
-            }
         }
     }
 
@@ -110,11 +107,7 @@ double T(G g, int N[20][20]) {
     double suma = 0;
     for (edge e : g.E) {
         double denominator = (e.c / (double)packetSize) - e.a;
-        if (denominator <= 0.0) {
-            return 99999;
-        } else {
             suma += e.a / denominator;
-        }
     }
     return suma / (double)AllPakiety;
 }
@@ -187,27 +180,13 @@ bool Send(G& g, int from, int to, int a) {
             if ((ge.ends[0] == e.ends[0] && ge.ends[1] == e.ends[1]) ||
                 (ge.ends[0] == e.ends[1] && ge.ends[1] == e.ends[0])) {
                 // Skip if edge would be overloaded
-                if ((ge.a + a) * packetSize > ge.c) return false;
-                //ge.a += a;
-                break;
-            }
-        }
-    }
-
-    for (const edge& e : path_edges) {
-        for (edge& ge : g.E) {
-            // Find the matching edge in the graph (by endpoints)
-            if ((ge.ends[0] == e.ends[0] && ge.ends[1] == e.ends[1]) ||
-                (ge.ends[0] == e.ends[1] && ge.ends[1] == e.ends[0])) {
-                // Skip if edge would be overloaded
-                //if ((ge.a + a) * packetSize > ge.c) return false;
                 ge.a += a;
+                if (ge.a * packetSize > ge.c) return false;
                 break;
             }
         }
     }
-
-    return true;
+return true;
 }
 
 bool exec(G* g,int N[20][20]){
@@ -331,16 +310,24 @@ double Pr_Edges_with_save(int N[20][20],  double T_max, G g, G main, const std::
         
         for(int j=0;j<i;j++){
             edge e;
-            e.ends[0]=mt()%20;
-            int d = mt()%20;
-            while(d==e.ends[0]){
-                d=mt()%20;
+            int p;
+            int k;
+            int status=0;
+            while(status==0){
+                p = mt()%20;
+                k = mt()%20;
+                while(p==k){
+                    k=mt()%20;
+                }
+                int local=1;
+                for(auto& e : current_g.E) {
+                    if(e.ends[0]==p&&e.ends[1]==k)local=0;
+                }
+                status=local;
             }
-            e.ends[1]=d;
-            for(auto& e : current_g.E) {
-                average+=e.c;
-            }
-            average = average/current_g.E.size();
+            e.ends[0]=p;
+            e.ends[1]=k;
+            
             //cout<<"Average" <<average<<endl;
 
             e.c=average;
@@ -377,9 +364,9 @@ int main(){
 
     //Pr_with_save(N,(double)0.1,g,main,"Results_C.csv");
     //Pr_N_with_save(N,(double)0.1,g,main,"Results_N.csv");
-    for(int i=0;i<25;i++){
-            Pr_Edges_with_save(N,(double)0.1,g,main,"Results_E.csv");
-    }
+    //for(int i=0;i<25;i++){
+            Pr_Edges_with_save(N,(double)0.1,g,main,"TEMP_Results_E.csv");
+    //}
     
     return 0;
 }

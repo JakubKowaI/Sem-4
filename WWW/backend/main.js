@@ -25,8 +25,8 @@ function authenticateToken(req, res, next) {
 
   if (!token) return res.sendStatus(401);
 
-  jwt.verify(token, secret, (err, user) => {
-    if (err) return res.sendStatus(403);
+  jwt.verify(token, secret,{algorithms:'HS512'}, (err, user) => {
+    if (err) return res.Status(403).json({error:'Cannot Authenticate'});
     req.user = user;
     next();
   });
@@ -34,15 +34,15 @@ function authenticateToken(req, res, next) {
 
 function requireAdmin(req, res, next) {
   db.query('SELECT * FROM User WHERE id = ?', [req.user.id], (err, results) => {
-    if (err) return res.status(500).json({ error: err });
+    if (err) return res.status(500).json({ error: 'Database error' });
     if (results.length === 0) return res.status(404).json({ message: 'User not found' });
 
     if (results[0].role === 'admin') {
       //console.log('Role is admin:', req.user.id);
-      return next(); // ✅ Admin - continue
+      return next(); // Admin - continue
     } else {
       //console.log('Role is not admin:', req.user.id);
-      return res.status(403).json({ message: 'Access denied. Admins only.' }); // ❌ Not admin
+      return res.status(403).json({ message: 'Access denied. Admins only.' }); //  Not admin
     }
   });
 }
@@ -82,12 +82,12 @@ app.post('/users/:userId/promote', authenticateToken, requireAdmin, (req, res) =
   const userId = req.params.userId;
 
 db.query('SELECT * FROM User WHERE id = ?', [userId], (err, results) => {
-  if (err) return res.status(500).json({ error: err });
+  if (err) return res.status(500).json({ error: 'Database error' });
   if (results.length === 0) return res.status(404).json({ message: 'User not found' });
   if (results[0].role === 'admin') return res.status(400).json({ message: 'User already is an admin' });
 
   db.query('UPDATE User SET role = \'admin\' WHERE id = ?', [userId], (err) => {
-    if (err) return res.status(500).json({ error: err });
+    if (err) return res.status(500).json({ error: 'Database error' });
 
       res.status(201).json({ message: `User ${userId} promoted to admin`});
     });
@@ -98,12 +98,12 @@ app.post('/users/:userId/demote', authenticateToken, requireAdmin, (req, res) =>
 const userId = req.params.userId;
 
 db.query('SELECT * FROM User WHERE id = ?', [userId], (err, results) => {
-  if (err) return res.status(500).json({ error: err });
+  if (err) return res.status(500).json({ error: 'Database error' });
   if (results.length === 0) return res.status(404).json({ message: 'User not found' });
   if (results[0].role === 'user') return res.status(400).json({ message: 'User already is an user' });
 
   db.query('UPDATE User SET role = \'user\' WHERE id = ?', [userId], (err) => {
-    if (err) return res.status(500).json({ error: err });
+    if (err) return res.status(500).json({ error: 'Database error' });
 
       res.status(201).json({ message: `User ${userId} demoted to user`});
     });
@@ -114,24 +114,23 @@ app.get('/users/:userId', authenticateToken, requireAdmin, (req, res) => {
   const userId = req.params.userId;
 
 db.query('SELECT id,email,role FROM User WHERE id = ?', [userId], (err, results) => {
-  if (err) return res.status(500).json({ error: err });
+  if (err) return res.status(500).json({ error: 'Database error' });
   if (results.length === 0) return res.status(404).json({ message: 'User not found' });
   res.status(201).json(results);
   
   });
 });
 
-app.delete('/users/:userId/delete', authenticateToken, requireAdmin, (req, res) => {
+app.delete('/users/:userId', authenticateToken, requireAdmin, (req, res) => {
   const userId = req.params.userId;
 
 db.query('DELETE FROM User WHERE id = ?', [userId], (err, results) => {
-  if (err) return res.status(500).json({ error: err });
+  if (err) return res.status(500).json({ error: 'Database error' });
   if (results.length === 0) return res.status(404).json({ message: 'User not found' });
   res.status(204).json(results);
   
   });
 });
-
 
 app.get('/books', (req, res) => {
   const { page = 1, limit = 10, ...filters } = req.query;
@@ -171,23 +170,23 @@ app.post('/books/add', authenticateToken, requireAdmin, (req, res) => {
   }
 
 db.query('INSERT INTO Book(title,author,isbn,publishedYear,genre) Values(?,?,?,?,?)', [title,author,isbn,publishedYear,genre], (err, results) => {
-  if (err) return res.status(500).json({ error: err });
+  if (err) return res.status(500).json({ error: 'Database error' });
   res.status(201).json(results);
   
   });
 });
 
-app.delete('/books/:bookId/delete', authenticateToken, requireAdmin, (req, res) => {
+app.delete('/books/:bookId', authenticateToken, requireAdmin, (req, res) => {
   const bookId = req.params.bookId;
 
 db.query('DELETE FROM Book WHERE id = ?', [bookId], (err, results) => {
-  if (err) return res.status(500).json({ error: err });
+  if (err) return res.status(500).json({ error: 'Database error' });
   if (results.length === 0) return res.status(404).json({ message: 'Book not found' });
   res.status(204).json(results);
   });
 });
 
-app.get('/books/:bookId/return', authenticateToken, (req, res) => {
+app.post('/books/:bookId/return', authenticateToken, (req, res) => {
   const bookId = req.params.bookId;
   const userId = req.user.id;
 
@@ -278,6 +277,7 @@ app.get('/books/:bookId/return', authenticateToken, (req, res) => {
     }
   });
 });
+
 app.get('/loans', authenticateToken, (req, res) => {
   const { page = 1, limit = 10, ...filters } = req.query;
   const offset = (page - 1) * limit;
@@ -335,7 +335,6 @@ app.get('/loans', authenticateToken, (req, res) => {
   });
 });
 
-
 app.post('/register', async (req, res) => {
   const { email, password } = req.body;
 
@@ -376,7 +375,7 @@ app.post('/login', (req, res) => {
 
     if (!valid) return res.status(401).send('Invalid credentials');
 
-    const token = jwt.sign({ id: user.id }, secret, { expiresIn: '1h' });
+    const token = jwt.sign({ id: user.id }, secret,{algorithm:'HS512'}, { expiresIn: '1h' });
 
     res.cookie('token', token, {
       httpOnly: true,
