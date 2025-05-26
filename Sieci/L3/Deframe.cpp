@@ -21,26 +21,6 @@ string calculateCRC(const string& input) {
     return remainder.substr(remainder.length() - (CRC32.length() - 1));
 }
 
-string bitStuffing(const string& data) {
-    string stuffed;
-    int oneCount = 0;
-
-    for (char bit : data) {
-        stuffed += bit;
-        if (bit == '1') {
-            oneCount++;
-            if (oneCount == 5) {
-                stuffed += '0';
-                oneCount = 0;
-            }
-        } else {
-            oneCount = 0;
-        }
-    }
-
-    return stuffed;
-}
-
 string bitUnstuffing(const string& data) {
     string unstuffed;
     int oneCount = 0;
@@ -50,7 +30,7 @@ string bitUnstuffing(const string& data) {
         if (data[i] == '1') {
             oneCount++;
             if (oneCount == 5) {
-                i++;
+                i++; // pomiń dodatkowe '0'
                 oneCount = 0;
             }
         } else {
@@ -59,24 +39,6 @@ string bitUnstuffing(const string& data) {
     }
 
     return unstuffed;
-}
-
-void frame(const string& inputFile, const string& outputFile) {
-    ifstream in(inputFile);
-    ofstream out(outputFile);
-
-    string bits;
-    getline(in, bits);
-
-    string crc = calculateCRC(bits);
-    string full = bits + crc;
-    string stuffed = bitStuffing(full);
-    string framed = FLAG + stuffed + FLAG;
-
-    out << framed << endl;
-
-    in.close();
-    out.close();
 }
 
 void deframe(const string& inputFile, const string& outputFile) {
@@ -105,6 +67,7 @@ void deframe(const string& inputFile, const string& outputFile) {
         out << data << endl;
         cout << "CRC OK: dane poprawne.\n";
     } else {
+        out << "CRC ERROR: dane uszkodzone.\n" << endl;
         cerr << "CRC ERROR: dane uszkodzone.\n";
     }
 
@@ -113,19 +76,6 @@ void deframe(const string& inputFile, const string& outputFile) {
 }
 
 int main() {
-    cout << "Wybierz opcję:\n1. Ramkuj (Z → W)\n2. Odramkuj (W → Z)\n> ";
-    int choice;
-    cin >> choice;
-
-    if (choice == 1) {
-        frame("Z.txt", "W.txt");
-        cout << "Zapisano do W.txt\n";
-    } else if (choice == 2) {
-        deframe("W.txt", "Z_out.txt");
-        cout << "Zapisano do Z_out.txt\n";
-    } else {
-        cerr << "Nieznana opcja.\n";
-    }
-
+    deframe("W.txt", "Z_out.txt");
     return 0;
 }
