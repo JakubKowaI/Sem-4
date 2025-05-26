@@ -73,16 +73,16 @@ bool has_losing_line(const char board[SIZE][SIZE], char player) {
 // Przykład użycia
 int main() {
     char board[SIZE][SIZE] = {
-        {'X', ' ', ' ', 'O', ' '},
-        {' ', 'X', 'O', ' ', ' '},
+        {' ', 'X', ' ', ' ', ' '},
         {' ', ' ', ' ', ' ', ' '},
         {' ', ' ', ' ', 'X', ' '},
-        {' ', ' ', ' ', ' ', ' '}
+        {' ', 'X', ' ', ' ', ' '},
+        {' ', ' ', '0', '0', '0'}
     };
 
-    printf("Czy X ma linię 4? %s\n", check_line(board, 'X', 4) ? "Tak" : "Nie");
-    printf("Czy X ma linię 3? %s\n", check_line(board, 'X', 3) ? "Tak" : "Nie");
-    printf("Czy X ma linię 2? %s\n", check_line(board, 'X', 2) ? "Tak" : "Nie");
+    printf("Czy X ma linię 4? %s\n", check_line(board, '0', 4) ? "Tak" : "Nie");
+    printf("Czy X ma linię 3? %s\n", check_line(board, '0', 3) ? "Tak" : "Nie");
+    printf("Czy X ma linię 2? %s\n", check_line(board, '0', 2) ? "Tak" : "Nie");
 
     return 0;
 }

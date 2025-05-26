@@ -22,6 +22,14 @@ int player;
 
 int (*h)(int [5][5],int);
 
+int max(int a, int b) {
+  if (a > b) {
+    return a;
+  } else {
+    return b;
+  }
+}
+
 bool checkWinState(int tempBoard[5][5], int player) {
   bool w = false;
   for (int i = 0; i < 28; i++)
@@ -42,7 +50,7 @@ int generateStates(int board[5][5], int tempPlayer, state out[25]) {
                 board[i][j] = tempPlayer;
 
                 memcpy(temp.board, board, sizeof(temp.board));
-                temp.move = i * 10 + j;
+                temp.move = (i * 10 + j)+11;
                 temp.value = 0;
 
                 out[counter++] = temp;
@@ -120,9 +128,9 @@ bool check_line(const int board[5][5], int player, int length) {
 // Sprawdza, czy w tablicy `line` o długości 4 występuje wzorzec XX-X lub X-XX
 bool is_pattern(const int line[4], int player) {
     // Sprawdź XX-X (np. X X _ X)
-    bool pattern1 = (line[0] == player && line[1] == player && line[3] == player && line[2] == '0');
+    bool pattern1 = (line[0] == player && line[1] == player && line[3] == player && line[2] == 0);
     // Sprawdź X-XX (np. X _ X X)
-    bool pattern2 = (line[0] == player && line[2] == player && line[3] == player && line[1] == '0');
+    bool pattern2 = (line[0] == player && line[2] == player && line[3] == player && line[1] == 0);
     return pattern1 || pattern2;
 }
 
@@ -172,23 +180,42 @@ int switchPlayers(int tempPlayer){
 }
 
 int aggressive_heuristic(int board[5][5],int tempPlayer) {
+  tempPlayer=switchPlayers(tempPlayer);
+    // for (int i = 0; i < 5; i++) {
+    //     for (int j = 0; j < 5; j++) {
+    //         printf("%d",board[i][j]);
+    //     }
+    //     printf("\n");
+    //}
     int value=0;
     if(check_line(board,tempPlayer,4)){
       value+=5000;
+      //printf("Has 4 line value: %d\n",value);
     }else{
       if(check_line(board,tempPlayer,3)){
       value+=-5000;
+            //printf("Has 3 line value: %d\n",value);
+
       }
     }
-    if(has_gap_line(board,tempPlayer))value+=1000;
+    if(has_gap_line(board,tempPlayer)){
+      value+=1000;      
+      //printf("Has gap line value: %d\n",value);
+    }
+
     if(check_line(board,tempPlayer,2)){
-      value+=250;
+      value+=250;      
+      //printf("Has 2 line value: %d\n",value);
+
     }
     for(int i=0;i<5;i++){
       for(int j=0;j<5;j++){
-        if(board[i][j]==tempPlayer)value+=(5-(abs(i-3)+abs(j-3)))*10;
+        if(board[i][j]==tempPlayer){
+          value += 10 * (3 - max(abs(i - 2), abs(j - 2)));
+        }
       }
     }
+    //printf("Final value: %d\n%d\n",value,tempPlayer);
 
     return value; 
 }
@@ -208,12 +235,13 @@ int defensive_heuristic(int board[5][5],int tempPlayer) {
     }
     for(int i=0;i<5;i++){
       for(int j=0;j<5;j++){
-        if(board[i][j]==tempPlayer)value+=(5-(abs(i-3)+abs(j-3)))*10;
+        if(board[i][j]==tempPlayer)value+=(5-(abs(i-4)+abs(j-4)))*10;
       }
     }
 
     return value; 
 }
+
 int licznik=0;
 state think(int board[5][5], int tempPlayer, int tempDepth,int lastMove){
   licznik++;
@@ -240,35 +268,35 @@ state think(int board[5][5], int tempPlayer, int tempDepth,int lastMove){
       }
     }
     free(moves);
-    printf("najlepsze rozwiazanie o wartosci %d :\n",res.value);
-    for (int i = 0; i < 5; i++) {
-        for (int j = 0; j < 5; j++) {
-            printf("%d",res.board[i][j]);
-        }
-        printf("\n");
-    }
-        printf("\n Last move %d\n",res.move);
+    // printf("najlepsze rozwiazanie o wartosci %d :\n",res.value);
+    // for (int i = 0; i < 5; i++) {
+    //     for (int j = 0; j < 5; j++) {
+    //         printf("%d",res.board[i][j]);
+    //     }
+    //     printf("\n");
+    // }
+    //     printf("\n Last move %d\n",res.move);
 
     return res;
   }else{
-    res.value=9999;
-    for(int i=0;i<count;i++){
-      int temp=think(moves[i].board,switchPlayers(tempPlayer),tempDepth-1,moves[i].move).value;
-      if(temp<=res.value){
-        res.value=temp;
-        res.move=moves[i].move;
-        memcpy(res.board, moves[i].board, sizeof(res.board));
-      }
+  res.value=9999;
+  for(int i=0;i<count;i++){
+    int temp=think(moves[i].board,switchPlayers(tempPlayer),tempDepth-1,moves[i].move).value;
+    if(temp<=res.value){
+      res.value=temp;
+      res.move=moves[i].move;
+      memcpy(res.board, moves[i].board, sizeof(res.board));
     }
-    free(moves);
-    printf("najlepsze rozwiazanie o wartosci %d :\n",res.value);
-    for (int i = 0; i < 5; i++) {
-        for (int j = 0; j < 5; j++) {
-            printf("%d",res.board[i][j]);
-        }
-        printf("\n");
-    }
-    printf("\n Last move %d\n",res.move);
+  }
+  free(moves);
+    // printf("najlepsze rozwiazanie o wartosci %d :\n",res.value);
+    // for (int i = 0; i < 5; i++) {
+    //     for (int j = 0; j < 5; j++) {
+    //         printf("%d",res.board[i][j]);
+    //     }
+    //     printf("\n");
+    // }
+    // printf("\n Last move %d\n",res.move);
     return res;
   }
 }
@@ -326,13 +354,13 @@ int main(int argc, char *argv[]) {
   end_game = false;
   sscanf(argv[3], "%d", &player);
 
-  if (player == 1){
+  //if (player == 1){
     h = aggressive_heuristic;
-    printf("Taking offensive approach\n");
-  }else{
-    h = defensive_heuristic;
-    printf("Taking defensive approach\n");
-}
+  //  printf("Taking offensive approach\n");
+  //}else{
+  //  h = defensive_heuristic;
+  //  printf("Taking defensive approach\n");
+//}
 
   depth = atoi(argv[5]);
   if(depth>10||depth<1)return -1;
