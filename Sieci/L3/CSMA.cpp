@@ -6,6 +6,7 @@
 #include <chrono>
 #include <cstdlib>
 #include <cmath>
+#include <iomanip>
 
 constexpr int MEDIUM_LENGTH = 100;
 constexpr int MAX_TIME = 200000;
@@ -87,7 +88,7 @@ void station_activity(Station& station, std::vector<Packet>& packets, int time) 
         station.transmitting=false;
         station.finished=false;
         station.collision_detected=false;
-        std::cout<<"Kolizja wykrywyta zaraz znowu nadam o "<< station.send_time<<std::endl;
+        //std::cout<<"Kolizja wykrywyta przez stacje "<<station.position<<" zaraz znowu nadam o "<< station.send_time<<std::endl;
     }
     if (station.transmitting) {
         
@@ -101,14 +102,14 @@ void station_activity(Station& station, std::vector<Packet>& packets, int time) 
         } else {
             station.transmitting = false;
             station.finished=true;
-            std::cout<<"Station "<<station.position<<" finished\n";
+            //std::cout<<"Station "<<station.position<<" finished\n";
         }
     }
     
 }
 
 void print_medium(const std::vector<char>& medium, int time) {
-    std::cout << "[" << time << "] ";
+    std::cout << "[" <<std::setw(4)<< time << "] ";
     for (char c : medium) std::cout << c;
     std::cout << "\n";
 }
