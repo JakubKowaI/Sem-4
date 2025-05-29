@@ -17,7 +17,7 @@ struct Node{
 void print_T(Node* root, int depth = 0, char prefix = ' ', string left_trace = "", string right_trace = "");
 
 struct Tree{
-    public:
+public:
 
     void rightRotate(Node* x){
         Node* y = x->left;
@@ -188,7 +188,7 @@ struct Tree{
         free(root);
     }
 
-    private:
+private:
 
     Node* root = nullptr;
 
