@@ -126,7 +126,6 @@ struct Tree{
                         x=x->p;
                         rightRotate(x);
                     }
-                    cout<<x->key<<endl;
                     x->p->color=true;
                     x->p->p->color=false;
                     leftRotate(x->p->p);
@@ -168,7 +167,7 @@ struct Tree{
 
     bool remove(int key){
         cout<<"\nDelete: "<<key<<endl;    
-        if(!removeNode(root,key))return false;
+        if(!removeNode(search(key)))return false;
         print();
         return true;
     }
@@ -180,8 +179,6 @@ struct Tree{
         }else
         return 0;
     }
-
-    
 
     void print(){
         print_T(root);
@@ -195,40 +192,96 @@ struct Tree{
 
     Node* root = nullptr;
 
-    Node* removeNode(Node* n, int x) {
-    if (n == nullptr) return n;
-
-    if (x < n->key) {
-        n->left = removeNode(n->left, x);
-        if (n->left) n->left->p = n;
-    } 
-    else if (x > n->key) {
-        n->right = removeNode(n->right, x);
-        if (n->right) n->right->p = n;
-    }
-    else {
-        if (!n->left) {
-            Node* temp = n->right;
-            if (n == root) root = temp;
-            if (temp) temp->p = n->p;
-            delete n;
-            return temp;
+    Node* removeNode(Node* z) {
+        Node* y;
+        Node* x;
+        if(!z->left||!z->right){
+            y=z;
+        }else{
+            y=getSuccessor(z);
         }
-        else if (!n->right) {
-            Node* temp = n->left;
-            if (n == root) root = temp;
-            if (temp) temp->p = n->p;
-            delete n;
-            return temp;
+        if(!z->left){
+            x=z->left;
+        }else{
+            x=z->right;
         }
-
-        Node* successor = Min(n->right);
-        n->key = successor->key;
-        n->right = removeNode(n->right, successor->key);
-        if (n->right) n->right->p = n;
+        x->p=y->p;
+        if(!y->p){
+            root=x;
+        }else if(y==y->p->left){
+            y->p->left=x;
+        }else{
+            y->p->right=x;
+        }
+        if(y!=z){
+            z->key=y->key;
+            z->p=y->p;
+            z->left=y->left;
+            z->right=y->right;
+        }
+        if(y->color){
+            RBDelFix(x);
+        }
+        return y;
     }
-    return n;
-}
+
+    void RBDelFix(Node* x){
+        Node* w;
+        while(x!=root&&x->color){
+            if(x==x->p->left){
+                w=x->p->right;
+                if(!w->color){
+                    w->color=true;
+                    x->p->color=false;
+                    leftRotate(x->p);
+                    w=x->p->right;
+                }
+                if(w->left->color&&w->right->color){
+                    w->color=false;
+                    x=x->p;
+                }else{
+                    if(w->right->color){
+                        w->left->color=true;
+                        w->color=false;
+                        rightRotate(w);
+                        w=x->p->right;
+                    }
+                    w->color=x->p->color;
+                    x->p->color=true;
+                    w->right->color=true;
+                    leftRotate(x->p);
+                    x=root;
+                    break;
+                }
+            }else{
+                w=x->p->left;
+                if(!w->color){
+                    w->color=true;
+                    x->p->color=false;
+                    rightRotate(x->p);
+                    w=x->p->left;
+                }
+                if(w->right->color&&w->left->color){
+                    w->color=false;
+                    x=x->p;
+                }else{
+                    if(w->left->color){
+                        w->right->color=true;
+                        w->color=false;
+                        leftRotate(w);
+                        w=x->p->left;
+                    }
+                    w->color=x->p->color;
+                    x->p->color=true;
+                    w->left->color=true;
+                    rightRotate(x->p);
+                    x=root;
+                    break;
+                }
+            }
+        }
+    x->color=true;//Moze musi byc w while
+    }
 
     void free(Node* n){
         if(!n)return;
