@@ -15,22 +15,22 @@ int main(){
         std::chrono::steady_clock::now().time_since_epoch().count()
     )    };
 
-    int k=25;
-    for(int i =100;i<=50000;i+=100){
+    int k=20;
+    for(int i =10000;i<=100000;i+=10000){
         for(int j=0;j<k;j++){
             int temp = mt()%i;
-            string gen = "./RandGen.out "+to_string(i)+" > temp.txt";
+            string gen = "./RandGen "+to_string(i)+" > temp.txt";
             const char* gencom = gen.c_str();
             system(gencom);
-            string rndSel = "./RandomSelect.out < temp.txt";
+            string rndSel = "./BST < temp.txt";
             const char* rndcom = rndSel.c_str();
             system(rndcom);
-            string sel = "./Select.out < temp.txt";
+            string sel = "./RBT < temp.txt";
             const char* selcom = sel.c_str();
             system(selcom);
-            // string h = "./MySort.out < temp.txt";
-            // const char* hcom = h.c_str();
-            // system(hcom);
+            string h = "./ST < temp.txt";
+            const char* hcom = h.c_str();
+            system(hcom);
         }
     }
     return 0;

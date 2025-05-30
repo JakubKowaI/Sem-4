@@ -6,27 +6,34 @@
 
 using namespace std;
 
+
+
 struct Node{
     int key;
     Node *left=nullptr;
     Node * right=nullptr;
     Node * p=nullptr;
     bool color=false;//false = czerwony
+
+    Node(int k) : key(k), left(nullptr), right(nullptr), p(nullptr), color(false) {}
+    Node() : key(-1), left(nullptr), right(nullptr), p(nullptr), color(true) {}
 };
 //Declarations
 void print_T(Node* root, int depth = 0, char prefix = ' ', string left_trace = "", string right_trace = "");
 
 struct Tree{
 public:
+    static Node* NIL; // Declare as static
+    Node* root; // Root is per-tree
 
     void rightRotate(Node* x){
         Node* y = x->left;
         x->left=y->right;
-        if(y->right){
+        if(y->right!=NIL){
             y->right->p=x;
         }
         y->p=x->p;
-        if(!x->p){
+        if(x->p==NIL){
             root=y;
         }else if(x==x->p->left){
             x->p->left=y;
@@ -39,12 +46,12 @@ public:
 
     void leftRotate(Node* x){
         Node* y = x->right;
-        x->right=y->left;//null
-        if(y->left){
+        x->right=y->left;
+        if(y->left!=NIL){
             y->left->p=x;
         }
         y->p=x->p;
-        if(!x->p){
+        if(x->p==NIL){
             root=y;
         }else if(x==x->p->left){
             x->p->left=y;
@@ -57,9 +64,9 @@ public:
 
     Node* insert(int key){
         cout<<"\nInserting: "<<key<<endl;
-        Node *y=nullptr;
+        Node *y=NIL;
         Node* x=root;
-        while(x){
+        while(x!=NIL){
             y=x;
             if(key<x->key)
                 x=x->left;
@@ -68,9 +75,12 @@ public:
             else
                 return nullptr;
         }
-        Node* z=new Node{key};
+        Node* z=new Node(key);
+        z->left = NIL;
+        z->right = NIL;
         z->p=y;
-        if(!y){
+        z->color=false;
+        if(y==NIL){
             root=z;
         }else if(z->key<y->key){
             y->left=z;
@@ -82,72 +92,66 @@ public:
     }
 
     void RBinsert(int key){
-        Node* x=insert(key);
+        Node* z=insert(key);
         Node* y;
-        if(!x)return;
+        if(!z)return;
 
-        while(x!=root&&!x->p->color){
-            if (!x->p || !x->p->p) {
-                break;
-            }
+        while(z!=root&&!z->p->color){
+            // if (!x->p || !x->p->p) {
+            //     break;
+            // }
 
-            if(x->p==x->p->p->left){
-                y=x->p->p->right;
+            if(z->p==z->p->p->left){
+                y=z->p->p->right;
                 
-                bool tempcolor=true;
-                if(y)tempcolor=y->color;
-
-                if(!tempcolor){
-                    x->p->color=true;
-                    if(y)y->color=true;
-                    x->p->p->color=false;
-                    x=x->p->p;
+                if(!y->color){
+                    z->p->color=true;
+                    y->color=true;
+                    z->p->p->color=false;
+                    z=z->p->p;
                 }else{
-                    if(x==x->p->right){
-                        x=x->p;
-                        leftRotate(x);
+                    if(z==z->p->right){
+                        z=z->p;
+                        leftRotate(z);
                     }
-                    x->p->color=true;
-                    x->p->p->color=false;
-                    rightRotate(x->p->p);
+                    z->p->color=true;
+                    z->p->p->color=false;
+                    rightRotate(z->p->p);
                 }
             }else{
-                y=x->p->p->left;
-                bool tempcolor=true;
-                if(y)tempcolor=y->color;
+                y=z->p->p->left;
 
-                if(!tempcolor){
-                    x->p->color=true;
-                    if(y)y->color=true;
-                    x->p->p->color=false;
-                    x=x->p->p;
+                if(!y->color){
+                    z->p->color=true;
+                    y->color=true;
+                    z->p->p->color=false;
+                    z=z->p->p;
                 }else{
-                    if(x==x->p->left){
-                        x=x->p;
-                        rightRotate(x);
+                    if(z==z->p->left){
+                        z=z->p;
+                        rightRotate(z);
                     }
-                    x->p->color=true;
-                    x->p->p->color=false;
-                    leftRotate(x->p->p);
+                    z->p->color=true;
+                    z->p->p->color=false;
+                    leftRotate(z->p->p);
                 }
             }
-            root->color=true;
         }
         root->color=true;
         print();
     }
 
     Node* Min(Node* n){
-        if(!n->left)return n;
+        if(n->left==NIL)return n;
         return Min(n->left);
     }
 
     Node* getSuccessor(Node* n){
-        if(n->right){
+        if(n->right!=NIL){
             return Min(n->right);
         }
         Node* y=n->p;
-        while(y&&n==y->right){
+        while(y!=NIL&&n==y->right){
             n=y;
             y=y->p;
         }
@@ -157,7 +161,7 @@ public:
     Node* search(int key) {
         Node* n=root;
         if(n->key==key)return n;
-        while(n){
+        while(n!=NIL){
             if(n->key==key)return n;
             if(key>n->key)n=n->right;
                 else n=n->left;
@@ -166,8 +170,13 @@ public:
     }
 
     bool remove(int key){
-        cout<<"\nDelete: "<<key<<endl;    
-        if(!removeNode(search(key)))return false;
+        cout<<"\nDelete: "<<key<<endl;  
+        Node* forDeletion=search(key);
+        if(!forDeletion){
+            cout<<"Nie ma elementu w drzewie"<<endl;
+            return false;
+        }
+        removeNode(forDeletion);
         print();
         return true;
     }
@@ -184,45 +193,62 @@ public:
         print_T(root);
     }
 
+    Tree(){
+        if (NIL == nullptr) {
+            NIL = new Node();
+            NIL->color = true;
+            NIL->left = NIL;
+            NIL->right = NIL;
+            NIL->p = NIL;
+        }
+        root = NIL;
+    }
+
     ~Tree() {
         free(root);
     }
 
+    void replace(Node* u, Node* v) {
+    if (u->p == NIL) { 
+        root = v;
+    } else if (u == u->p->left) { 
+        u->p->left = v;
+    } else { 
+        u->p->right = v;
+    }
+        v->p = u->p;
+    }
 private:
 
-    Node* root = nullptr;
+    void removeNode(Node* z) {
+        Node* y = z; 
+        Node* x = NIL; 
 
-    Node* removeNode(Node* z) {
-        Node* y;
-        Node* x;
-        if(!z->left||!z->right){
-            y=z;
-        }else{
-            y=getSuccessor(z);
+        if (z->left == NIL || z->right == NIL) {
+            y = z;
+        } else {
+            y = Min(z->right);
         }
-        if(!z->left){
-            x=z->left;
-        }else{
-            x=z->right;
+
+        if (y->left != NIL) {
+            x = y->left;
+        } else {
+            x = y->right;
         }
-        x->p=y->p;
-        if(!y->p){
-            root=x;
-        }else if(y==y->p->left){
-            y->p->left=x;
-        }else{
-            y->p->right=x;
+
+        bool ogYcolor = y->color;
+
+        replace(y, x);
+
+        if (y != z) {
+            z->key = y->key; 
         }
-        if(y!=z){
-            z->key=y->key;
-            z->p=y->p;
-            z->left=y->left;
-            z->right=y->right;
-        }
-        if(y->color){
+
+        delete y;
+
+        if (ogYcolor) {
             RBDelFix(x);
         }
-        return y;
     }
 
     void RBDelFix(Node* x){
@@ -230,16 +256,19 @@ private:
         while(x!=root&&x->color){
             if(x==x->p->left){
                 w=x->p->right;
+
                 if(!w->color){
                     w->color=true;
                     x->p->color=false;
                     leftRotate(x->p);
                     w=x->p->right;
                 }
+                
                 if(w->left->color&&w->right->color){
                     w->color=false;
                     x=x->p;
                 }else{
+                    
                     if(w->right->color){
                         w->left->color=true;
                         w->color=false;
@@ -251,16 +280,17 @@ private:
                     w->right->color=true;
                     leftRotate(x->p);
                     x=root;
-                    break;
                 }
             }else{
                 w=x->p->left;
+                
                 if(!w->color){
                     w->color=true;
                     x->p->color=false;
                     rightRotate(x->p);
                     w=x->p->left;
                 }
+
                 if(w->right->color&&w->left->color){
                     w->color=false;
                     x=x->p;
@@ -271,12 +301,12 @@ private:
                         leftRotate(w);
                         w=x->p->left;
                     }
+
                     w->color=x->p->color;
                     x->p->color=true;
                     w->left->color=true;
                     rightRotate(x->p);
                     x=root;
-                    break;
                 }
             }
         }
@@ -284,12 +314,14 @@ private:
     }
 
     void free(Node* n){
-        if(!n)return;
+        if(n==NIL)return;
         free(n->left);
         free(n->right);
         delete n;
     }
 };
+
+Node* Tree::NIL = nullptr;
 
 void appendResultToCSV(const std::string& algorithm, int array_size, int comparisons, int swaps,long long time, const std::string& filename) {
     std::ofstream file(filename, std::ios::app);
@@ -309,12 +341,12 @@ void appendResultToCSV(const std::string& algorithm, int array_size, int compari
 }
 
 void print_T(Node* root, int depth , char prefix , string left_trace , string right_trace ) {
-    if (!root) return;
+    if (root==Tree::NIL) return;
 
     left_trace.resize(depth + 1, ' ');
     right_trace.resize(depth + 1, ' ');
 
-    if (root->left) {
+    if (root->left!=Tree::NIL) {
         right_trace[depth] = ' ';
         print_T(root->left, depth + 1, '/', left_trace, right_trace);
     }
@@ -340,7 +372,7 @@ void print_T(Node* root, int depth , char prefix , string left_trace , string ri
     if(root->color)cout << "[\033[30m" << root->key << "\033[0m]\n";
     if(!root->color)cout << "[\033[31m" << root->key << "\033[0m]\n";
 
-    if (root->right) {
+    if (root->right!=Tree::NIL) {
         left_trace[depth] = '|';
         print_T(root->right, depth + 1, '\\', left_trace, right_trace);
     }
