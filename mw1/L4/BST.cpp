@@ -3,8 +3,26 @@
 #include <string>
 #include <chrono>
 #include <random>
+#include <vector>
+#include <algorithm>
 
 using namespace std;
+
+int comparisons = 0;
+int pointer_reads = 0;
+int pointer_assignments = 0;
+
+mt19937 mt{
+    static_cast<std::mt19937::result_type>(
+        std::chrono::steady_clock::now().time_since_epoch().count()
+    )    
+};
+
+void reset_counters() {
+    comparisons = 0;
+    pointer_reads = 0;
+    pointer_assignments = 0;
+}
 
 struct Node{
     int key;
@@ -12,44 +30,32 @@ struct Node{
     Node * right=nullptr;
     Node * p=nullptr;
 };
+
+void appendResultToCSV(const std::string& algorithm, const std::string& operation, string n, int comparisons, int pointer_reads,int pointer_assignments,int height, long long time_microsec, const std::string& filename="results.csv") {
+    std::ifstream checkFile(filename);
+    bool isEmpty = checkFile.peek() == std::ifstream::traits_type::eof();
+    checkFile.close();
+
+    std::ofstream file(filename, std::ios::app);
+    if (!file.is_open()) {
+        std::cerr << "Error opening file!" << std::endl;
+        return;
+    }
+
+    if (isEmpty) {
+        file << "Algorithm,Operation,n,Comparisons,Pointer reads,Pointer swaps,Height,Time (microsec)\n";
+    }
+
+    file << algorithm << "," << operation << "," << n << "," << comparisons << "," << pointer_reads<<","<<pointer_assignments<<","<<height << "," << time_microsec << "\n";
+    file.close();
+    reset_counters();
+}
+
 //Declarations
 void print_BST(Node* root, int depth = 0, char prefix = ' ', string left_trace = "", string right_trace = "");
 
 struct Tree{
     public:
-
-    // bool insert(int key) {
-    //     cout<<"\nInsert: "<<key<<endl;
-    //     if (!root) {
-    //         root = new Node{key};
-    //         print();
-    //         return true;
-    //     }
-        
-    //     Node* current = root;
-    //     while (true) {
-    //         if (key < current->key) {
-    //             if (!current->left) {
-    //                 current->left = new Node{key,nullptr,nullptr,current};
-    //                 break;
-    //             }
-    //             current = current->left;
-    //         } 
-    //         else if (key > current->key) {
-    //             if (!current->right) {
-    //                 current->right = new Node{key,nullptr,nullptr,current};
-    //                 break;
-    //             }
-    //             current = current->right;
-    //         } 
-    //         else {
-    //             return false;
-    //         }
-    //     }
-        
-    //     print();
-    //     return true;
-    // }
 
     void insert(int key){
         cout<<"\nInserting: "<<key<<endl;
@@ -106,19 +112,15 @@ struct Tree{
 
     bool remove(int key){
         cout<<"\nDelete: "<<key<<endl;    
-        if(!removeNode(root,key))return false;
+        Node* node_to_delete = search(key);
+        if (!node_to_delete) {
+            cout << "Node " << key << " not found." << endl;
+            return false;
+        }
+        root = removeNode(root, key);
         print();
         return true;
     }
-
-    // bool remove(int key){
-    //     cout<<"\nDelete: "<<key<<endl;   
-    //     Node* temp = search(key); 
-    //     if(!temp)return false;
-    //     if(!removeNode(temp))return false;
-    //     print();
-    //     return true;
-    // }
 
     int height() const {
         return height(root);
@@ -143,7 +145,7 @@ struct Tree{
     }
 
     Node* removeNode(Node* n, int x) {
-    if (n == nullptr) return n;
+    if (n == nullptr) return nullptr;
 
     if (x < n->key) {
         n->left = removeNode(n->left, x);
@@ -156,58 +158,28 @@ struct Tree{
     else {
         if (!n->left) {
             Node* temp = n->right;
-            if (n == root) root = temp;
-            if (temp) temp->p = n->p;
+            // if (n == root) root = temp;
+            // if (temp) temp->p = n->p;
             delete n;
             return temp;
         }
         else if (!n->right) {
             Node* temp = n->left;
-            if (n == root) root = temp;
-            if (temp) temp->p = n->p;
+            // if (n == root) root = temp;
+            // if (temp) temp->p = n->p;
             delete n;
             return temp;
+        }else{
+            Node* successor = Min(n->right);
+            n->key = successor->key;
+            n->right = removeNode(n->right, successor->key);
+            if (n->right) n->right->p = n;
         }
 
-        Node* successor = Min(n->right);
-        n->key = successor->key;
-        n->right = removeNode(n->right, successor->key);
-        if (n->right) n->right->p = n;
+        
     }
     return n;
 }
-
-    // Node* removeNode(Node* n){
-    //     Node* y;
-    //     Node* x;
-    //     if(!n->left||!n->right){
-    //         y=n;
-    //     }else{
-    //         y=getSuccessor(n);
-    //     }
-    //     if(y->left){
-    //         x=y->left;  
-    //     }else{
-    //         x=y->right;
-    //     }
-    //     if(x){
-    //         x->p=y->p;
-    //     }
-    //     if(!y->p){
-    //         root=x;
-    //     }else if(y=y->p->left){
-    //         y->p->left=x;
-    //     }else{
-    //         y->p->right=x;
-    //     }
-    //     if(y!=n){
-    //         n->key=y->key;
-    //         n->p=y->p;
-    //         n->right=y->right;
-    //         n->left=y->left;
-    //     }
-    //     return y;
-    // }
 
     void free(Node* n){
         if(!n)return;
@@ -216,23 +188,6 @@ struct Tree{
         delete n;
     }
 };
-
-void appendResultToCSV(const std::string& algorithm, int array_size, int comparisons, int swaps,long long time, const std::string& filename) {
-    std::ofstream file(filename, std::ios::app);
-    if (!file.is_open()) {
-        std::cerr << "Error opening file!" << std::endl;
-        return;
-    }
-
-    std::ifstream checkFile(filename);
-    if (checkFile.peek() == std::ifstream::traits_type::eof()) {
-        file << "Algorithm,Array Size,Comparisons,Swaps,Time (microsec)\n";
-    }
-    
-    file << algorithm << "," << array_size << "," << comparisons << "," << swaps << "," << time<< "\n";
-    file.flush();
-    file.close();
-}
 
 void print_BST(Node* root, int depth , char prefix , string left_trace , string right_trace ) {
     if (!root) return;
@@ -271,43 +226,46 @@ void print_BST(Node* root, int depth , char prefix , string left_trace , string 
     }
 }
 
-string Mix(string A){
-    mt19937 mt{
-        static_cast<std::mt19937::result_type>(
-            std::chrono::steady_clock::now().time_since_epoch().count()
-        )    };
+// vector<int> Mix(vector<int> A){
+//     vector<int> B = A;
+//     shuffle(B.begin(), B.end(), mt);
+    
+//     return B;
+// }
 
-    string B="";
-    B.resize(A.size(),' ');
-    for(int i=0;i<A.size();i++){
-        int temp = mt()%A.size();
-        while(B[temp]!=' '){
-            temp = mt()%A.size();
-        }
-        B[temp]=A[i];
-    }
-    return B;
-}
-int main(){
+int main(int argc,char* argv[]){
 string line;
-    Tree BSTtree;
-    string A="";
+    Tree BSTree;
+    vector<int> A;
+    if(argc!=2){
+        cout<<"Zla liczba argumentow\n";
+        return 0;
+    }
+    string n =argv[1];
     try{
-        int i=0;
         while(getline(cin, line)){
-            A.resize(i+1);
             int temp=stoi(line);
-            A[i]=temp;
-            BSTtree.insert(temp);
-            i++;
+            A.push_back(temp);
+            auto start = chrono::high_resolution_clock::now();
+            BSTree.insert(temp);
+            auto end = chrono::high_resolution_clock::now();
+            long long duration = chrono::duration_cast<chrono::microseconds>(end - start).count();
+
+            appendResultToCSV("BST", "insert",n, comparisons, pointer_reads,pointer_assignments, BSTree.height(), duration, "results.csv");
         }
     }catch (const exception& e) {
         cout << "Error: " << e.what() << endl;
         return -1;
     }
-    string B=Mix(A);
-    for(int i=0;i<B.size();i++){
-        int temp =(int)B[i];
-        BSTtree.remove(temp);
+
+    shuffle(A.begin(),A.end(),mt);
+
+    for(int i : A){
+        auto start = chrono::high_resolution_clock::now();
+        BSTree.remove(i);
+        auto end = chrono::high_resolution_clock::now();
+        long long duration = chrono::duration_cast<chrono::microseconds>(end - start).count();
+
+        appendResultToCSV("BST", "remove",n, comparisons, pointer_reads,pointer_assignments, BSTree.height(), duration, "results.csv");
     }
 }

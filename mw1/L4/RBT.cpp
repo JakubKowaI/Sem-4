@@ -3,9 +3,46 @@
 #include <string>
 #include <chrono>
 #include <random>
+#include <vector>
+#include <algorithm>
 
 using namespace std;
 
+int comparisons = 0;
+int pointer_reads = 0;
+int pointer_assignments = 0;
+
+mt19937 mt{
+    static_cast<std::mt19937::result_type>(
+        std::chrono::steady_clock::now().time_since_epoch().count()
+    )    
+};
+
+void reset_counters() {
+    comparisons = 0;
+    pointer_reads = 0;
+    pointer_assignments = 0;
+}
+
+void appendResultToCSV(const std::string& algorithm, const std::string& operation, string n, int comparisons, int pointer_reads,int pointer_assignments,int height, long long time_microsec, const std::string& filename="results.csv") {
+    std::ifstream checkFile(filename);
+    bool isEmpty = checkFile.peek() == std::ifstream::traits_type::eof();
+    checkFile.close();
+
+    std::ofstream file(filename, std::ios::app);
+    if (!file.is_open()) {
+        std::cerr << "Error opening file!" << std::endl;
+        return;
+    }
+
+    if (isEmpty) {
+        file << "Algorithm,Operation,n,Comparisons,Pointer reads,Pointer swaps,Height,Time (microsec)\n";
+    }
+
+    file << algorithm << "," << operation << "," << n << "," << comparisons << "," << pointer_reads<<","<<pointer_assignments<<","<<height << "," << time_microsec << "\n";
+    file.close();
+    reset_counters();
+}
 
 
 struct Node{
@@ -181,12 +218,8 @@ public:
         return true;
     }
 
-    int height(Node* n) {
-        if(n->right){
-            if(n->right->color)return 1 + height(n->right);
-            else return height(n->right);
-        }else
-        return 0;
+    int height() {
+        return  height(root);
     }
 
     void print(){
@@ -219,6 +252,14 @@ public:
         v->p = u->p;
     }
 private:
+
+    int height(Node* n) {
+        if(n->right!=NIL){
+            if(n->right->color)return 1 + height(n->right);
+            else return height(n->right);
+        }else
+        return 0;
+    }
 
     void removeNode(Node* z) {
         Node* y = z; 
@@ -323,23 +364,6 @@ private:
 
 Node* Tree::NIL = nullptr;
 
-void appendResultToCSV(const std::string& algorithm, int array_size, int comparisons, int swaps,long long time, const std::string& filename) {
-    std::ofstream file(filename, std::ios::app);
-    if (!file.is_open()) {
-        std::cerr << "Error opening file!" << std::endl;
-        return;
-    }
-
-    std::ifstream checkFile(filename);
-    if (checkFile.peek() == std::ifstream::traits_type::eof()) {
-        file << "Algorithm,Array Size,Comparisons,Swaps,Time (microsec)\n";
-    }
-    
-    file << algorithm << "," << array_size << "," << comparisons << "," << swaps << "," << time<< "\n";
-    file.flush();
-    file.close();
-}
-
 void print_T(Node* root, int depth , char prefix , string left_trace , string right_trace ) {
     if (root==Tree::NIL) return;
 
@@ -395,26 +419,39 @@ string Mix(string A){
     }
     return B;
 }
-int main(){
+int main(int argc, char* argv[]){
 string line;
-    Tree RBTtree;
-    string A="";
+    Tree RBTree;
+    vector<int> A;
+    if(argc!=2){
+        cout<<"Zla liczba argumentow\n";
+        return 0;
+    }
+    string n =argv[1];
     try{
-        int i=0;
         while(getline(cin, line)){
-            A.resize(i+1);
             int temp=stoi(line);
-            A[i]=temp;
-            RBTtree.RBinsert(temp);
-            i++;
+            A.push_back(temp);
+            auto start = chrono::high_resolution_clock::now();
+            RBTree.insert(temp);
+            auto end = chrono::high_resolution_clock::now();
+            long long duration = chrono::duration_cast<chrono::microseconds>(end - start).count();
+
+            appendResultToCSV("BST", "insert",n, comparisons, pointer_reads,pointer_assignments, RBTree.height(), duration, "results.csv");
         }
     }catch (const exception& e) {
         cout << "Error: " << e.what() << endl;
         return -1;
     }
-    string B=Mix(A);
-    for(int i=0;i<B.size();i++){
-        int temp =(int)B[i];
-        RBTtree.remove(temp);
+
+    shuffle(A.begin(),A.end(),mt);
+
+    for(int i : A){
+        auto start = chrono::high_resolution_clock::now();
+        RBTree.remove(i);
+        auto end = chrono::high_resolution_clock::now();
+        long long duration = chrono::duration_cast<chrono::microseconds>(end - start).count();
+
+        appendResultToCSV("BST", "remove",n, comparisons, pointer_reads,pointer_assignments, RBTree.height(), duration, "results.csv");
     }
 }
