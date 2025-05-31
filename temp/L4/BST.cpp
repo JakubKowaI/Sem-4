@@ -58,108 +58,67 @@ struct Tree{
     public:
 
     void insert(int key){
-        //cout<<"\nInserting: "<<key<<endl;
-        Node *y = nullptr;
-        Node* x = root;
-        while (x) {
-            pointer_reads++;          
-            y = x;
-            comparisons++;
-            pointer_reads++;          
-            if (key < x->key) {
-                pointer_reads++;      
-                x = x->left;
-                pointer_assignments++;
-            } else if (key > x->key) {
-                pointer_reads++;      
-                x = x->right;
-                pointer_assignments++;
-            } else {
-                comparisons++;
+        cout<<"\nInserting: "<<key<<endl;
+        Node *y=nullptr;
+        Node* x=root;
+        while(x){
+            y=x;
+            if(key<x->key)
+                x=x->left;
+            else if(key>x->key)
+                x=x->right;
+            else
                 return;
-            }
         }
-
-        Node* z = new Node{key};
-        pointer_assignments++;
-        z->p = y;
-
-        comparisons++;
-        if (!y) {
-            root = z;
-            pointer_assignments++;
-        } else {
-            pointer_reads++;          
-            comparisons++;
-            if (z->key < y->key) {
-                pointer_assignments++;
-                y->left = z;
-            } else {
-                pointer_assignments++;
-                y->right = z;
-            }
+        Node* z=new Node{key};
+        z->p=y;
+        if(!y){
+            root=z;
+        }else if(z->key<y->key){
+            y->left=z;
+        }else{
+            y->right=z;
         }
-        pointer_assignments++;
-        //print();
+        print();
     }
 
     Node* Min(Node* n){
-        pointer_reads++;
-        comparisons++;
         if(!n->left)return n;
         return Min(n->left);
     }
 
     Node* getSuccessor(Node* n){
-        pointer_reads++;
-        comparisons++;
-        if (n->right) {
-            pointer_reads++;
+        if(n->right){
             return Min(n->right);
         }
-        Node* y = n->p;
-        pointer_assignments++;
-        pointer_reads++;
-        while (y && n == y->right) {
-            comparisons++;
-            pointer_reads++;
-            n = y;
-            pointer_assignments++;
-            y = y->p;
-            pointer_assignments++;
+        Node* y=n->p;
+        while(y&&n==y->right){
+            n=y;
+            y=y->p;
         }
         return y;
     }
 
     Node* search(int key) {
-        Node* n = root;
-        pointer_reads++;
-        while (n) {
-            pointer_reads++; 
-            comparisons++;
-            if (n->key == key) return n;
-            comparisons++;
-            if (key > n->key) {
-                pointer_reads++;
-                n = n->right;
-            } else {
-                pointer_reads++;
-                n = n->left;
-            }
-            pointer_assignments++;
+        Node* n=root;
+        if(n->key==key)return n;
+        while(n){
+            if(n->key==key)return n;
+            if(key>n->key)n=n->right;
+                else n=n->left;
         }
         return nullptr;
     }
 
     bool remove(int key){
-        //cout<<"\nDelete: "<<key<<endl;    
+        cout<<"\nDelete: "<<key<<endl;    
         Node* node_to_delete = search(key);
         if (!node_to_delete) {
             cout << "Node " << key << " not found." << endl;
             return false;
         }
         root = removeNode(root, key);
-        //print();
+        print();
         return true;
     }
 
@@ -186,55 +145,41 @@ struct Tree{
     }
 
     Node* removeNode(Node* n, int x) {
-        if (n == nullptr) return nullptr;
-        pointer_reads++;
-        comparisons++;
-        if (x < n->key) {
-            pointer_reads++;
-            n->left = removeNode(n->left, x);
-            pointer_assignments++;
-            if (n->left) {
-                pointer_reads++;
-                pointer_assignments++;
-                n->left->p = n;
-            }
-        } else if (x > n->key) {
-            pointer_reads++;
-            n->right = removeNode(n->right, x);
-            pointer_assignments++;
-            if (n->right) {
-                pointer_reads++;
-                pointer_assignments++;
-                n->right->p = n;
-            }
-        } else {
-            comparisons++;
-            if (!n->left) {
-                pointer_reads++;
-                Node* temp = n->right;
-                delete n;
-                return temp;
-            } else if (!n->right) {
-                pointer_reads++;
-                Node* temp = n->left;
-                delete n;
-                return temp;
-            } else {
-                Node* successor = Min(n->right);
-                pointer_reads++;
-                pointer_assignments++;
-                n->key = successor->key;
-                n->right = removeNode(n->right, successor->key);
-                pointer_assignments++;
-                if (n->right) {
-                    pointer_reads++;
-                    pointer_assignments++;
-                    n->right->p = n;
-                }
-            }
-        }
-        return n;
+    if (n == nullptr) return nullptr;
+
+    if (x < n->key) {
+        n->left = removeNode(n->left, x);
+        if (n->left) n->left->p = n;
+    } 
+    else if (x > n->key) {
+        n->right = removeNode(n->right, x);
+        if (n->right) n->right->p = n;
     }
+    else {
+        if (!n->left) {
+            Node* temp = n->right;
+            // if (n == root) root = temp;
+            // if (temp) temp->p = n->p;
+            delete n;
+            return temp;
+        }
+        else if (!n->right) {
+            Node* temp = n->left;
+            // if (n == root) root = temp;
+            // if (temp) temp->p = n->p;
+            delete n;
+            return temp;
+        }else{
+            Node* successor = Min(n->right);
+            n->key = successor->key;
+            n->right = removeNode(n->right, successor->key);
+            if (n->right) n->right->p = n;
+        }
+
+        
+    }
+    return n;
+}
 
     void free(Node* n){
         if(!n)return;
@@ -292,11 +237,11 @@ int main(int argc,char* argv[]){
 string line;
     Tree BSTree;
     vector<int> A;
-    if(argc!=2){
-        cout<<"Zla liczba argumentow\n";
-        return 0;
-    }
-    string n =argv[1];
+    // if(argc!=2){
+    //     cout<<"Zla liczba argumentow\n";
+    //     return 0;
+    // }
+    // string n =argv[1];
     try{
         while(getline(cin, line)){
             int temp=stoi(line);

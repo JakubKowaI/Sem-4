@@ -19,3 +19,9 @@ make
 ./IncGen 30 | ./ST
 
 ./RandGen 30 | ./ST
+
+tmux capture-pane -p -S'-' -E'-' -J > log.txt   
+
+ST - wysokosc w remove
+ST - podstawienia w inser inc
+RBT - wysokosc

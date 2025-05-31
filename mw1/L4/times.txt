@@ -1,0 +1,11 @@
+time ./IncTest 
+
+real	446m6.403s
+user	1051m44.265s
+sys	9m35.899s
+
+time ./RandTest 
+
+real	362m26.482s
+user	686m2.305s
+sys	8m26.624s

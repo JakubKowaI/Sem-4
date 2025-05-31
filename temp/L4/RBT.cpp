@@ -65,271 +65,156 @@ public:
 
     void rightRotate(Node* x){
         Node* y = x->left;
-        pointer_reads++;
-        pointer_assignments++;
-
         x->left=y->right;
-        pointer_reads++;
-        pointer_reads++;
-        pointer_assignments++;
-
         if(y->right!=NIL){
-            pointer_reads++;
             y->right->p=x;
-            pointer_reads++;
-            pointer_assignments++;
         }
-
         y->p=x->p;
-        pointer_reads++;
-        pointer_assignments++;
-
         if(x->p==NIL){
-            pointer_reads++;
             root=y;
-            pointer_assignments++;
         }else if(x==x->p->left){
-            pointer_reads += 2;
             x->p->left=y;
-            pointer_assignments++;
         }else{
-            pointer_reads += 2;
             x->p->right=y;
-            pointer_assignments++;
         }
-
         y->right=x;
-        pointer_assignments++;
-
         x->p=y;
-        pointer_assignments++;
     }
 
     void leftRotate(Node* x){
         Node* y = x->right;
-        pointer_reads++;
-        pointer_assignments++;
-
-        x->right = y->left;
-        pointer_reads++;
-        pointer_reads++;
-        pointer_assignments++;
-
-        if (y->left != NIL) {
-            pointer_reads++;
-            y->left->p = x;
-            pointer_reads++;
-            pointer_assignments++;
+        x->right=y->left;
+        if(y->left!=NIL){
+            y->left->p=x;
         }
-
-        y->p = x->p;
-        pointer_reads++;
-        pointer_assignments++;
-
-        if (x->p == NIL) {
-            pointer_reads++;
-            root = y;
-            pointer_assignments++;
-        } else if (x == x->p->left) {
-            pointer_reads += 2;
-            x->p->left = y;
-            pointer_assignments++;
-        } else {
-            pointer_reads += 2;
-            x->p->right = y;
-            pointer_assignments++;
+        y->p=x->p;
+        if(x->p==NIL){
+            root=y;
+        }else if(x==x->p->left){
+            x->p->left=y;
+        }else{
+            x->p->right=y;
         }
-
-        y->left = x;
-        pointer_assignments++;
-
-        x->p = y;
-        pointer_assignments++;
+        y->left=x;
+        x->p=y;
     }
 
     Node* insert(int key){
-        //cout<<"\nInserting: "<<key<<endl;
+        cout<<"\nInserting: "<<key<<endl;
         Node *y=NIL;
         Node* x=root;
-        while (x != NIL) {
-            pointer_reads++; 
-            y = x;
-            pointer_assignments++;
-
-            comparisons++;
-            pointer_reads++; 
-            if (key < x->key) {
-                x = x->left;
-                pointer_reads++;
-                pointer_assignments++;
-            } else if (key > x->key) {
-                comparisons++;
-                pointer_reads++;
-                x = x->right;
-                pointer_reads++;
-                pointer_assignments++;
-            } else {
-                comparisons++;
+        while(x!=NIL){
+            y=x;
+            if(key<x->key)
+                x=x->left;
+            else if(key>x->key)
+                x=x->right;
+            else
                 return nullptr;
-            }
         }
-
         Node* z=new Node(key);
         z->left = NIL;
         z->right = NIL;
         z->p=y;
         z->color=false;
-        pointer_assignments+=3;
         if(y==NIL){
             root=z;
-            comparisons++;
         }else if(z->key<y->key){
-            pointer_reads+=2;
             y->left=z;
-            comparisons+=2;
         }else{
             y->right=z;
-            comparisons+=2;
         }
-        pointer_assignments++;
 
         return z;
     }
 
     void RBinsert(int key){
         Node* z=insert(key);
-        pointer_assignments++;
         Node* y;
         if(!z)return;
 
         while(z!=root&&!z->p->color){
-            comparisons+=2;
-            pointer_reads+=2;
+            // if (!x->p || !x->p->p) {
+            //     break;
+            // }
+
             if(z->p==z->p->p->left){
-                pointer_reads+=3;
                 y=z->p->p->right;
-                pointer_assignments++;
-                pointer_reads++;
+                
                 if(!y->color){
                     z->p->color=true;
                     y->color=true;
                     z->p->p->color=false;
                     z=z->p->p;
-                    pointer_assignments+=3;
-                    pointer_reads+=4;
                 }else{
                     if(z==z->p->right){
-                        comparisons++;
                         z=z->p;
-                        pointer_reads+=2;
-                        pointer_assignments++;
                         leftRotate(z);
                     }
                     z->p->color=true;
                     z->p->p->color=false;
-                    pointer_reads+=2;
-                    pointer_assignments+=2;
                     rightRotate(z->p->p);
                 }
             }else{
-                pointer_reads+=3;
                 y=z->p->p->left;
-                pointer_assignments++;
-                pointer_reads++;
+
                 if(!y->color){
                     z->p->color=true;
                     y->color=true;
                     z->p->p->color=false;
                     z=z->p->p;
-                    pointer_assignments+=3;
-                    pointer_reads+=4;
                 }else{
                     if(z==z->p->left){
-                        comparisons++;
                         z=z->p;
-                        pointer_reads+=2;
-                        pointer_assignments++;
                         rightRotate(z);
                     }
                     z->p->color=true;
                     z->p->p->color=false;
-                    pointer_reads+=2;
-                    pointer_assignments+=2;
                     leftRotate(z->p->p);
                 }
             }
         }
         root->color=true;
-        //print();
+        print();
     }
 
     Node* Min(Node* n){
-        pointer_reads++;
-        comparisons++;
         if(n->left==NIL)return n;
         return Min(n->left);
     }
 
     Node* getSuccessor(Node* n){
-        pointer_reads++;
-        comparisons++;
         if(n->right!=NIL){
-            pointer_reads++;
             return Min(n->right);
         }
         Node* y=n->p;
-        pointer_assignments++;
-        pointer_reads++;
         while(y!=NIL&&n==y->right){
-            comparisons++;
-            pointer_reads++;
-            n = y;
-            pointer_assignments++;
-            y = y->p;
-            pointer_assignments++;
+            n=y;
+            y=y->p;
         }
         return y;
     }
 
     Node* search(int key) {
-        Node* n = root;
-        pointer_reads++;
-        if (n->key == key) {
-            comparisons++;
-            return n;
-        }
-
-        while (n != NIL) {
-            pointer_reads++; 
-            comparisons++;
-            pointer_reads++; 
-            if (n->key == key) {
-                return n;
-            }
-            comparisons++;
-            pointer_reads++; 
-            if (key > n->key) {
-                n = n->right;
-                pointer_reads++;
-                pointer_assignments++;
-            } else {
-                n = n->left;
-                pointer_reads++;
-                pointer_assignments++;
-            }
+        Node* n=root;
+        if(n->key==key)return n;
+        while(n!=NIL){
+            if(n->key==key)return n;
+            if(key>n->key)n=n->right;
+                else n=n->left;
         }
         return nullptr;
     }
 
     bool remove(int key){
-        //cout<<"\nDelete: "<<key<<endl;  
+        cout<<"\nDelete: "<<key<<endl;  
         Node* forDeletion=search(key);
         if(!forDeletion){
-            //cout<<"Nie ma elementu w drzewie"<<endl;
+            cout<<"Nie ma elementu w drzewie"<<endl;
             return false;
         }
         removeNode(forDeletion);
-        //print();
+        print();
         return true;
     }
 
@@ -357,169 +242,114 @@ public:
     }
 
     void replace(Node* u, Node* v) {
-        if (u->p == NIL) {
-            pointer_reads++;
-            root = v;
-            pointer_assignments++;
-        } else if (u == u->p->left) {
-            pointer_reads += 2;
-            u->p->left = v;
-            pointer_assignments++;
-        } else {
-            pointer_reads += 2;
-            u->p->right = v;
-            pointer_assignments++;
-        }
-
-        v->p = u->p;
-        pointer_assignments++;
+    if (u->p == NIL) { 
+        root = v;
+    } else if (u == u->p->left) { 
+        u->p->left = v;
+    } else { 
+        u->p->right = v;
     }
-
+        v->p = u->p;
+    }
 private:
 
     int height(Node* n) {
-        comparisons++;
-        if (n->right != NIL) {
-            pointer_reads++;
-            if (n->right->color) {
-                pointer_reads++;
-                return 1 + height(n->right);
-            } else {
-                return height(n->right);
-            }
-        } else {
-            return 0;
-        }
+        if(n->right!=NIL){
+            if(n->right->color)return 1 + height(n->right);
+            else return height(n->right);
+        }else
+        return 0;
     }
 
     void removeNode(Node* z) {
         Node* y = z; 
         Node* x = NIL; 
-        pointer_assignments++;
+
         if (z->left == NIL || z->right == NIL) {
             y = z;
         } else {
             y = Min(z->right);
         }
-        comparisons+=2;
-        pointer_reads+=2;
-        pointer_assignments++;
 
         if (y->left != NIL) {
             x = y->left;
         } else {
             x = y->right;
         }
-        comparisons++;
-        pointer_reads+=2;
-        pointer_assignments++;
 
         bool ogYcolor = y->color;
-        pointer_reads++;
 
         replace(y, x);
 
         if (y != z) {
             z->key = y->key; 
-            pointer_reads++;
-            pointer_assignments++;
         }
-        comparisons++;
-        pointer_reads++;
 
         delete y;
 
         if (ogYcolor) {
             RBDelFix(x);
         }
-        comparisons++;
     }
 
     void RBDelFix(Node* x){
         Node* w;
         while(x!=root&&x->color){
-            comparisons++;
-            pointer_reads+=2;
             if(x==x->p->left){
                 w=x->p->right;
-                pointer_reads+=2;
-                pointer_assignments++;
 
                 if(!w->color){
                     w->color=true;
                     x->p->color=false;
                     leftRotate(x->p);
                     w=x->p->right;
-                    pointer_assignments+=3;
-                    pointer_reads+=4;
                 }
-                comparisons++;
                 
                 if(w->left->color&&w->right->color){
                     w->color=false;
                     x=x->p;
-                    pointer_assignments+=2;
-                    pointer_reads+=3;
                 }else{
+                    
                     if(w->right->color){
                         w->left->color=true;
                         w->color=false;
                         rightRotate(w);
                         w=x->p->right;
-                        pointer_assignments+=3;
-                        pointer_reads+=4;
                     }
-                    comparisons++;
                     w->color=x->p->color;
                     x->p->color=true;
                     w->right->color=true;
                     leftRotate(x->p);
                     x=root;
-                    pointer_assignments+=4;
-                    pointer_reads+=3;
                 }
-                comparisons++;
             }else{
                 w=x->p->left;
-                pointer_reads+=2;
-                pointer_assignments++;
+                
                 if(!w->color){
                     w->color=true;
                     x->p->color=false;
                     rightRotate(x->p);
                     w=x->p->left;
-                    pointer_assignments+=3;
-                    pointer_reads+=4;
                 }
-                comparisons++;
 
                 if(w->right->color&&w->left->color){
                     w->color=false;
                     x=x->p;
-                    pointer_assignments+=2;
-                    pointer_reads+=3;
                 }else{
                     if(w->left->color){
                         w->right->color=true;
                         w->color=false;
                         leftRotate(w);
                         w=x->p->left;
-                        pointer_assignments+=3;
-                        pointer_reads+=4;
                     }
-                    comparisons++;
 
                     w->color=x->p->color;
                     x->p->color=true;
                     w->left->color=true;
                     rightRotate(x->p);
                     x=root;
-                    pointer_assignments+=4;
-                    pointer_reads+=3;
                 }
-                comparisons++;
             }
-            comparisons++;
         }
     x->color=true;//Moze musi byc w while
     }
@@ -594,11 +424,11 @@ int main(int argc, char* argv[]){
 string line;
     Tree RBTree;
     vector<int> A;
-    if(argc!=2){
-        cout<<"Zla liczba argumentow\n";
-        return 0;
-    }
-    string n =argv[1];
+    // if(argc!=2){
+    //     cout<<"Zla liczba argumentow\n";
+    //     return 0;
+    // }
+    // string n =argv[1];
     try{
         while(getline(cin, line)){
             int temp=stoi(line);
@@ -608,7 +438,7 @@ string line;
             auto end = chrono::high_resolution_clock::now();
             long long duration = chrono::duration_cast<chrono::microseconds>(end - start).count();
 
-            //appendResultToCSV("RBT", "insert",n, comparisons, pointer_reads,pointer_assignments, RBTree.height(), duration, "results.csv");
+            //appendResultToCSV("BST", "insert",n, comparisons, pointer_reads,pointer_assignments, RBTree.height(), duration, "results.csv");
         }
     }catch (const exception& e) {
         cout << "Error: " << e.what() << endl;
@@ -623,6 +453,6 @@ string line;
         auto end = chrono::high_resolution_clock::now();
         long long duration = chrono::duration_cast<chrono::microseconds>(end - start).count();
 
-        //appendResultToCSV("RBT", "remove",n, comparisons, pointer_reads,pointer_assignments, RBTree.height(), duration, "results.csv");
+        //appendResultToCSV("BST", "remove",n, comparisons, pointer_reads,pointer_assignments, RBTree.height(), duration, "results.csv");
     }
 }
