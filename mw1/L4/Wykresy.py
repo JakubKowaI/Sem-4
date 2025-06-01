@@ -37,13 +37,30 @@ def plot_metric(df, scenario, metric, label):
     means = df.groupby(["n", "Algorithm", "Operation"]).mean(numeric_only=True).reset_index()
 
     algos_ops = sorted(means[["Algorithm", "Operation"]].drop_duplicates().itertuples(index=False, name=None))
-    styles = get_styles(algos_ops)
+    #styles = get_styles(algos_ops)
 
     for algo, op in algos_ops:
         subset = means[(means["Algorithm"] == algo) & (means["Operation"] == op)]
         if subset.empty:
             continue
-        color, marker, linestyle = styles[(algo, op)]
+        #color, marker, linestyle = styles[(algo, op)]
+        if algo == "BST":
+            color='tab:green'
+            linestyle='-.'
+        elif algo == "RBT":
+            color = 'tab:red'
+            linestyle='--'
+        elif algo == "ST":
+            color = 'tab:blue'
+            linestyle=':'
+
+        if op == "insert":
+            marker= 'o'
+        if op == "remove":
+            marker = 'X'
+
+        #linestyle=':'
+
         plt.plot(
             subset["n"],
             subset[metric],

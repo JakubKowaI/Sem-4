@@ -200,7 +200,7 @@ struct Tree{
         pointer_assignments++;
 
         if (!n || n->key != key) { 
-            cout << "Node " << key << " not found." << endl;
+            //cout << "Node " << key << " not found." << endl;
             return false;
         }
         comparisons+=2;

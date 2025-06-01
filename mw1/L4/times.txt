@@ -9,3 +9,15 @@ time ./RandTest
 real	362m26.482s
 user	686m2.305s
 sys	8m26.624s
+
+time ./RandTest 
+
+real	335m21.840s
+user	471m8.925s
+sys	0m11.783s
+
+time ./IncTest 
+
+real	379m44.335s
+user	501m17.101s
+sys	0m13.117s

@@ -184,7 +184,7 @@ struct Tree{
         //cout<<"\nDelete: "<<key<<endl;    
         Node* node_to_delete = search(key);
         if (!node_to_delete) {
-            cout << "Node " << key << " not found." << endl;
+            //cout << "Node " << key << " not found." << endl;
             return false;
         }
         root = removeNode(root, key);

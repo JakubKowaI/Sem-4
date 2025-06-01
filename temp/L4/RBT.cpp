@@ -434,7 +434,7 @@ string line;
             int temp=stoi(line);
             A.push_back(temp);
             auto start = chrono::high_resolution_clock::now();
-            RBTree.insert(temp);
+            RBTree.RBinsert(temp);
             auto end = chrono::high_resolution_clock::now();
             long long duration = chrono::duration_cast<chrono::microseconds>(end - start).count();
 
