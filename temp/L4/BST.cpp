@@ -5,12 +5,30 @@
 #include <random>
 #include <vector>
 #include <algorithm>
+#include <sys/file.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <cerrno>
+#include <thread>
+#include <cstring>
 
 using namespace std;
 
 int comparisons = 0;
 int pointer_reads = 0;
 int pointer_assignments = 0;
+
+//"Algorithm,Operation,n,Comparisons,Pointer reads,Pointer swaps,Height,Time (microsec)\n"
+
+// vector<int> Algo;
+vector<bool> Oper;
+vector<int> N_num;
+vector<int> comps;
+vector<int> p_reads;
+vector<int> p_swaps;
+vector<int> High;
+vector<int> Time;
+
 
 mt19937 mt{
     static_cast<std::mt19937::result_type>(
@@ -31,14 +49,50 @@ struct Node{
     Node * p=nullptr;
 };
 
-void appendResultToCSV(const std::string& algorithm, const std::string& operation, string n, int comparisons, int pointer_reads,int pointer_assignments,int height, long long time_microsec, const std::string& filename="results.csv") {
+void save(bool operation, int n, int comparisons, int pointer_reads,int pointer_assignments,int height, int time_microsec){
+    // Algo.push_back(algorithm);
+    Oper.push_back(operation);
+    N_num.push_back(n);
+    comps.push_back(comparisons);
+    p_reads.push_back(pointer_reads);
+    p_swaps.push_back(pointer_assignments);
+    High.push_back(height);
+    Time.push_back(time_microsec);
+}
+
+void appendResultToCSV(const std::string& filename = "results.csv") {
+    int fd = -1;
+
+    // Próbuj otworzyć i zablokować plik dopóki się nie uda
+    while (true) {
+        fd = open(filename.c_str(), O_CREAT | O_WRONLY | O_APPEND, 0644);
+        if (fd == -1) {
+            cerr << "❌ Błąd przy otwieraniu pliku: " << strerror(errno) << std::endl;
+            this_thread::sleep_for(std::chrono::milliseconds(100)); // poczekaj chwilę i próbuj dalej
+            continue;
+        }
+
+        if (flock(fd, LOCK_EX) == -1) {
+            cerr << "🔒 Plik zablokowany, oczekiwanie..." << std::endl;
+            close(fd);
+            this_thread::sleep_for(std::chrono::milliseconds(100)); // poczekaj 100 ms i próbuj ponownie
+            continue;
+        }
+
+        break; // udało się otworzyć i zablokować plik
+    }
+
+    // Teraz mamy blokadę, możemy pisać
     std::ifstream checkFile(filename);
-    bool isEmpty = checkFile.peek() == std::ifstream::traits_type::eof();
+    checkFile.seekg(0, std::ios::end);
+    bool isEmpty = (checkFile.tellg() == 0);
     checkFile.close();
 
-    std::ofstream file(filename, std::ios::app);
+    ofstream file(filename, std::ios::app);
     if (!file.is_open()) {
-        std::cerr << "Error opening file!" << std::endl;
+        cerr << "❌ Nie można otworzyć pliku do zapisu!" << std::endl;
+        flock(fd, LOCK_UN);
+        close(fd);
         return;
     }
 
@@ -46,8 +100,20 @@ void appendResultToCSV(const std::string& algorithm, const std::string& operatio
         file << "Algorithm,Operation,n,Comparisons,Pointer reads,Pointer swaps,Height,Time (microsec)\n";
     }
 
-    file << algorithm << "," << operation << "," << n << "," << comparisons << "," << pointer_reads<<","<<pointer_assignments<<","<<height << "," << time_microsec << "\n";
+    for (int i = 0; i < comps.size(); ++i) {
+        file << "BST,"
+             << (Oper[i] ? "remove" : "insert") << ","
+             << N_num[i] << ","
+             << comps[i] << ","
+             << p_reads[i] << ","
+             << p_swaps[i] << ","
+             << High[i] << ","
+             << Time[i] << "\n";
+    }
+
     file.close();
+    flock(fd, LOCK_UN); // odblokuj plik
+    close(fd);          // zamknij deskryptor
     reset_counters();
 }
 
@@ -59,53 +125,94 @@ struct Tree{
 
     void insert(int key){
         cout<<"\nInserting: "<<key<<endl;
-        Node *y=nullptr;
-        Node* x=root;
-        while(x){
-            y=x;
-            if(key<x->key)
-                x=x->left;
-            else if(key>x->key)
-                x=x->right;
-            else
+        Node *y = nullptr;
+        Node* x = root;
+        while (x) {
+            pointer_reads++;          
+            y = x;
+            comparisons++;
+            pointer_reads++;          
+            if (key < x->key) {
+                pointer_reads++;      
+                x = x->left;
+                pointer_assignments++;
+            } else if (key > x->key) {
+                pointer_reads++;      
+                x = x->right;
+                pointer_assignments++;
+            } else {
+                comparisons++;
                 return;
+            }
         }
-        Node* z=new Node{key};
-        z->p=y;
-        if(!y){
-            root=z;
-        }else if(z->key<y->key){
-            y->left=z;
-        }else{
-            y->right=z;
+
+        Node* z = new Node{key};
+        pointer_assignments++;
+        z->p = y;
+
+        comparisons++;
+        if (!y) {
+            root = z;
+            pointer_assignments++;
+        } else {
+            pointer_reads++;          
+            comparisons++;
+            if (z->key < y->key) {
+                pointer_assignments++;
+                y->left = z;
+            } else {
+                pointer_assignments++;
+                y->right = z;
+            }
         }
+        pointer_assignments++;
         print();
     }
 
     Node* Min(Node* n){
+        pointer_reads++;
+        comparisons++;
         if(!n->left)return n;
         return Min(n->left);
     }
 
     Node* getSuccessor(Node* n){
-        if(n->right){
+        pointer_reads++;
+        comparisons++;
+        if (n->right) {
+            pointer_reads++;
             return Min(n->right);
         }
-        Node* y=n->p;
-        while(y&&n==y->right){
-            n=y;
-            y=y->p;
+        Node* y = n->p;
+        pointer_assignments++;
+        pointer_reads++;
+        while (y && n == y->right) {
+            comparisons++;
+            pointer_reads++;
+            n = y;
+            pointer_assignments++;
+            y = y->p;
+            pointer_assignments++;
         }
         return y;
     }
 
     Node* search(int key) {
-        Node* n=root;
-        if(n->key==key)return n;
-        while(n){
-            if(n->key==key)return n;
-            if(key>n->key)n=n->right;
-                else n=n->left;
+        Node* n = root;
+        pointer_reads++;
+        while (n) {
+            pointer_reads++; 
+            comparisons++;
+            if (n->key == key) return n;
+            comparisons++;
+            if (key > n->key) {
+                pointer_reads++;
+                n = n->right;
+            } else {
+                pointer_reads++;
+                n = n->left;
+            }
+            pointer_assignments++;
         }
         return nullptr;
     }
@@ -145,41 +252,55 @@ struct Tree{
     }
 
     Node* removeNode(Node* n, int x) {
-    if (n == nullptr) return nullptr;
-
-    if (x < n->key) {
-        n->left = removeNode(n->left, x);
-        if (n->left) n->left->p = n;
-    } 
-    else if (x > n->key) {
-        n->right = removeNode(n->right, x);
-        if (n->right) n->right->p = n;
-    }
-    else {
-        if (!n->left) {
-            Node* temp = n->right;
-            // if (n == root) root = temp;
-            // if (temp) temp->p = n->p;
-            delete n;
-            return temp;
+        if (n == nullptr) return nullptr;
+        pointer_reads++;
+        comparisons++;
+        if (x < n->key) {
+            pointer_reads++;
+            n->left = removeNode(n->left, x);
+            pointer_assignments++;
+            if (n->left) {
+                pointer_reads++;
+                pointer_assignments++;
+                n->left->p = n;
+            }
+        } else if (x > n->key) {
+            pointer_reads++;
+            n->right = removeNode(n->right, x);
+            pointer_assignments++;
+            if (n->right) {
+                pointer_reads++;
+                pointer_assignments++;
+                n->right->p = n;
+            }
+        } else {
+            comparisons++;
+            if (!n->left) {
+                pointer_reads++;
+                Node* temp = n->right;
+                delete n;
+                return temp;
+            } else if (!n->right) {
+                pointer_reads++;
+                Node* temp = n->left;
+                delete n;
+                return temp;
+            } else {
+                Node* successor = Min(n->right);
+                pointer_reads++;
+                pointer_assignments++;
+                n->key = successor->key;
+                n->right = removeNode(n->right, successor->key);
+                pointer_assignments++;
+                if (n->right) {
+                    pointer_reads++;
+                    pointer_assignments++;
+                    n->right->p = n;
+                }
+            }
         }
-        else if (!n->right) {
-            Node* temp = n->left;
-            // if (n == root) root = temp;
-            // if (temp) temp->p = n->p;
-            delete n;
-            return temp;
-        }else{
-            Node* successor = Min(n->right);
-            n->key = successor->key;
-            n->right = removeNode(n->right, successor->key);
-            if (n->right) n->right->p = n;
-        }
-
-        
+        return n;
     }
-    return n;
-}
 
     void free(Node* n){
         if(!n)return;
@@ -226,13 +347,6 @@ void print_BST(Node* root, int depth , char prefix , string left_trace , string 
     }
 }
 
-// vector<int> Mix(vector<int> A){
-//     vector<int> B = A;
-//     shuffle(B.begin(), B.end(), mt);
-    
-//     return B;
-// }
-
 int main(int argc,char* argv[]){
 string line;
     Tree BSTree;
@@ -249,9 +363,10 @@ string line;
             auto start = chrono::high_resolution_clock::now();
             BSTree.insert(temp);
             auto end = chrono::high_resolution_clock::now();
-            long long duration = chrono::duration_cast<chrono::microseconds>(end - start).count();
+            long long duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
 
-            //appendResultToCSV("BST", "insert",n, comparisons, pointer_reads,pointer_assignments, BSTree.height(), duration, "results.csv");
+            //save(0,stoi(n),comparisons,pointer_reads,pointer_assignments,BSTree.height(),duration);
+            //reset_counters();
         }
     }catch (const exception& e) {
         cout << "Error: " << e.what() << endl;
@@ -264,8 +379,10 @@ string line;
         auto start = chrono::high_resolution_clock::now();
         BSTree.remove(i);
         auto end = chrono::high_resolution_clock::now();
-        long long duration = chrono::duration_cast<chrono::microseconds>(end - start).count();
+        long long duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
 
-        //appendResultToCSV("BST", "remove",n, comparisons, pointer_reads,pointer_assignments, BSTree.height(), duration, "results.csv");
+        //save(1,stoi(n),comparisons,pointer_reads,pointer_assignments,BSTree.height(),duration);
+        //reset_counters();
     }
+    //appendResultToCSV();
 }

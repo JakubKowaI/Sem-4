@@ -5,6 +5,12 @@
 #include <random>
 #include <vector>
 #include <algorithm>
+#include <sys/file.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <cerrno>
+#include <thread>
+#include <cstring>
 
 using namespace std;
 
@@ -43,14 +49,39 @@ void save(bool operation, int n, int comparisons, int pointer_reads,int pointer_
     Time.push_back(time_microsec);
 }
 
-void appendResultToCSV(const std::string& filename="results.csv") {
+void appendResultToCSV(const std::string& filename = "results.csv") {
+    int fd = -1;
+
+    // Próbuj otworzyć i zablokować plik dopóki się nie uda
+    while (true) {
+        fd = open(filename.c_str(), O_CREAT | O_WRONLY | O_APPEND, 0644);
+        if (fd == -1) {
+            cerr << "❌ Błąd przy otwieraniu pliku: " << strerror(errno) << std::endl;
+            this_thread::sleep_for(std::chrono::milliseconds(100)); // poczekaj chwilę i próbuj dalej
+            continue;
+        }
+
+        if (flock(fd, LOCK_EX) == -1) {
+            cerr << "🔒 Plik zablokowany, oczekiwanie..." << std::endl;
+            close(fd);
+            this_thread::sleep_for(std::chrono::milliseconds(100)); // poczekaj 100 ms i próbuj ponownie
+            continue;
+        }
+
+        break; // udało się otworzyć i zablokować plik
+    }
+
+    // Teraz mamy blokadę, możemy pisać
     std::ifstream checkFile(filename);
-    bool isEmpty = checkFile.peek() == std::ifstream::traits_type::eof();
+    checkFile.seekg(0, std::ios::end);
+    bool isEmpty = (checkFile.tellg() == 0);
     checkFile.close();
 
-    std::ofstream file(filename, std::ios::app);
+    ofstream file(filename, std::ios::app);
     if (!file.is_open()) {
-        std::cerr << "Error opening file!" << std::endl;
+        cerr << "❌ Nie można otworzyć pliku do zapisu!" << std::endl;
+        flock(fd, LOCK_UN);
+        close(fd);
         return;
     }
 
@@ -58,14 +89,20 @@ void appendResultToCSV(const std::string& filename="results.csv") {
         file << "Algorithm,Operation,n,Comparisons,Pointer reads,Pointer swaps,Height,Time (microsec)\n";
     }
 
-    for(int i=0;i<comps.size();i++){
-        if(Oper[i]){
-            file << "RBT" << "," << "remove" << "," << N_num[i] << "," << comps[i] << "," << p_reads[i]<<","<<p_swaps[i]<<","<<High[i] << "," << Time[i] << "\n";
-        }
-        file << "RBT" << "," << "insert" << "," << N_num[i] << "," << comps[i] << "," << p_reads[i]<<","<<p_swaps[i]<<","<<High[i] << "," << Time[i] << "\n";
-
+    for (int i = 0; i < comps.size(); ++i) {
+        file << "RBT,"
+             << (Oper[i] ? "remove" : "insert") << ","
+             << N_num[i] << ","
+             << comps[i] << ","
+             << p_reads[i] << ","
+             << p_swaps[i] << ","
+             << High[i] << ","
+             << Time[i] << "\n";
     }
+
     file.close();
+    flock(fd, LOCK_UN); // odblokuj plik
+    close(fd);          // zamknij deskryptor
     reset_counters();
 }
 
@@ -173,7 +210,7 @@ public:
     }
 
     Node* insert(int key){
-        //cout<<"\nInserting: "<<key<<endl;
+        cout<<"\nInserting: "<<key<<endl;
         Node *y=NIL;
         Node* x=root;
         while (x != NIL) {
@@ -285,7 +322,7 @@ public:
             }
         }
         root->color=true;
-        //print();
+        print();
     }
 
     Node* Min(Node* n){
@@ -347,14 +384,14 @@ public:
     }
 
     bool remove(int key){
-        //cout<<"\nDelete: "<<key<<endl;  
+        cout<<"\nDelete: "<<key<<endl;  
         Node* forDeletion=search(key);
         if(!forDeletion){
             //cout<<"Nie ma elementu w drzewie"<<endl;
             return false;
         }
         removeNode(forDeletion);
-        //print();
+        print();
         return true;
     }
 
@@ -600,11 +637,11 @@ int main(int argc, char* argv[]){
 string line;
     Tree RBTree;
     vector<int> A;
-    if(argc!=2){
-        cout<<"Zla liczba argumentow\n";
-        return 0;
-    }
-    string n =argv[1];
+    // if(argc!=2){
+    //     cout<<"Zla liczba argumentow\n";
+    //     return 0;
+    // }
+    // string n =argv[1];
     try{
         while(getline(cin, line)){
             int temp=stoi(line);
@@ -612,11 +649,10 @@ string line;
             auto start = chrono::high_resolution_clock::now();
             RBTree.RBinsert(temp);
             auto end = chrono::high_resolution_clock::now();
-            long long duration = chrono::duration_cast<chrono::microseconds>(end - start).count();
+            long long duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
 
-                    save(0,stoi(n),comparisons,pointer_reads,pointer_assignments,RBTree.height(),duration);
-            reset_counters();
-            //appendResultToCSV("RBT", "insert",n, comparisons, pointer_reads,pointer_assignments, RBTree.height(), duration, "results.csv");
+            //save(0,stoi(n),comparisons,pointer_reads,pointer_assignments,RBTree.height(),duration);
+            //reset_counters();
         }
     }catch (const exception& e) {
         cout << "Error: " << e.what() << endl;
@@ -629,11 +665,10 @@ string line;
         auto start = chrono::high_resolution_clock::now();
         RBTree.remove(i);
         auto end = chrono::high_resolution_clock::now();
-        long long duration = chrono::duration_cast<chrono::microseconds>(end - start).count();
+        long long duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
                 
-        save(1,stoi(n),comparisons,pointer_reads,pointer_assignments,RBTree.height(),duration);
-        reset_counters();
-        //appendResultToCSV("RBT", "remove",n, comparisons, pointer_reads,pointer_assignments, RBTree.height(), duration, "results.csv");
+        //save(1,stoi(n),comparisons,pointer_reads,pointer_assignments,RBTree.height(),duration);
+        //reset_counters();
     }
-    appendResultToCSV();
+   //appendResultToCSV();
 }

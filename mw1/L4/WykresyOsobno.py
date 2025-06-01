@@ -2,13 +2,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import os
 
-# Nazwy plików CSV
+# Pliki z danymi
 FILES = {
     "Increasing": "IncResults.csv",
-    "Random": "RandResults.csv"
+    #"Random": "RandResults.csv"
 }
 
-# Miary do wykresów: (kolumna, etykieta)
+# Metryki do analizy
 METRICS = [
     ("Comparisons", "Liczba porównań"),
     ("Pointer reads", "Odczyty wskaźników"),
@@ -17,71 +17,49 @@ METRICS = [
     ("Time (microsec)", "Czas operacji [μs]")
 ]
 
-# Styl graficzny dla operacji
-OPERATION_STYLE = {
-    "insert": {"marker": "o", "linestyle": "-", "label": "insert"},
-    "remove": {"marker": "X", "linestyle": "--", "label": "remove"}
-}
+# Lista drzew
+TREES = ["BST", "RBT", "ST"]
 
-# Kolor dla typu drzewa
-ALGO_COLOR = {
-    "BST": "tab:green",
-    "RBT": "tab:red",
-    "ST": "tab:blue"
-}
+# Rysuj wykresy
+def plot_tree_metrics(df, tree_type, scenario):
+    df_tree = df[df["Algorithm"] == tree_type]
+    if df_tree.empty:
+        print(f"⚠️ Brak danych dla drzewa {tree_type} ({scenario})")
+        return
 
-# Rysowanie wykresów dla jednego algorytmu (BST/RBT/ST)
-def plot_metric_per_algorithm(df, scenario, algorithm, metric, label):
-    plt.figure(figsize=(10, 6))
-    means = df[df["Algorithm"] == algorithm].groupby(["n", "Operation"]).mean(numeric_only=True).reset_index()
+    for metric, label in METRICS:
+        plt.figure(figsize=(10, 6))
 
-    for op in ["insert", "remove"]:
-        subset = means[means["Operation"] == op]
-        if subset.empty:
-            continue
+        for op, color, ls in [("insert", "tab:blue", "-"), ("remove", "tab:red", "--")]:
+            df_op = df_tree[df_tree["Operation"] == op]
+            if df_op.empty:
+                continue
 
-        # Styl
-        style = OPERATION_STYLE[op]
-        color = ALGO_COLOR.get(algorithm, "black")
+            # Grupowanie i agregacja
+            mean_values = df_op.groupby("n")[metric].mean()
+            max_values = df_op.groupby("n")[metric].max()
 
-        # Średnia i maksimum
-        avg_val = subset[metric].mean()
-        max_val = subset[metric].max()
-        print(f"📊 {scenario} | {algorithm} | {label} | {op} — Średnia: {avg_val:.2f}, Maksimum: {max_val:.2f}")
+            # Rysowanie
+            mean_values.plot(label=f"{op} (średnia)", linestyle=ls, color=color)
+            max_values.plot(label=f"{op} (maksimum)", linestyle=ls, color=color, marker='x')
 
-        # Wykres
-        plt.plot(
-            subset["n"],
-            subset[metric],
-            label=style["label"],
-            color=color,
-            linestyle=style["linestyle"],
-            marker=style["marker"],
-            markersize=6,
-            linewidth=2
-        )
+        plt.title(f"{label} — {tree_type} — {scenario}")
+        plt.xlabel("n")
+        plt.ylabel(label)
+        plt.legend()
+        plt.grid(True)
+        plt.tight_layout()
+        filename = f"{tree_type}_{metric.replace(' ', '_')}_{scenario}.png"
+        plt.savefig(filename, dpi=300)
+        plt.close()
+        print(f"✅ Zapisano: {filename}")
 
-    plt.title(f"{label} — {algorithm} — {scenario}")
-    plt.xlabel("n")
-    plt.ylabel(label)
-    plt.legend()
-    plt.grid(True)
-    plt.tight_layout()
-
-    filename = f"{metric.replace(' ', '_')}_{algorithm}_{scenario}.png"
-    plt.savefig(filename, dpi=300)
-    plt.close()
-    print(f"✅ Zapisano: {filename}")
-
-# Przetwarzanie plików
+# Główna pętla
 for scenario, filename in FILES.items():
     if not os.path.exists(filename):
-        print(f"⚠️ Plik nie znaleziony: {filename}")
+        print(f"❌ Plik nie istnieje: {filename}")
         continue
 
-    df = pd.read_csv(filename)
-    algorithms = df["Algorithm"].unique()
-
-    for algorithm in algorithms:
-        for metric, label in METRICS:
-            plot_metric_per_algorithm(df, scenario, algorithm, metric, label)
+    df = pd.read_csv(filename, on_bad_lines="skip")
+    for tree in TREES:
+        plot_tree_metrics(df, tree, scenario)

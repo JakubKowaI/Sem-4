@@ -54,10 +54,14 @@ def plot_metric(df, scenario, metric, label):
             color = 'tab:blue'
             linestyle=':'
 
+        if op not in {"insert", "remove"}:
+            continue  # pomiń inne operacje
+
         if op == "insert":
             marker= 'o'
-        if op == "remove":
+        elif op == "remove":
             marker = 'X'
+        
 
         #linestyle=':'
 
