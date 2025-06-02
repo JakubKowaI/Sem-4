@@ -5,7 +5,7 @@ import os
 # Pliki z danymi
 FILES = {
     "Increasing": "IncResults.csv",
-    #"Random": "RandResults.csv"
+    "Random": "RandResults.csv"
 }
 
 # Metryki do analizy
@@ -14,7 +14,7 @@ METRICS = [
     ("Pointer reads", "Odczyty wskaźników"),
     ("Pointer swaps", "Podstawienia wskaźników"),
     ("Height", "Wysokość drzewa"),
-    ("Time (microsec)", "Czas operacji [μs]")
+    ("Time (microsec)", "Czas operacji [nanosec]")
 ]
 
 # Lista drzew

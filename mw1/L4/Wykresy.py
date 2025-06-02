@@ -15,7 +15,7 @@ METRICS = [
     ("Pointer reads", "Odczyty wskaźników"),
     ("Pointer swaps", "Podstawienia wskaźników"),
     ("Height", "Wysokość drzewa"),
-    ("Time (microsec)", "Czas operacji [μs]")
+    ("Time (microsec)", "Czas operacji [nanosec]")
 ]
 
 # Unikalne style: kolory, markery i linie

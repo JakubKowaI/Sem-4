@@ -210,7 +210,7 @@ public:
     }
 
     Node* insert(int key){
-        cout<<"\nInserting: "<<key<<endl;
+        //cout<<"\nInserting: "<<key<<endl;
         Node *y=NIL;
         Node* x=root;
         while (x != NIL) {
@@ -322,7 +322,7 @@ public:
             }
         }
         root->color=true;
-        print();
+        //print();
     }
 
     Node* Min(Node* n){
@@ -384,14 +384,14 @@ public:
     }
 
     bool remove(int key){
-        cout<<"\nDelete: "<<key<<endl;  
+        //cout<<"\nDelete: "<<key<<endl;  
         Node* forDeletion=search(key);
         if(!forDeletion){
             //cout<<"Nie ma elementu w drzewie"<<endl;
             return false;
         }
         removeNode(forDeletion);
-        print();
+        //print();
         return true;
     }
 
@@ -637,11 +637,11 @@ int main(int argc, char* argv[]){
 string line;
     Tree RBTree;
     vector<int> A;
-    // if(argc!=2){
-    //     cout<<"Zla liczba argumentow\n";
-    //     return 0;
-    // }
-    // string n =argv[1];
+    if(argc!=2){
+        cout<<"Zla liczba argumentow\n";
+        return 0;
+    }
+    string n =argv[1];
     try{
         while(getline(cin, line)){
             int temp=stoi(line);
@@ -651,8 +651,8 @@ string line;
             auto end = chrono::high_resolution_clock::now();
             long long duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
 
-            //save(0,stoi(n),comparisons,pointer_reads,pointer_assignments,RBTree.height(),duration);
-            //reset_counters();
+            save(0,stoi(n),comparisons,pointer_reads,pointer_assignments,RBTree.height(),duration);
+            reset_counters();
         }
     }catch (const exception& e) {
         cout << "Error: " << e.what() << endl;
@@ -667,8 +667,8 @@ string line;
         auto end = chrono::high_resolution_clock::now();
         long long duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
                 
-        //save(1,stoi(n),comparisons,pointer_reads,pointer_assignments,RBTree.height(),duration);
-        //reset_counters();
+        save(1,stoi(n),comparisons,pointer_reads,pointer_assignments,RBTree.height(),duration);
+        reset_counters();
     }
-   //appendResultToCSV();
+   appendResultToCSV();
 }

@@ -124,7 +124,7 @@ struct Tree{
     public:
 
     void insert(int key){
-        cout<<"\nInserting: "<<key<<endl;
+        //cout<<"\nInserting: "<<key<<endl;
         Node *y = nullptr;
         Node* x = root;
         while (x) {
@@ -166,7 +166,7 @@ struct Tree{
             }
         }
         pointer_assignments++;
-        print();
+        //print();
     }
 
     Node* Min(Node* n){
@@ -218,14 +218,14 @@ struct Tree{
     }
 
     bool remove(int key){
-        cout<<"\nDelete: "<<key<<endl;    
+        //cout<<"\nDelete: "<<key<<endl;    
         Node* node_to_delete = search(key);
         if (!node_to_delete) {
-            cout << "Node " << key << " not found." << endl;
+            //cout << "Node " << key << " not found." << endl;
             return false;
         }
         root = removeNode(root, key);
-        print();
+        //print();
         return true;
     }
 
@@ -351,11 +351,11 @@ int main(int argc,char* argv[]){
 string line;
     Tree BSTree;
     vector<int> A;
-    // if(argc!=2){
-    //     cout<<"Zla liczba argumentow\n";
-    //     return 0;
-    // }
-    // string n =argv[1];
+    if(argc!=2){
+        cout<<"Zla liczba argumentow\n";
+        return 0;
+    }
+    string n =argv[1];
     try{
         while(getline(cin, line)){
             int temp=stoi(line);
@@ -365,8 +365,8 @@ string line;
             auto end = chrono::high_resolution_clock::now();
             long long duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
 
-            //save(0,stoi(n),comparisons,pointer_reads,pointer_assignments,BSTree.height(),duration);
-            //reset_counters();
+            save(0,stoi(n),comparisons,pointer_reads,pointer_assignments,BSTree.height(),duration);
+            reset_counters();
         }
     }catch (const exception& e) {
         cout << "Error: " << e.what() << endl;
@@ -381,8 +381,8 @@ string line;
         auto end = chrono::high_resolution_clock::now();
         long long duration = chrono::duration_cast<chrono::nanoseconds>(end - start).count();
 
-        //save(1,stoi(n),comparisons,pointer_reads,pointer_assignments,BSTree.height(),duration);
-        //reset_counters();
+        save(1,stoi(n),comparisons,pointer_reads,pointer_assignments,BSTree.height(),duration);
+        reset_counters();
     }
-    //appendResultToCSV();
+    appendResultToCSV();
 }
