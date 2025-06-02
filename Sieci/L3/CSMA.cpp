@@ -16,7 +16,7 @@ constexpr int BACKOFF_TIME = 5;
 
 struct Station {
     int position;
-    std::string frame;
+    char bit;
     int send_time;
     int index;
     int recIndex=0;
@@ -35,26 +35,26 @@ struct Packet {
     bool bounced=false;
 };
 
-std::string load_frame(const std::string& filename,char znak) {
-    std::ifstream file(filename);
-    if (!file.is_open()) {
-        std::cerr << "Error opening file: " << filename << std::endl;
-        return std::string(200, '0'); // Return default frame if file can't be opened
-    }
+//std::string load_frame(const std::string& filename,char znak) {
+//     std::ifstream file(filename);
+//     if (!file.is_open()) {
+//         std::cerr << "Error opening file: " << filename << std::endl;
+//         return std::string(200, '0'); // Return default frame if file can't be opened
+//     }
     
-    std::string line;
-    std::getline(file, line);
-    file.close();
+//     std::string line;
+//     std::getline(file, line);
+//     file.close();
     
-    // Ensure the frame is exactly 200 characters long
-    if (line.size() < 200) {
-        line.append(200 - line.size(), '0'); // Pad with zeros if too short
-    } else if (line.size() > 200) {
-        line = line.substr(0, 200); // Truncate if too long
-    }
+//     // Ensure the frame is exactly 200 characters long
+//     if (line.size() < 200) {
+//         line.append(200 - line.size(), '0'); // Pad with zeros if too short
+//     } else if (line.size() > 200) {
+//         line = line.substr(0, 200); // Truncate if too long
+//     }
     
-    return line;
-}
+//     return line;
+// }
 
 void propagate(std::vector<char>& medium,std::vector<Packet>& packets) {
     for (auto it = packets.begin(); it != packets.end();) {
@@ -105,11 +105,11 @@ void detect_collision(std::vector<Packet>& packets,std::vector<Station>& station
 }
 
 void station_activity(Station& station, std::vector<Packet>& packets, int time,std::vector<char>& medium) {
-    if(station.recIndex==station.frame.size()-1&&!station.finished){
+    if(station.recIndex==200&&!station.finished&&!station.collision_detected){
         station.finished=true;
-        std::cout<<"Station "<<station.position<< " finished"<<std::endl;
+        std::cout<<"Station "<<station.bit<< " finished"<<std::endl;
     }
-    if (time == station.send_time && !station.transmitting&&station.finished!=true) {
+    if (time >= station.send_time && !station.transmitting&&!station.finished) {
         if(medium[station.position]!='-'){
             station.send_time++;
         }else{
@@ -117,46 +117,58 @@ void station_activity(Station& station, std::vector<Packet>& packets, int time,s
             station.collision_detected=false;
             station.transmitting=true;
         }
-        
     }
+
     if(medium[station.position]=='X'&&station.collision_detected==false){
         station.collision_counter++;
-        station.send_time = time + (BACKOFF_TIME + rand() % 25)*station.collision_counter;
-        station.transmitting=false;
+        station.send_time = time + (BACKOFF_TIME + rand() % 250)*station.collision_counter;
+        //station.transmitting=false;
         station.collision_detected=true;
-        //std::cout<<"Kolizja wykrywyta przez stacje "<<station.position<<" zaraz znowu nadam o "<< station.send_time<<std::endl;
+        std::cout<<"Kolizja wykrywyta przez stacje "<<station.bit<<" zaraz znowu nadam o "<< station.send_time<<std::endl;
     }
-    //&&
-    for (Packet& p : packets) {  // Note the reference &
+    
+    //for (Packet& p : packets) {  // Note the reference &
     // std::cout << "Checking packet at " << p.position 
     //           << " (station at " << station.position << ")"
     //           << " bit: " << p.bit << std::endl;
               
-    if (p.position == station.position&&p.source==&station&&p.direction) {
-        // std::cout << "Hejka - Position match! Station " << station.position 
-        //           << " received bit " << p.bit 
-        //           << " (expected: " << station.frame[station.recIndex] << ")"
-        //           << std::endl;
+    // if (p.position == station.position&&p.source==&station&&p.direction) {
+    //     // std::cout << "Hejka - Position match! Station " << station.position 
+    //     //           << " received bit " << p.bit 
+    //     //           << " (expected: " << station.frame[station.recIndex] << ")"
+    //     //           << std::endl;
         
-        if (p.bit == station.frame[station.recIndex]) {
-            station.recIndex++;
-            //std::cout << "Bit match! recIndex now " << station.recIndex << std::endl;
-        } else {
-            station.recIndex = 0;
-            //std::cout << "Bit mismatch! Reset recIndex to 0" << std::endl;
-        }
-    }else{
-        //std::cout<<"Test\n";
-    }
-    }
+    //     if (p.bit == station.frame[station.recIndex]) {
+    //         station.recIndex++;
+    //         //std::cout << "Bit match! recIndex now " << station.recIndex << std::endl;
+    //     } else {
+    //         station.recIndex = 0;
+    //         //std::cout << "Bit mismatch! Reset recIndex to 0" << std::endl;
+    //     }
+    // }else{
+    //     //std::cout<<"Test\n";
+    // }
+    //}
     if (station.transmitting) {
-        if (station.index < station.frame.size()) {
-            char bit = station.frame[station.index];
-            Packet temp1={station.position,bit,&station,0};
-            Packet temp2={station.position,bit,&station,1};
+        if (station.recIndex < 200) {
+            if(station.collision_detected){
+                Packet temp1={station.position,'X',&station,0};
+                Packet temp2={station.position,'X',&station,1};
+                packets.push_back(temp1);
+                packets.push_back(temp2);
+            }else{
+                //char bit = station.frame[station.index];
+            Packet temp1={station.position,station.bit,&station,0};
+            Packet temp2={station.position,station.bit,&station,1};
             packets.push_back(temp1);
             packets.push_back(temp2);
-            station.index++;
+            }
+            station.recIndex++;
+        }else{
+            if(station.collision_detected){
+                station.recIndex=0;
+                station.transmitting=false;
+            }
         }
     }
 }
@@ -171,13 +183,13 @@ int main() {
     std::vector<char> medium(MEDIUM_LENGTH, '-');
 
     //system("./frame.out");
-    std::string frame = load_frame("W.txt");
-    std::cout<<frame.size()<<std::endl;
+    // std::string frame = load_frame("W.txt");
+    // std::cout<<frame.size()<<std::endl;
 
     std::vector<Station> stations = {
-        {10, frame, 2},
-        {30, frame, 5},
-        {70, frame, 8},
+        {10, 'A', 2},
+        {30, 'B', 5},
+        {70, 'C', 8},
     };
     std::vector<Packet> packets;
 
@@ -195,7 +207,7 @@ int main() {
         std::fill(medium.begin(), medium.end(), '-');
         propagate(medium,packets);
         print_medium(medium, time);
-        //std::this_thread::sleep_for(std::chrono::milliseconds(25));
+        std::this_thread::sleep_for(std::chrono::milliseconds(25));
             if(doneStations==stations.size()){
                 std::cout<<"All Stations Finished \n";
                 return 1;
