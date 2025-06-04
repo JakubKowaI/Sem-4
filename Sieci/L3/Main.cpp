@@ -67,14 +67,19 @@ void frame(const string& inputFile, const string& outputFile) {
 
     string bits;
     getline(in, bits);
+    int count = 0;
 
-    string crc = calculateCRC(bits);
-    string full = bits + crc;
-    string stuffed = bitStuffing(full);
-    string framed = FLAG + stuffed + FLAG;
-
-    out << framed << endl;
-
+    for(int i=0; i<bits.size(); i+=80){
+        std::string message = bits.substr(i, 80);
+        string crc = calculateCRC(message);
+        string full = message + crc;
+        string stuffed = bitStuffing(full);
+        string framed = FLAG + stuffed + FLAG;
+        out << framed;
+        count++;
+    }
+    
+    std::cout<<count<<std::endl;
     in.close();
     out.close();
 }
@@ -82,32 +87,65 @@ void frame(const string& inputFile, const string& outputFile) {
 void deframe(const string& inputFile, const string& outputFile) {
     ifstream in(inputFile);
     ofstream out(outputFile);
+    int count = 0;
 
     string line;
     getline(in, line);
 
-    size_t start = line.find(FLAG);
-    size_t end = line.rfind(FLAG);
+    int i=0;
 
-    if (start == string::npos || end == string::npos || start == end) {
-        cerr << "Brak poprawnych ramek.\n";
-        return;
+    while(!line.empty()){
+        size_t startFlagPos = line.find(FLAG);
+
+        if (startFlagPos > 0) {
+            std::cerr << "Ostrzeżenie: Znaleziono śmieci (" << startFlagPos << " bitów) przed flagą startową na pozycji " << startFlagPos << ". Pomijanie.\n";
+            line = line.substr(startFlagPos); // Skip junk
+            startFlagPos = 0; // The flag is now at the beginning of the new buffer
+        }
+
+        if (startFlagPos == string::npos) {
+            cerr << "Brak kolejnej ramki lub nieprawidłowy format na końcu.\n";
+            break;
+        }
+
+        size_t endFlagPos = line.find(FLAG, startFlagPos + FLAG.length());
+
+        if (endFlagPos == string::npos) {
+            cerr << "Brak końcowej flagi dla rozpoczętej ramki.\n";
+            break;
+        }
+
+        string stuffed = line.substr(startFlagPos + FLAG.length(), endFlagPos - (startFlagPos + FLAG.length()));
+        string full = bitUnstuffing(stuffed);
+
+        size_t crcLen = CRC32.length() - 1;
+        if (full.length() < crcLen) {
+            line = line.substr(endFlagPos);
+            cerr << "CRC ERROR: dane uszkodzone.\n";
+            continue;;
+        }
+        string data = full.substr(0, full.size() - crcLen);
+        string crc = full.substr(full.size() - crcLen);
+        line = line.substr(endFlagPos);//przydaloby sie do endflagi zeby moc ewentualnie nie obcinac
+
+        // |FLAG|data+crc|FLAG|FLAG|data+crc|FLAG
+        
+        if (calculateCRC(data) == crc) {
+            out << data << endl;
+            line=line.substr(FLAG.length());
+            cout << "CRC OK: dane poprawne.\n";
+            count++;
+        } else {
+            cerr << "CRC ERROR: dane uszkodzone.\n";
+            size_t potentialEndFlag = line.find(FLAG, FLAG.length());
+            if(potentialEndFlag==FLAG.length()){//wtedy znaczy ze data byla zjebana
+                line=line.substr(FLAG.length());
+            }
+        }
+        i++;
     }
 
-    string stuffed = line.substr(start + FLAG.length(), end - start - FLAG.length());
-    string full = bitUnstuffing(stuffed);
-
-    size_t crcLen = CRC32.length() - 1;
-    string data = full.substr(0, full.size() - crcLen);
-    string crc = full.substr(full.size() - crcLen);
-
-    if (calculateCRC(data) == crc) {
-        out << data << endl;
-        cout << "CRC OK: dane poprawne.\n";
-    } else {
-        cerr << "CRC ERROR: dane uszkodzone.\n";
-    }
-
+    std::cout<<count<<std::endl;
     in.close();
     out.close();
 }

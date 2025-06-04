@@ -109,46 +109,32 @@ void station_activity(Station& station, std::vector<Packet>& packets, int time,s
         station.finished=true;
         std::cout<<"Station "<<station.bit<< " finished"<<std::endl;
     }
-    if (time >= station.send_time && !station.transmitting&&!station.finished) {
+
+    if (0 == station.send_time && !station.transmitting&&!station.finished) {
         if(medium[station.position]!='-'){
-            station.send_time++;
+            station.send_time=0;
         }else{
             station.index=0;
             station.collision_detected=false;
             station.transmitting=true;
         }
     }
+    if(station.send_time>0){
+        station.send_time--;
+    }
 
     if(medium[station.position]=='X'&&station.collision_detected==false){
         station.collision_counter++;
-        station.send_time = time + (BACKOFF_TIME + rand() % 250)*station.collision_counter;
+        if(station.collision_counter==16)station.finished=true;
+        if(station.collision_counter>10){
+            station.send_time = (rand()%(int)pow(2,10))*200;
+        }else{
+            station.send_time = (rand()%(int)pow(2,station.collision_counter))*MEDIUM_LENGTH*2;
+        }
         //station.transmitting=false;
         station.collision_detected=true;
-        std::cout<<"Kolizja wykrywyta przez stacje "<<station.bit<<" zaraz znowu nadam o "<< station.send_time<<std::endl;
+        std::cout<<"Kolizja wykrywyta przez stacje "<<station.bit<<" nadam za  "<< station.send_time<<" o "<<time+station.send_time<<std::endl;
     }
-    
-    //for (Packet& p : packets) {  // Note the reference &
-    // std::cout << "Checking packet at " << p.position 
-    //           << " (station at " << station.position << ")"
-    //           << " bit: " << p.bit << std::endl;
-              
-    // if (p.position == station.position&&p.source==&station&&p.direction) {
-    //     // std::cout << "Hejka - Position match! Station " << station.position 
-    //     //           << " received bit " << p.bit 
-    //     //           << " (expected: " << station.frame[station.recIndex] << ")"
-    //     //           << std::endl;
-        
-    //     if (p.bit == station.frame[station.recIndex]) {
-    //         station.recIndex++;
-    //         //std::cout << "Bit match! recIndex now " << station.recIndex << std::endl;
-    //     } else {
-    //         station.recIndex = 0;
-    //         //std::cout << "Bit mismatch! Reset recIndex to 0" << std::endl;
-    //     }
-    // }else{
-    //     //std::cout<<"Test\n";
-    // }
-    //}
     if (station.transmitting) {
         if (station.recIndex < 200) {
             if(station.collision_detected){
@@ -158,10 +144,10 @@ void station_activity(Station& station, std::vector<Packet>& packets, int time,s
                 packets.push_back(temp2);
             }else{
                 //char bit = station.frame[station.index];
-            Packet temp1={station.position,station.bit,&station,0};
-            Packet temp2={station.position,station.bit,&station,1};
-            packets.push_back(temp1);
-            packets.push_back(temp2);
+                Packet temp1={station.position,station.bit,&station,0};
+                Packet temp2={station.position,station.bit,&station,1};
+                packets.push_back(temp1);
+                packets.push_back(temp2);
             }
             station.recIndex++;
         }else{
@@ -181,7 +167,7 @@ void print_medium(const std::vector<char>& medium, int time) {
 
 int main() {
     std::vector<char> medium(MEDIUM_LENGTH, '-');
-
+    srand(time(NULL));
     //system("./frame.out");
     // std::string frame = load_frame("W.txt");
     // std::cout<<frame.size()<<std::endl;
@@ -207,7 +193,7 @@ int main() {
         std::fill(medium.begin(), medium.end(), '-');
         propagate(medium,packets);
         print_medium(medium, time);
-        std::this_thread::sleep_for(std::chrono::milliseconds(25));
+        //std::this_thread::sleep_for(std::chrono::milliseconds(25));
             if(doneStations==stations.size()){
                 std::cout<<"All Stations Finished \n";
                 return 1;

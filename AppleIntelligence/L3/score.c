@@ -252,6 +252,56 @@ int count_gap_lines(const int board[5][5], int player) {
     return count;
 }
 
+static bool one_gap_pattern(const int line[3], int player) {
+    if(line[0]==player&&line[1]==0&&line[2]==player||
+    line[0]==0&&line[1]==player&&line[2]==player||
+    line[0]==player&&line[1]==player&&line[2]==0)
+    return true;
+    return false;
+}
+
+int count_lines_with_one_gap(const int board[5][5], int player) {
+    int count = 0;
+
+    // Wiersze (poziomo)
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j <= 2; j++) {  // 0,1 → 0-3 i 1-4
+            int line[3];
+            for (int k = 0; k < 3; k++) line[k] = board[i][j + k];
+            if (one_gap_pattern(line, player)) count++;
+        }
+    }
+
+    // Kolumny (pionowo)
+    for (int j = 0; j < 5; j++) {
+        for (int i = 0; i <= 2; i++) {
+            int line[3];
+            for (int k = 0; k < 3; k++) line[k] = board[i + k][j];
+            if (one_gap_pattern(line, player)) count++;
+        }
+    }
+
+    // Przekątne lewo-góra → prawo-dół
+    for (int i = 0; i <= 2; i++) {
+        for (int j = 0; j <= 2; j++) {
+            int line[3];
+            for (int k = 0; k < 3; k++) line[k] = board[i + k][j + k];
+            if (one_gap_pattern(line, player)) count++;
+        }
+    }
+
+    // Przekątne prawo-góra → lewo-dół
+    for (int i = 0; i <= 2; i++) {
+        for (int j = 2; j <= 3; j++) {
+            int line[3];
+            for (int k = 0; k < 3; k++) line[k] = board[i + k][j - k];
+            if (one_gap_pattern(line, player)) count++;
+        }
+    }
+
+    return count;
+}
+
 int aggressive_heuristic(const int board[5][5], int player) {
     // for (int i = 0; i < 5; i++) {
     //     for (int j = 0; j < 5; j++) {
@@ -282,13 +332,14 @@ int main(){
     int board[5][5] = {
         {0, 0, 1, 0, 0},
         {0, 0, 0, 0, 0},
-        {0, 0, 2, 0, 0},
+        {0, 2, 2, 0, 2},
         {0, 0, 0, 0, 0},
         {0, 0, 0, 0, 0}
     };
-    printf("%d\n",aggressive_heuristic(board,2));
-    printf("%d\n",count_lines_of_length(board,2,3));
-    printf("%d\n",count_gap_lines(board,2));
+    //printf("%d\n",aggressive_heuristic(board,2));
+    //printf("%d\n",count_lines_of_length(board,2,3));
+    //printf("%d\n",count_gap_lines(board,2));
+    printf("%d\n",count_lines_with_one_gap(board,2));
 
     return 0;
 }

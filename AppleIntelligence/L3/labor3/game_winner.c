@@ -7,129 +7,118 @@ Client ver. 0.2
 #include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <limits.h>
 
 #include "./board.h"
 #include "./Heuristic.h"
 #include "./Logic.h"
 
-typedef struct{
-  int value;
-  int board[5][5];
-  int move;
-  int aplha;
-  int beta;
-} state;
-
-int depth=0;
 int player;
 
-int (*h_gracz)(const int [5][5],int);
-int (*h_odp)(const int [5][5],int);
+int (*h)(const int [5][5],int);
+// int (*h_odp)(const int [5][5],int);
+int myMax(int board[5][5],int player,int depth,int alpha,int beta);
+int myMin(int board[5][5],int player,int depth,int alpha,int beta);
 
-int generateStates(int board[5][5], int tempPlayer, state out[25]) {
+int generateStates(int board[5][5], int tempPlayer,int out[25]) {
     int counter = 0;
     for (int i = 0; i < 5; i++) {
         for (int j = 0; j < 5; j++) {
             if (board[i][j] == 0) {
-                state temp;
-                board[i][j] = tempPlayer;
-
-                memcpy(temp.board, board, sizeof(temp.board));
-                temp.move = (i * 10 + j)+11;
-                temp.value = 0;
-
-                out[counter++] = temp;
-                // printf("%d:\n",i);
-                // for (int i = 0; i < 5; i++) {
-                //     for (int j = 0; j < 5; j++) {
-                //         printf("%d",temp.board[i][j]);
-                //     }
-                //     printf("\n");
-                // }
-                board[i][j] = 0;
+                out[counter++] = (i * 10 + j)+11;
             }
         }
     }
     return counter;
 }
 
-//int licznik=0;
+void apply_move(int board[5][5], int move, int player) {
+    int row = (move/10)-1;
+    int col = (move %10)-1;
+    board[row][col] = player;
+}
 
-state minmax(int board[5][5], int tempPlayer, int tempDepth,int lastMove,int alpha, int beta){
-  //licznik++;
-  //printf("%d\r",licznik);
-  state res;
-  if(tempDepth == 0 || checkWinState(board, player) || checkWinState(board, switchPlayers(player))){
-    if(tempPlayer==player){
-      res.value = h_gracz(board,tempPlayer);
-    }else{
-      res.value = h_odp(board,tempPlayer);
-    }
-    
-    res.move = lastMove;
-    memcpy(res.board, board, sizeof(res.board));
-    return res;
-  }
+int myMax(int board[5][5],int player,int depth,int alpha,int beta){
+  if(count_lines_of_length(board,player,4)>0)return INT_MAX;
+  if(count_lines_of_length(board,switchPlayers(player),4)>0)return INT_MIN;
+  if(depth==0)return h(board,player);
 
-  state *moves=malloc(25*sizeof(state));
-  int count = generateStates(board, tempPlayer, moves);
+  int moves[25];
+  int count = generateStates(board, player,moves);
+  int max=INT_MIN;
 
-  if (count == 0) {
-    res.value = h_gracz(board, player);
-    res.move = lastMove;
-    memcpy(res.board, board, sizeof(res.board));
-    return res;
-  }
+  for(int i=0;i<count;i++){
+      int tempBoard[5][5];
+      memcpy(tempBoard, board, sizeof(tempBoard));
+      apply_move(tempBoard,moves[i],player);
 
-  if(tempPlayer==player){
-     res.value=-999999;
-    for(int i=0;i<count;i++){
-      int temp=minmax(moves[i].board,switchPlayers(tempPlayer),tempDepth-1,moves[i].move,alpha,beta).value;
-      if(temp>=res.value){
-        res.value=temp;
-        res.move=moves[i].move;
-        memcpy(res.board, moves[i].board, sizeof(res.board));
-      }
-      alpha = (alpha > res.value) ? alpha : res.value;
+      int temp=myMin(tempBoard,player,depth-1,alpha,beta);
+
+      max = (temp > max) ? temp : max;
+      alpha = (alpha > temp) ? alpha : temp;
         if (beta <= alpha) break; 
     }
-    free(moves);
-    // printf("najlepsze rozwiazanie o wartosci %d :\n",res.value);
-    // for (int i = 0; i < 5; i++) {
-    //     for (int j = 0; j < 5; j++) {
-    //         printf("%d",res.board[i][j]);
-    //     }
-    //     printf("\n");
-    // }
-    //     printf("\n Last move %d\n",res.move);
+    return max;
+}
 
-    return res;
-  }else{
-  res.value=999999;
+int myMin(int board[5][5],int player,int depth,int alpha,int beta){
+  if(count_lines_of_length(board,player,4)>0)return INT_MIN;
+  if(count_lines_of_length(board,switchPlayers(player),4)>0)return INT_MAX;
+  if(depth==0)return h(board,player);
+
+  int moves[25];
+  int count = generateStates(board, switchPlayers(player),moves);
+  int min=INT_MAX;
+
   for(int i=0;i<count;i++){
-    int temp=minmax(moves[i].board,switchPlayers(tempPlayer),tempDepth-1,moves[i].move,alpha,beta).value;
-    if(temp<=res.value){
-      res.value=temp;
-      res.move=moves[i].move;
-      memcpy(res.board, moves[i].board, sizeof(res.board));
+      int tempBoard[5][5];
+      memcpy(tempBoard, board, sizeof(tempBoard));
+      apply_move(tempBoard,moves[i],switchPlayers(player));
+
+      int temp=myMax(tempBoard,player,depth-1,alpha,beta);
+
+      min = (temp < min) ? temp : min;
+      beta = (beta < temp) ? beta : temp;
+        if (beta <= alpha) break; 
     }
-    beta = (beta < res.value) ? beta : res.value;
-      if (beta <= alpha) break;
-  }
-  free(moves);
-    // printf("najlepsze rozwiazanie o wartosci %d :\n",res.value);
-    // for (int i = 0; i < 5; i++) {
-    //     for (int j = 0; j < 5; j++) {
-    //         printf("%d",res.board[i][j]);
-    //     }
-    //     printf("\n");
-    // }
-    // printf("\n Last move %d\n",res.move);
-    return res;
-  }
+    return min;
+}
+
+int minmax(int board[5][5], int tempPlayer, int tempDepth){
+  if(board[2][2]==0)return 33;
+  int finalMove=888;
+  int alpha=INT_MIN;
+  int beta=INT_MAX;
+
+  int moves[25];
+  int count = generateStates(board, tempPlayer,moves);
+
+  if (count == 0)return 8889;
+
+  
+    int max=INT_MIN;
+
+    for(int i=0;i<count;i++){
+      int tempBoard[5][5];
+      memcpy(tempBoard, board, sizeof(tempBoard));
+      apply_move(tempBoard,moves[i],tempPlayer);
+
+      int temp=myMin(tempBoard,tempPlayer,tempDepth-1,alpha,beta);
+
+      if(temp>max){
+        max=temp;
+        finalMove=moves[i];
+      }
+      alpha = (alpha > temp) ? alpha : temp;
+        if (beta <= alpha) break; 
+    }
+    printf("Final score: %d\n",max);
+    return finalMove;
+  
 }
 
 int main(int argc, char *argv[]) {
+  srand(time(NULL));
   int server_socket;
   struct sockaddr_in server_addr;
   char server_message[16], player_message[16];
@@ -192,10 +181,10 @@ int main(int argc, char *argv[]) {
   //  printf("Taking defensive approach\n");
   // }
 
-  h_gracz = aggressive_heuristic;
-  h_odp = aggressive_heuristic;
+  h =aggressive_heuristic;
+  //h_odp = aggressive_heuristic;
 
-  depth = atoi(argv[5]);
+  int depth = atoi(argv[5]);
   if(depth>10||depth<1)return -1;
   while ( !end_game ) {
     memset(server_message, '\0', sizeof(server_message));
@@ -220,17 +209,19 @@ int main(int argc, char *argv[]) {
       
       printf("Current board before minmax():\n");
       printBoard();
-      state thisMove=minmax(board,player,depth,-1,-999999,999999);
-      printf("Final best choice %d :\n",thisMove.value);
-      for (int i = 0; i < 5; i++) {
-          for (int j = 0; j < 5; j++) {
-              printf("%d",thisMove.board[i][j]);
-          }
-          printf("\n");
-      }
-      printf("%d\n",thisMove.move);
-      snprintf(player_message, sizeof(player_message), "%d", thisMove.move);
-      move=thisMove.move;
+
+      int thisMove=minmax(board,player,depth);
+
+      printf("Final best choice %d :\n",thisMove);
+      // for (int i = 0; i < 5; i++) {
+      //     for (int j = 0; j < 5; j++) {
+      //         printf("%d",thisMove.board[i][j]);
+      //     }
+      //     printf("\n");
+      // }
+      printf("%d\n",thisMove);
+      snprintf(player_message, sizeof(player_message), "%d", thisMove);
+      move=thisMove;
 
       sscanf(player_message, "%d", &move);
       setMove(move, player);
