@@ -39,8 +39,8 @@ void apply_move(int board[5][5], int move, int player) {
 }
 
 int myMax(int board[5][5],int player,int depth,int alpha,int beta){
-  if(count_lines_of_length(board,player,4)>0)return INT_MAX;
-  if(count_lines_of_length(board,switchPlayers(player),4)>0)return INT_MIN;
+  if(h(board,player)==INT_MAX)return INT_MAX;
+  if(h(board,player)==INT_MIN)return INT_MIN;
   if(depth==0)return h(board,player);
 
   int moves[25];
@@ -55,15 +55,15 @@ int myMax(int board[5][5],int player,int depth,int alpha,int beta){
       int temp=myMin(tempBoard,player,depth-1,alpha,beta);
 
       max = (temp > max) ? temp : max;
-      alpha = (alpha > temp) ? alpha : temp;
-        if (beta <= alpha) break; 
+      // alpha = (alpha >= temp) ? alpha : temp;
+      //   if (beta <= alpha) break; 
     }
     return max;
 }
 
 int myMin(int board[5][5],int player,int depth,int alpha,int beta){
-  if(count_lines_of_length(board,player,4)>0)return INT_MIN;
-  if(count_lines_of_length(board,switchPlayers(player),4)>0)return INT_MAX;
+  if(h(board,player)==INT_MAX)return INT_MIN;
+  if(h(board,player)==INT_MIN)return INT_MAX;
   if(depth==0)return h(board,player);
 
   int moves[25];
@@ -78,22 +78,22 @@ int myMin(int board[5][5],int player,int depth,int alpha,int beta){
       int temp=myMax(tempBoard,player,depth-1,alpha,beta);
 
       min = (temp < min) ? temp : min;
-      beta = (beta < temp) ? beta : temp;
-        if (beta <= alpha) break; 
+      // beta = (beta <= temp) ? beta : temp;
+      //   if (beta <= alpha) break; 
     }
     return min;
 }
 
 int minmax(int board[5][5], int tempPlayer, int tempDepth){
   if(board[2][2]==0)return 33;
-  int finalMove=888;
+  int finalMove=-2;
   int alpha=INT_MIN;
   int beta=INT_MAX;
 
   int moves[25];
   int count = generateStates(board, tempPlayer,moves);
 
-  if (count == 0)return 8889;
+  if (count == 0)return -1;
 
   
     int max=INT_MIN;
@@ -109,8 +109,8 @@ int minmax(int board[5][5], int tempPlayer, int tempDepth){
         max=temp;
         finalMove=moves[i];
       }
-      alpha = (alpha > temp) ? alpha : temp;
-        if (beta <= alpha) break; 
+      // alpha = (alpha >= temp) ? alpha : temp;
+      //   if (beta <= alpha) break; 
     }
     printf("Final score: %d\n",max);
     return finalMove;

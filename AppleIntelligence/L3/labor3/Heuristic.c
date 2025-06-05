@@ -94,7 +94,7 @@ int defensive_heuristic(const int board[5][5], int player) {
 
 static int evaluate_4_line_aggresive(const int line[4],int player){
   int value=0;
-  value+=rand()%250;
+  //value+=rand()%250;
 
   //Player = X
   //Opponent = O
@@ -106,9 +106,9 @@ static int evaluate_4_line_aggresive(const int line[4],int player){
   if (is_three_pattern(line, player)) return INT_MIN;//XXX- v -XXX
   if (is_three_pattern(line, switchPlayers(player))) return INT_MAX; //OOO- v -OOO
   if (is_pattern(line,player)) value+=1000000; //XX_X v X_XX
-  if (is_pattern(line,switchPlayers(player))) value-=100000; //OO_O v O_OO
+  if (is_pattern(line,switchPlayers(player))) value-=1250000; //OO_O v O_OO
   if (interrupted_pattern(line,player))value-=150000; //XXOX v XOXX
-  if (interrupted_pattern(line,switchPlayers(player)))value+=250000; //OOXO v OXOO
+  if (interrupted_pattern(line,switchPlayers(player)))value+=2250000; //OOXO v OXOO
   if (is_empty_pattern(line,player)) value+=25000; // X__X
   if (is_free_pattern(line,player))value+=35000;//_XX_
   if (is_one_side_blocked_pattern(line,player))value-=35000;//OXX_ v _XXO
