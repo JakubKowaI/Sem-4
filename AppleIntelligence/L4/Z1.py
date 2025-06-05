@@ -24,7 +24,7 @@ for clusters in [10, 15, 20, 30]:
 
     # Wybierz najlepszy model (najmniejsza inercja)
     for _ in range(10):
-        kmeans = KMeans(n_clusters=clusters, init='k-means++', n_init=1)
+        kmeans = KMeans(n_clusters=clusters, init='random', n_init=1)#można użyc init='k-means++'
         kmeans.fit(X_scaled)
         if kmeans.inertia_ < min_inertia:
             min_inertia = kmeans.inertia_

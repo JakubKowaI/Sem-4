@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require("cors");
 var mysql = require('mysql');
 const app = express();
 const bcrypt = require('bcryptjs');
@@ -8,6 +9,12 @@ const cookieParser = require('cookie-parser');
 app.use(cookieParser());
 
 const secret = 'MySecretKey'; // move to env variable in production
+
+// Włącz CORS i zezwól na frontend z portu 5173 (Vite)
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true // jeśli używasz ciasteczek
+}));
 
 // Wbudowany middleware do obsługi danych JSON i danych z formularzy urlencoded
 app.use(express.urlencoded({ extended: false })); // Obsługuje 'application/x-www-form-urlencoded'
@@ -26,7 +33,7 @@ function authenticateToken(req, res, next) {
   if (!token) return res.sendStatus(401);
 
   jwt.verify(token, secret,{algorithms:'HS512'}, (err, user) => {
-    if (err) return res.Status(403).json({error:'Cannot Authenticate'});
+    if (err) return res.status(403).json({error:'Cannot Authenticate'});
     req.user = user;
     next();
   });
@@ -116,7 +123,7 @@ app.get('/users/:userId', authenticateToken, requireAdmin, (req, res) => {
 db.query('SELECT id,email,role FROM User WHERE id = ?', [userId], (err, results) => {
   if (err) return res.status(500).json({ error: 'Database error' });
   if (results.length === 0) return res.status(404).json({ message: 'User not found' });
-  res.status(201).json(results);
+  res.status(200).json(results);
   
   });
 });
@@ -430,7 +437,7 @@ var server = app.listen(3001, () => {
     console.log("Przykładowa aplikacja nasłuchuje na http://%s:%s", host, port)
 })
 
-var db = mysql.createConnection({
+const db = mysql.createConnection({
   host: "localhost",
   user: "kuba",
   password: "kubutek15",
