@@ -165,40 +165,37 @@ private:
 // Definicja statycznego pola
 Node* Heap::NIL = nullptr;
 int j=0;
-void save_to_csv(int n, const string filename="results_operations.csv") {
+void save_to_csv(int n, const string filename="results_n.csv") {
     ofstream file(filename, ios::app); // dopisuje
     if (file.tellp() == 0) {
-        file << "n,i-th operation, comparisons\n";
+        file << "n, comparisons\n";
     }
     j++;
     file << n << ","
-         << j << ","
          << comparisons << "\n";
     file.close();
     comparisons=0;
 }
 
 int main() {
-    int n = 500;
-    Heap H1, H2;
+    int n = 10000;
+    
 
-    for (int i = 0; i < n; i++) {
+    for(int k=100;k<=n;k+=100){
+        Heap H1, H2;
+        for (int i = 0; i < k; i++) {
         H1.insert(mt() % (25 * n));
-        save_to_csv(n);
         H2.insert(mt() % (25 * n));
-        save_to_csv(n);
-    }
+        }
 
-    Heap H = Heap::Binomial_heap_union(H1, H2);
-    save_to_csv(n);
+        Heap H = Heap::Binomial_heap_union(H1, H2);
 
-    for (int i = 0; i < 2 * n; i++) {
-        int min_val = H.extract_min();
-        // if (min_val != -1)
-        //     cout << min_val << " ";
-        save_to_csv(n);
+        for (int i = 0; i < 2 * k; i++) {
+            int min_val = H.extract_min();
+        }
+        save_to_csv(k);
     }
-    cout << "\nHeap is empty\n";
+    
 
     return 0;
 }

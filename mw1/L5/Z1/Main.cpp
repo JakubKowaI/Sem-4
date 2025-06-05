@@ -133,7 +133,7 @@ void run_experiment(int nMin, int nMax, int step, int rep) {
 }
 
 int main() {
-    int nMin = 100, nMax = 1000, step = 100, rep = 5;
+    int nMin = 100, nMax = 5000, step = 100, rep = 5;
     run_experiment(nMin, nMax, step, rep);
     return 0;
 }
