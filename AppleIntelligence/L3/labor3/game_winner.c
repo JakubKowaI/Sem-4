@@ -52,11 +52,19 @@ int myMax(int board[5][5],int player,int depth,int alpha,int beta){
       memcpy(tempBoard, board, sizeof(tempBoard));
       apply_move(tempBoard,moves[i],player);
 
+      if(h(tempBoard,player)==INT_MAX)return INT_MAX;
+    }
+
+  for(int i=0;i<count;i++){
+      int tempBoard[5][5];
+      memcpy(tempBoard, board, sizeof(tempBoard));
+      apply_move(tempBoard,moves[i],player);
+
       int temp=myMin(tempBoard,player,depth-1,alpha,beta);
 
       max = (temp > max) ? temp : max;
-      // alpha = (alpha >= temp) ? alpha : temp;
-      //   if (beta <= alpha) break; 
+      alpha = (alpha >= temp) ? alpha : temp;
+        if (beta <= alpha) break; 
     }
     return max;
 }
@@ -78,8 +86,8 @@ int myMin(int board[5][5],int player,int depth,int alpha,int beta){
       int temp=myMax(tempBoard,player,depth-1,alpha,beta);
 
       min = (temp < min) ? temp : min;
-      // beta = (beta <= temp) ? beta : temp;
-      //   if (beta <= alpha) break; 
+      beta = (beta <= temp) ? beta : temp;
+        if (beta <= alpha) break; 
     }
     return min;
 }
@@ -103,14 +111,22 @@ int minmax(int board[5][5], int tempPlayer, int tempDepth){
       memcpy(tempBoard, board, sizeof(tempBoard));
       apply_move(tempBoard,moves[i],tempPlayer);
 
+      if(h(tempBoard,tempPlayer)==INT_MAX)return INT_MAX;
+    }
+
+    for(int i=0;i<count;i++){
+      int tempBoard[5][5];
+      memcpy(tempBoard, board, sizeof(tempBoard));
+      apply_move(tempBoard,moves[i],tempPlayer);
+
       int temp=myMin(tempBoard,tempPlayer,tempDepth-1,alpha,beta);
 
       if(temp>max){
         max=temp;
         finalMove=moves[i];
       }
-      // alpha = (alpha >= temp) ? alpha : temp;
-      //   if (beta <= alpha) break; 
+      alpha = (alpha >= temp) ? alpha : temp;
+        if (beta <= alpha) break; 
     }
     printf("Final score: %d\n",max);
     return finalMove;
