@@ -8,18 +8,18 @@ static int evaluate_4_line_defensive(const int line[4],int player){
   //Free space = _
   //Free/occupied = -
 
-  if (is_win_pattern(line, player)) return INT_MAX;//XXXX
-  if (is_win_pattern(line, switchPlayers(player))) return INT_MIN;//OOOO
-  if (is_three_pattern(line, player)) return INT_MIN;//XXX- v -XXX
-  if (is_three_pattern(line, switchPlayers(player))) return INT_MAX; //OOO- v -OOO
+  // if (is_win_pattern(line, player)) return INT_MAX;//XXXX
+  // if (is_win_pattern(line, switchPlayers(player))) return INT_MIN;//OOOO
+  // if (is_three_pattern(line, player)) return INT_MIN;//XXX- v -XXX
+  // if (is_three_pattern(line, switchPlayers(player))) return INT_MAX; //OOO- v -OOO
   if (is_pattern(line,player)) value+=250000; //XX_X v X_XX
-  if (is_pattern(line,switchPlayers(player))) value-=100000; //OO_O v O_OO
+  if (is_pattern(line,switchPlayers(player))) value-=1000000; //OO_O v O_OO
   if (interrupted_pattern(line,player))value-=150000; //XXOX v XOXX
-  if (interrupted_pattern(line,switchPlayers(player)))value+=350000; //OOXO v OXOO
+  if (interrupted_pattern(line,switchPlayers(player)))value+=3500000; //OOXO v OXOO
   if (is_empty_pattern(line,player)) value+=75000; // X__X
   if (is_free_pattern(line,player))value+=65000;//_XX_
   if (is_one_side_blocked_pattern(line,player))value-=25000;//OXX_ v _XXO
-  if (is_one_side_blocked_pattern(line,switchPlayers(player)))value+=125000;//XOO_ v _OOX
+  if (is_one_side_blocked_pattern(line,switchPlayers(player)))value+=1250000;//XOO_ v _OOX
   if (is_checkered_pattern(line,player))value+=25000;//X_X_ v _X_X
   if (is_checkered_pattern(line,switchPlayers(player)))value-=15000;//O_O_ v _O_O
   if (is_two_on_the_side_pattern(line,player)) value+=7500;//XX__ v __XX 
@@ -28,8 +28,14 @@ static int evaluate_4_line_defensive(const int line[4],int player){
 }
 
 int defensive_heuristic(const int board[5][5], int player) {
-    int value=0;
+   int value=0;
 
+  if(count_lines_of_length(board,player,4)>0)return INT_MAX;//XXXX
+  if(count_lines_of_length(board,switchPlayers(player),4)>0)return INT_MIN;//OOOO
+  if(count_lines_of_length(board,player,3)>0)return INT_MIN;//XXX- v -XXX
+  if(count_lines_of_length(board,switchPlayers(player),3)>0)return INT_MAX; //OOO- v -OOO
+
+  
 
   //Sprawdzanie poziomych linii po 4 znaki
   for (int i = 0; i < 5; i++) {
@@ -80,16 +86,17 @@ int defensive_heuristic(const int board[5][5], int player) {
     if(threeLines[i][0]==opponent&&threeLines[i][1]==opponent&&threeLines[i][2]==opponent)return INT_MAX;
   }
 
-  for(int i=0;i<5;i++){
-    for(int j=0;j<5;j++){
-      if(board[i][j]==player){
-        value += 25000 * (3 - max(abs(i - 2), abs(j - 2)));
+
+    for(int i=0;i<5;i++){
+      for(int j=0;j<5;j++){
+        if(board[i][j]==player){
+          value += 500 * (3 - max(abs(i - 2), abs(j - 2)));
+        }
       }
     }
-  }
     //printf("Final value: %d\n%d\n",value,tempPlayer);
 
-  return value; 
+    return value; 
 }
 
 static int evaluate_4_line_aggresive(const int line[4],int player){
@@ -101,10 +108,10 @@ static int evaluate_4_line_aggresive(const int line[4],int player){
   //Free space = _
   //Free/occupied = -
 
-  if (is_win_pattern(line, player)) return INT_MAX;//XXXX
-  if (is_win_pattern(line, switchPlayers(player))) return INT_MIN;//OOOO
-  if (is_three_pattern(line, player)) return INT_MIN;//XXX- v -XXX
-  if (is_three_pattern(line, switchPlayers(player))) return INT_MAX; //OOO- v -OOO
+  // if (is_win_pattern(line, player)) return INT_MAX;//XXXX
+  // if (is_win_pattern(line, switchPlayers(player))) return INT_MIN;//OOOO
+  // if (is_three_pattern(line, player)) return INT_MIN;//XXX- v -XXX
+  // if (is_three_pattern(line, switchPlayers(player))) return INT_MAX; //OOO- v -OOO
   if (is_pattern(line,player)) value+=1000000; //XX_X v X_XX
   if (is_pattern(line,switchPlayers(player))) value-=1250000; //OO_O v O_OO
   if (interrupted_pattern(line,player))value-=150000; //XXOX v XOXX
@@ -123,6 +130,12 @@ static int evaluate_4_line_aggresive(const int line[4],int player){
 int aggressive_heuristic(const int board[5][5], int player) {
   int value=0;
 
+  if(count_lines_of_length(board,player,4)>0)return INT_MAX;//XXXX
+  if(count_lines_of_length(board,switchPlayers(player),4)>0)return INT_MIN;//OOOO
+  if(count_lines_of_length(board,player,3)>0)return INT_MIN;//XXX- v -XXX
+  if(count_lines_of_length(board,switchPlayers(player),3)>0)return INT_MAX; //OOO- v -OOO
+
+  
 
   //Sprawdzanie poziomych linii po 4 znaki
   for (int i = 0; i < 5; i++) {

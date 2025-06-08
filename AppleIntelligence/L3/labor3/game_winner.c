@@ -53,7 +53,7 @@ int myMax(int board[5][5],int player,int depth,int alpha,int beta){
       apply_move(tempBoard,moves[i],player);
 
       if(h(tempBoard,player)==INT_MAX)return INT_MAX;
-    }
+  }
 
   for(int i=0;i<count;i++){
       int tempBoard[5][5];
@@ -187,17 +187,13 @@ int main(int argc, char *argv[]) {
   end_game = false;
   sscanf(argv[3], "%d", &player);
 
-  // if (player == 1){
-  // h_gracz = aggressive_heuristic;
-  // h_odp = defensive_heuristic;
-  //  printf("Taking offensive approach\n");
-  // }else{
-  //  h_gracz = defensive_heuristic;
-  //  h_odp= aggressive_heuristic;
-  //  printf("Taking defensive approach\n");
-  // }
+  if (player == 1){
+    h = aggressive_heuristic;
+  }else{
+    h = defensive_heuristic;
+  }
 
-  h =aggressive_heuristic;
+  //h =aggressive_heuristic;
   //h_odp = aggressive_heuristic;
 
   int depth = atoi(argv[5]);
