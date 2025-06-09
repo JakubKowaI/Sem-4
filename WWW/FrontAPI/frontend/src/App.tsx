@@ -100,6 +100,10 @@ const App: React.FC = () => {
       throw new Error(errorData.message || `HTTP ${response.status}`);
     }
 
+    if (response.status === 204) {
+      return {} as T;
+    }
+
     return response.json();
   };
 

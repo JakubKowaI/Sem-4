@@ -74,9 +74,9 @@ export const UsersList: React.FC<{
                 try {
                     await apiCall(`/users/${userId}`, { method: 'DELETE' });
                     showMessage('User deleted successfully!');
-                    fetchUsers();
+                    fetchUsers(); 
                 } catch (error) {
-                    showMessage('Failed to delete user', 'error');
+                    showMessage((error as Error).message || 'Failed to delete user', 'error');
                 }
             }
         };

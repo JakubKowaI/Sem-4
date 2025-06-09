@@ -1,0 +1,7 @@
+
+# Maskarada NAT — pozwala na wychodzenie na internet
+sudo iptables -t nat -A POSTROUTING -s 10.10.10.0/24 -o wlan0 -j MASQUERADE
+
+# Forwardowanie pakietów z GNS3
+sudo iptables -A FORWARD -s 10.10.10.0/24 -o wlan0 -j ACCEPT
+sudo iptables -A FORWARD -d 10.10.10.0/24 -m state --state ESTABLISHED,RELATED -i wlan0 -j ACCEPT

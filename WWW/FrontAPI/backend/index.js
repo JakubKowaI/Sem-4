@@ -143,7 +143,7 @@ app.delete('/users/:userId', authenticateToken, requireAdmin, (req, res) => {
     db.query('DELETE FROM User WHERE id = ?', [userId], (err, results) => {
         if (err) return res.status(500).json({ error: 'Database error' });
         if (results.length === 0) return res.status(404).json({ message: 'User not found' });
-        res.status(204).json(results);
+        res.status(204).json({ message: 'User deleted' });
 
     });
 });
@@ -245,7 +245,8 @@ app.delete('/books/:bookId', authenticateToken, requireAdmin, (req, res) => {
     db.query('DELETE FROM Book WHERE id = ?', [bookId], (err, results) => {
         if (err) return res.status(500).json({ error: 'Database error' });
         if (results.length === 0) return res.status(404).json({ message: 'Book not found' });
-        res.status(204).json(results);
+        res.status(204).json({ message: 'Book deleted' });
+
     });
 });
 
@@ -611,9 +612,9 @@ app.post('/books/:bookId/lend', authenticateToken, (req, res) => {
 
 
 var server = app.listen(3001, () => {
-    var host = server.address().address
-    var port = server.address().port
-    console.log("Przykładowa aplikacja nasłuchuje na http://%s:%s", host, port)
+    var host = server.address().address;
+    var port = server.address().port;
+    console.log("Przykładowa aplikacja nasłuchuje na http://%s:%s", host, port);
 })
 
 const db = mysql.createConnection({
