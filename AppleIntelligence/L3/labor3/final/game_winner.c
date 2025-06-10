@@ -101,7 +101,7 @@ int myMin(int board[5][5],int player,int depth,int alpha,int beta){
 }
 
 int minmax(int board[5][5], int tempPlayer, int tempDepth){
-  if(board[2][2]==0)return 33;
+  //if(board[2][2]==0)return 33;
   int finalMove=-2;
   int alpha=INT_MIN;
   int beta=INT_MAX;

@@ -246,7 +246,7 @@ app.delete('/books/:bookId', authenticateToken, requireAdmin, (req, res) => {
         if (err) return res.status(500).json({ error: 'Database error' });
         if (results.length === 0) return res.status(404).json({ message: 'Book not found' });
         res.status(204).json({ message: 'Book deleted' });
-
+ 
     });
 });
 

@@ -100,7 +100,7 @@ export const Books: React.FC<{
                     showMessage('Book deleted successfully!');
                     fetchBooks();
                 } catch (error) {
-                    showMessage('Failed to delete book', 'error');
+                    showMessage((error as Error).message || 'Failed to delete book', 'error');
                 }
             }
         };
