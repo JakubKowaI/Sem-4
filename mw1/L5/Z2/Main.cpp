@@ -95,7 +95,7 @@ double prim(int n, const vector<Edge>& edges, bool build_tree = false) {
     }
 
     vector<bool> in_mst(n, false);
-    vector<double> min_edge(n, 1e9);
+    vector<double> min_edge(n, 1e9); 
     vector<int> parent(n, -1);
     priority_queue<pair<double, int>, vector<pair<double, int>>, greater<>> pq;
 
