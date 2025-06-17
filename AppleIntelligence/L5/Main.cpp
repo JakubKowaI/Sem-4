@@ -35,6 +35,7 @@ vector<pair<double,double>> L1(vector<pair<double,double>> x){
     double sum1=0.0;
     double sum2=0.0;
     vector<pair<double,double>> result;
+    result.clear();
     for(pair<double,double> el : x){
         sum1+=el.first;
         sum2+=el.second;
@@ -179,7 +180,9 @@ int main(){
 
     while(learning_rate<=0.5){
 
-        for(int repetition=0;repetition<15;repetition++){
+        for(int repetition=0;repetition<85;repetition++){
+            dane.clear();
+            labels.clear();
             for(int i=0;i<ilosc_testow;i++){
                 dane.push_back(make_pair(dis(mt),dis(mt)));
                 if(get<0>(dane[i])*get<1>(dane[i])>=0)labels.push_back(true);
@@ -215,7 +218,8 @@ int main(){
                 double input[2]={dane[i].first,dane[i].second};
                 vector<double> hidden_out = hidden.forward(input);
                 double y_pred = output.forward(hidden_out);
-                cout<<"Pred: "<<y_pred<<" Label: "<<labels[i]<<endl;
+                //cout<<dane[i].first<<" : "<<dane[i].second<<endl;
+                //cout<<"Pred: "<<y_pred<<" Label: "<<labels[i]<<endl;
                 if((y_pred>=0.5&&labels[i]==1)||(y_pred<0.5&&labels[i]==0))correct++;
             }
             double accuracy=(double)correct/(double)(ilosc_testow/10);
